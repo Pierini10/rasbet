@@ -18,6 +18,7 @@ function App() {
         >
           Learn React
         </a>
+        <button className='btn btn-primary'>Click me</button>
       </header>
     </div>
   );
