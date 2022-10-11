@@ -18,7 +18,7 @@ function App() {
         >
           Learn React
         </a>
-        <button className='btn btn-primary'>Click me</button>
+        <button className='btn btn-success'>Click me</button>
       </header>
     </div>
   );
