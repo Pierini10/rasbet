@@ -1,8 +1,9 @@
 import { Form } from "react-router-dom";
 
+//acabar
 const Searchbar = () => {
   return (
-    <div className="m-12 pl-3 pr-3 flex  items-center border-2 border-gray-500 rounded-full overflow-hidden space-x-3">
+    <div className="m-12 pl-3 pr-3 flex  items-center border-2 border-green-900 rounded-full overflow-hidden space-x-3">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

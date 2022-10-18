@@ -8,7 +8,7 @@ const listaDesportos: string[] = ["Futebol", "Basquetebol", "Ténis", "MotoGP"];
 
 const Navbar = () => {
   return (
-    <div className="bg-green-900 grid grid-cols-3 h-24 items-center p-6 text-white">
+    <div className="sticky top-0 bg-green-900 grid grid-cols-3 h-24 items-center p-6 text-white">
       <nav className="col-span-2 flex justify-between h-full items-center">
         <img src="logo.png" alt="logo" className="" />
         <div className="pr-4 uppercase text-base font-medium">
@@ -17,7 +17,7 @@ const Navbar = () => {
               <SportButton sport="Todos" />
             </li>
             {listaDesportos.map((e) => (
-              <li>
+              <li id={e}>
                 <SportButton sport={e} />
               </li>
             ))}
