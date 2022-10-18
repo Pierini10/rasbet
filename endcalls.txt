@@ -1,0 +1,148 @@
+yyyy/mm/dd
+
+[Registo]
+envio {
+    email:string,
+    nome: nome,
+    apelido: nome,
+    password: string,
+    nif: number,
+    cc: number,
+    morada: string,
+    telemovel: (codigo do pais)string,
+    birthday: string,
+}
+
+
+
+[login]
+envio {
+    email: string
+    pass: string
+} 
+receber { 
+id: number,
+saldo: number,
+nome: string,
+apelido: string,
+role: string
+}
+
+[mudar info]
+e tudo opcional
+envio {
+    email?: string,
+    nome?: nome,
+    apelido?: nome,
+    password?: string,
+    morada?: string,
+    telemovel?: (codigo do pais)string,
+}
+receber {
+    string com mensagem de sucesso
+    ou erro 
+}
+
+[receber jogos]
+receber {
+    [
+        {
+            idjogo:string
+            desporto:string
+            descricao:string
+            apostasPossiveis:[
+                {
+                    nome: string
+                    odd: number
+                }
+            ]
+            data: string,
+            state: string
+        }
+    ]
+}
+
+[executar bet]
+envio {
+    idUser: number
+    montante: number
+    metodoPag: string
+    [{
+        idjogo: number
+        nome: string
+        odd: number
+    }]
+}
+
+[historico apostas]
+envio {
+    idUser: number
+}
+receber {
+    [{
+        idbet:string
+        [{
+        descricao:string
+        aposta:string
+        resultado: string
+        montante: number
+        ganhos: number
+        }]
+    }]
+}
+
+[historico de transacoes]
+envio {
+    idUser: number
+}
+receber {
+        [{
+        descricao:string
+        data: string
+        operacao: number
+        saldoaposMov: number
+        }] 
+}
+
+
+[inserir odd]
+envio {
+    idUser: number
+    [{
+        idbet: number,
+        apostasPossiveis:[
+                {
+                    nome: string
+                    odd: number
+                }
+            ]
+    }] 
+}
+
+
+
+[levantar ou depositar dito guito] {
+    envio {
+        idUser: string
+        montante: number
+        tipo: string (levantamento ou deposito)
+    }
+    receber {
+        saldo: number
+    }
+}
+
+
+[mudar estado da aposta] {
+    envio {
+    idAposta: number 
+    idUser: number
+    estado: string
+    }
+    receber {
+        mensagem
+    }
+}
+
+
+[notificacoes? fazer? como fazer?]
