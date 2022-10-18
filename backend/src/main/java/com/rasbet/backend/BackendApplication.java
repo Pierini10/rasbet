@@ -7,9 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BackendApplication {
 
 	public static void main(String[] args) {
+		// Run backend application.
 		SpringApplication.run(BackendApplication.class, args);
-		System.out.println("Backend Working Bitches!!!");
-		System.out.println("Backend Working Bitches!!!");
 	}
-
 }
