@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Bets from "./view/bets/Bets";
+import Historico from "./view/historico/Historico";
 import Login from "./view/login/Login";
+import Profile from "./view/perfil/Perfil";
 import Registo from "./view/registro/Registo";
 
 const router = createBrowserRouter([
@@ -17,8 +19,16 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "bets",
+    path: "/bets",
     element: <Bets />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "/historico",
+    element: <Historico />,
   },
 ]);
 
