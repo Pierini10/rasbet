@@ -1,4 +1,4 @@
-package com.rasbet.database;
+package com.rasbet.backend.Database;
 
 import java.sql.*;
 
