@@ -1,18 +1,23 @@
-yyyy/mm/dd
+todas as datas devem ser da forma yyyy-MM-dd
+todas as datas devem ser da forma: HH:mm
 
 [Registo]
 envio {
     email:string,
+    password: string,
     nome: nome,
     apelido: nome,
-    password: string,
     nif: number,
     cc: number,
     morada: string,
     telemovel: (codigo do pais)string,
     birthday: string,
 }
-
+receber{
+    user id?
+    mesma info que login?
+    booleano?
+}
 
 
 [login]
@@ -31,10 +36,11 @@ role: string
 [mudar info]
 e tudo opcional
 envio {
+    userID: int     -> no futuro será um token?
     email?: string,
+    password?: string,
     nome?: nome,
     apelido?: nome,
-    password?: string,
     morada?: string,
     telemovel?: (codigo do pais)string,
 }
@@ -50,13 +56,14 @@ receber {
             idjogo:string
             desporto:string
             descricao:string
+            data: string,
+            hora: string,
             apostasPossiveis:[
                 {
                     nome: string
                     odd: number
                 }
             ]
-            data: string,
             state: string
         }
     ]
@@ -68,8 +75,8 @@ envio {
     montante: number
     metodoPag: string
     [{
-        idjogo: number
-        nome: string
+        idEvento: number
+        prediction: string
         odd: number
     }]
 }
@@ -83,7 +90,7 @@ receber {
         idbet:string
         [{
         descricao:string
-        aposta:string
+        prediction:string
         resultado: string
         montante: number
         ganhos: number
@@ -97,9 +104,10 @@ envio {
 }
 receber {
         [{
-        descricao:string
-        data: string
-        operacao: number
+        data: string,
+        hora: string,
+        descricao:string,
+        quantia: number,
         saldoaposMov: number
         }] 
 }
@@ -109,7 +117,7 @@ receber {
 envio {
     idUser: number
     [{
-        idbet: number,
+        eventID: number,
         apostasPossiveis:[
                 {
                     nome: string
@@ -120,12 +128,15 @@ envio {
 }
 
 
-
+TODO: provavel que tenhamos de integrar alguma forma de pagamento legit,
+    ou pelo menos o "esqueleto"...como deixar as cenas de forma genérica
+    para que seja mais facil fazer isso? é trabalho para o backend?
+    Refiro-me a p.ex depositar por mbway...temos de chamar API da SIBS p.ex...
+    Ou levantar, temos de mandar notify para admin? gerar uma transferencia automatica?
 [levantar ou depositar dito guito] {
     envio {
         idUser: string
-        montante: number
-        tipo: string (levantamento ou deposito)
+        montante: number (negativo para levantar, positivo para depositar)
     }
     receber {
         saldo: number
