@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +22,8 @@ public class RasBetFacade {
     // TODO:
     // Logout ? probably token related...
     // Notifications?
+    //
+    // Create class for user, event, bet, transaction
 
     /**
      * Register user.
@@ -35,9 +38,9 @@ public class RasBetFacade {
      * @param phoneNumber
      * @param Birthday (yyyy-MM-dd)
      * 
-     * @return
+     * @return True if user was registered successfully, false otherwise.
      */
-    @GetMapping("/register")
+    @PostMapping("/register")
     public int register(
         @RequestParam(value = "email") String email,
         @RequestParam(value = "pw") String password,
@@ -58,6 +61,8 @@ public class RasBetFacade {
      * @param email
      * @param password
      * 
+     * TODO: return class user
+     * 
      * @return List containing:
      *  0: User ID
      *  1: Balance
@@ -65,7 +70,7 @@ public class RasBetFacade {
      *  4: Surname
      *  5: role
      */
-    @GetMapping("/login")
+    @PostMapping("/login")
     public List<String> login(
         @RequestParam(value = "email") String email,
         @RequestParam(value = "pw") String password)
@@ -87,7 +92,7 @@ public class RasBetFacade {
      * 
      * @return True if change was successful, false otherwise.
      */
-    @GetMapping("/changeInfo")
+    @PostMapping("/changeInfo")
     public boolean changeInfo(
         @RequestParam(value = "userID") int userID,
         @RequestParam(value = "email", required = false) String email,
@@ -102,6 +107,8 @@ public class RasBetFacade {
 
     /**
      * Get current events information.
+     * 
+     * TODO: RETURN list of class event
      * 
      * @return List containing:
      * 0: Event ID
@@ -133,7 +140,7 @@ public class RasBetFacade {
      * 
      * @return True if bet was successful, false otherwise.
      */
-    @GetMapping("/makeBet")
+    @PostMapping("/makeBet")
     public boolean makeBet(
         @RequestParam(value = "userID") int userID,
         @RequestParam(value = "amount") double amount,
@@ -147,6 +154,8 @@ public class RasBetFacade {
      * Get user's bets history.
      * 
      * @param userID
+     * 
+     * TODO: list of class bet
      * 
      * @return List containing:
      *  0: Bet ID
@@ -170,6 +179,8 @@ public class RasBetFacade {
      * Get user's transactions history.
      * 
      * @param userID
+     * 
+     * TODO: return list of class transaction
      * 
      * @return List containing:
      *  0: Date (yyyy-MM-dd)
@@ -198,7 +209,7 @@ public class RasBetFacade {
      * 
      * @return True if insertion was successful, false otherwise.
      */
-    @GetMapping("/insertOdd")
+    @PostMapping("/insertOdd")
     public boolean insertOdd(
         @RequestParam(value = "userID") int userID,
         @RequestParam(value = "eventID") int eventID,
@@ -219,7 +230,7 @@ public class RasBetFacade {
      * 
      * @return Balance after transaction or -1 if transaction failed.
      */
-    @GetMapping("/withdrawDeposit")
+    @PostMapping("/withdrawDeposit")
     public double withdrawDeposit(
         @RequestParam(value = "userID") int userID,
         @RequestParam(value = "amount") double amount)
