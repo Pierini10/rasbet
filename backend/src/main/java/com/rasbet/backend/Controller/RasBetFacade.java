@@ -1,0 +1,235 @@
+package com.rasbet.backend.Controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class RasBetFacade {
+    
+    /**
+     * Check backend connection.
+     */
+    @GetMapping("/checkConnectivity")
+    public String checkConnection() {
+        return "Backend is live!";
+    }
+
+    // TODO:
+    // Logout ? probably token related...
+    // Notifications?
+
+    /**
+     * Register user.
+     * 
+     * @param email
+     * @param password
+     * @param firstName
+     * @param lastName
+     * @param NIF
+     * @param CC (Citizen Card)
+     * @param address
+     * @param phoneNumber
+     * @param Birthday (yyyy-MM-dd)
+     * 
+     * @return
+     */
+    @GetMapping("/register")
+    public int register(
+        @RequestParam(value = "email") String email,
+        @RequestParam(value = "pw") String password,
+        @RequestParam(value = "fn") String firstName,
+        @RequestParam(value = "ln") String lastName,
+        @RequestParam(value = "NIF") String NIF,
+        @RequestParam(value = "CC") String CC,
+        @RequestParam(value = "address") String address,
+        @RequestParam(value = "pn") String phoneNumber,
+        @RequestParam(value = "bday") String birthday)
+    {
+        return 0;
+    }
+
+    /**
+     * Login user.
+     * 
+     * @param email
+     * @param password
+     * 
+     * @return List containing:
+     *  0: User ID
+     *  1: Balance
+     *  3: Name
+     *  4: Surname
+     *  5: role
+     */
+    @GetMapping("/login")
+    public List<String> login(
+        @RequestParam(value = "email") String email,
+        @RequestParam(value = "pw") String password)
+    {
+        return new ArrayList<String>();
+    }
+
+    /**
+     * Change user information.
+     * Receiving only the parameters that are to be changed.
+     * 
+     * @param userID
+     * @param email
+     * @param password
+     * @param firstName
+     * @param lastName
+     * @param address
+     * @param phoneNumber
+     * 
+     * @return True if change was successful, false otherwise.
+     */
+    @GetMapping("/changeInfo")
+    public boolean changeInfo(
+        @RequestParam(value = "userID") int userID,
+        @RequestParam(value = "email", required = false) String email,
+        @RequestParam(value = "pw", required = false) String password,
+        @RequestParam(value = "fn", required = false) String firstName,
+        @RequestParam(value = "ln", required = false) String lastName,
+        @RequestParam(value = "address", required = false) String address,
+        @RequestParam(value = "pn", required = false) String phoneNumber)
+    {
+        return false;
+    }
+
+    /**
+     * Get current events information.
+     * 
+     * @return List containing:
+     * 0: Event ID
+     * 1: Sport Name
+     * 2: Event Description (Porto x Benfica)
+     * 3: Event Date (yyyy-MM-dd)
+     * 4: Event Time (HH:mm)
+     * 5: Possible Bets 
+     *      [
+     *          (Name, Odd),
+     *      ]
+     * 6: Event Status (0: Not started, 1: In progress, 2: Final Result)
+     */
+    @GetMapping("/getEvents")
+    public List<List<String>> getEvents() {
+        return new ArrayList<List<String>>();
+    }
+
+    /**
+     * Make a bet.
+     * 
+     * @param userID
+     * @param amount
+     * @param paymentMethod
+     * @param SimpleBets
+     *      [
+     *          (eventID, prediction, odd),
+     *      ]
+     * 
+     * @return True if bet was successful, false otherwise.
+     */
+    @GetMapping("/makeBet")
+    public boolean makeBet(
+        @RequestParam(value = "userID") int userID,
+        @RequestParam(value = "amount") double amount,
+        @RequestParam(value = "paymentMethod") String paymentMethod,
+        @RequestParam(value = "simpleBets") List<List<String>> simpleBets)
+    {
+        return false;
+    }
+
+    /**
+     * Get user's bets history.
+     * 
+     * @param userID
+     * 
+     * @return List containing:
+     *  0: Bet ID
+     *  SimpleBet
+     *      [
+     *          0: Description (Porto x Benfica)
+     *          1: Prediction (Porto)
+     *          2: Result (Porto)
+     *          3: Amount
+     *          4: Profit
+     *      ]
+     */
+    @GetMapping("/getBetsHistory")
+    public List<List<String>> getBetsHistory(
+        @RequestParam(value = "userID") int userID) 
+    {
+        return new ArrayList<List<String>>();
+    }
+
+    /**
+     * Get user's transactions history.
+     * 
+     * @param userID
+     * 
+     * @return List containing:
+     *  0: Date (yyyy-MM-dd)
+     *  1: Time (HH:mm)
+     *  2: Description
+     *  3: Amount
+     *  4: PostTransactionBalance
+     */
+    @GetMapping("/getTransactionsHistory")
+    public List<List<String>> getTransactionsHistory(
+        @RequestParam(value = "userID") int userID) 
+    {
+        return new ArrayList<List<String>>();
+    }
+
+    /**
+     * Insert new ODD.
+     * 
+     * @param UserID
+     * @param List containing:
+     *     0: Event ID
+     *     PossibleBets
+     *      [
+     *         (Name, Odd),
+     *      ]
+     * 
+     * @return True if insertion was successful, false otherwise.
+     */
+    @GetMapping("/insertOdd")
+    public boolean insertOdd(
+        @RequestParam(value = "userID") int userID,
+        @RequestParam(value = "eventID") int eventID,
+        @RequestParam(value = "possibleBets") List<List<String>> possibleBets)
+    {
+        return false;
+    }
+
+    /**
+     * Withdraw and deposit money.
+     * 
+     * TODO: ter dois links diferentes a vir para este metodo...
+     *  tipo o link deposit e o link withdraw ambos vinham para aqui
+     *  e o metodo fazia a operacao correspondente...
+     * 
+     * @param userID
+     * @param amount (negative for withdraw, positive for deposit)
+     * 
+     * @return Balance after transaction or -1 if transaction failed.
+     */
+    @GetMapping("/withdrawDeposit")
+    public double withdrawDeposit(
+        @RequestParam(value = "userID") int userID,
+        @RequestParam(value = "amount") double amount)
+    {
+        return 0;
+    }
+
+    /**
+     * TODO: Change bet status. Não percebi este requisito...
+     * 
+     */
+
+}
