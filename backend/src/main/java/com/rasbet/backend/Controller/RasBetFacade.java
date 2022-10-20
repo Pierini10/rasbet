@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rasbet.backend.Database.*;
+import com.rasbet.backend.Entities.*;
+
 @RestController
 public class RasBetFacade {
     
@@ -52,6 +55,8 @@ public class RasBetFacade {
         @RequestParam(value = "pn") String phoneNumber,
         @RequestParam(value = "bday") String birthday)
     {
+        User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday);
+        UserDB.create_User(new_user);
         return 0;
     }
 
