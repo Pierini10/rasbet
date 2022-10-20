@@ -1,6 +1,7 @@
 todas as datas devem ser da forma yyyy-MM-dd
 todas as datas devem ser da forma: HH:mm
 
+Jorge
 [Registo]
 envio {
     email:string,
@@ -19,7 +20,7 @@ receber{
     booleano?
 }
 
-
+Jorge
 [login]
 envio {
     email: string
@@ -33,6 +34,7 @@ apelido: string,
 role: string
 }
 
+Jorge
 [mudar info]
 e tudo opcional
 envio {
@@ -49,6 +51,7 @@ receber {
     ou erro 
 }
 
+Jorge
 [receber jogos]
 receber {
     [
@@ -69,6 +72,8 @@ receber {
     ]
 }
 
+
+Cris
 [executar bet]
 envio {
     idUser: number
@@ -81,6 +86,7 @@ envio {
     }]
 }
 
+Cris
 [historico apostas]
 envio {
     idUser: number
@@ -98,6 +104,7 @@ receber {
     }]
 }
 
+João
 [historico de transacoes]
 envio {
     idUser: number
@@ -113,6 +120,8 @@ receber {
 }
 
 
+João
+Cuidado Boolean que impede overwrite do supervisor ainda não existe
 [inserir odd]
 envio {
     idUser: number
@@ -128,6 +137,7 @@ envio {
 }
 
 
+João
 TODO: provavel que tenhamos de integrar alguma forma de pagamento legit,
     ou pelo menos o "esqueleto"...como deixar as cenas de forma genérica
     para que seja mais facil fazer isso? é trabalho para o backend?
@@ -144,6 +154,7 @@ TODO: provavel que tenhamos de integrar alguma forma de pagamento legit,
 }
 
 
+Cris
 [mudar estado da aposta] {
     envio {
     idAposta: number 
