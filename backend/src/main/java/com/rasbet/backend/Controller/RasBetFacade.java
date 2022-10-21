@@ -86,7 +86,7 @@ public class RasBetFacade {
             @RequestParam(value = "pw") String password) {
         User user = new User(email, password);
         try {
-            int status = UserDB.check_User(user);
+            int status = UserDB.get_User(user);
             if (status < 0) {
                 throw new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Password is Wrong!");
@@ -123,7 +123,18 @@ public class RasBetFacade {
             @RequestParam(value = "ln", required = false) String lastName,
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "pn", required = false) String phoneNumber) {
-        return false;
+        boolean r = true;
+        try {
+            User user = UserDB.get_User(userID);
+            user.update_info(email, password, firstName, lastName, address, phoneNumber);
+            UserDB.update_User(user);
+        } catch (SQLException e) {
+            r = false;
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "SQLException", e);
+        }        
+        return r;
     }
 
     /**

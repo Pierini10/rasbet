@@ -30,7 +30,7 @@ public class User {
         this.birthday = birthday;
     }
 
-    // Basic all variables Constructer
+    // Basic email, password Constructer
     public User(String email, String password) {
         this.email = email;
         this.password = password;
@@ -133,5 +133,14 @@ public class User {
     
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void update_info(String email, String password, String firstName, String lastName, String address,String phoneNumber) {
+        if (!email.equals("")) this.email = email;
+        if (!password.equals("")) this.password = password; 
+        if (!firstName.equals("")) this.firstName = firstName; 
+        if (!lastName.equals("")) this.lastName = lastName; 
+        if (!address.equals("")) this.address = address; 
+        if (!phoneNumber.equals("")) this.phoneNumber = phoneNumber;
     }
 }

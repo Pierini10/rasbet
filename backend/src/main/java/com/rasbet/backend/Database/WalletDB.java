@@ -10,7 +10,7 @@ public class WalletDB {
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
         // Create a wallet
-        String query = "INSERT INTO Wallet (Balance)\nVALUES (0)\nRETURNING Wallet_ID;";
+        String query = "INSERT INTO Wallet (Balance) VALUES (0) RETURNING Wallet_ID;";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         int wallet_id = rs.getInt("Wallet_ID");
 
@@ -25,7 +25,7 @@ public class WalletDB {
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
         // Create a wallet
-        String query = "SELECT * FROM Wallet \nWHERE Wallet_ID=" + wallet_id + ";";
+        String query = "SELECT * FROM Wallet WHERE Wallet_ID=" + wallet_id + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         double balance = rs.getDouble("Balance");
 
@@ -40,7 +40,7 @@ public class WalletDB {
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
         // Create a wallet
-        String query = "DELETE FROM table_name WHERE condition Wallet_ID=" + wallet_id + ";";
+        String query = "DELETE FROM Wallet WHERE Wallet_ID=" + wallet_id + ";";
         sqLiteJDBC2.executeUpdate(query);
 
         sqLiteJDBC2.close();
