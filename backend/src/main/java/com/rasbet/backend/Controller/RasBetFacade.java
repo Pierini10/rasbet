@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.rasbet.backend.Database.*;
-import com.rasbet.backend.Entities.*;
+import com.rasbet.backend.Database.TransactionDB;
+import com.rasbet.backend.Database.UserDB;
+import com.rasbet.backend.Entities.Transaction;
+import com.rasbet.backend.Entities.User;
 
 @RestController
 public class RasBetFacade {
@@ -133,7 +135,7 @@ public class RasBetFacade {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "SQLException", e);
-        }        
+        }
         return r;
     }
 
@@ -220,9 +222,16 @@ public class RasBetFacade {
      *         4: PostTransactionBalance
      */
     @GetMapping("/getTransactionsHistory")
-    public List<List<String>> getTransactionsHistory(
+    public ArrayList<Transaction> getTransactionsHistory(
             @RequestParam(value = "userID") int userID) {
-        return new ArrayList<List<String>>();
+        try {
+
+            return TransactionDB.getTransactions(userID);
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "SQLException", e);
+        }
     }
 
     /**
