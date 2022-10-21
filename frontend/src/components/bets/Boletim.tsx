@@ -27,6 +27,7 @@ const Boletim = (props: Data) => {
           onClick={() => props.btCallback(false)}
         >
           Múltiplas
+          
         </button>
       </div>
       <div className="h-[56%]">bets</div>
