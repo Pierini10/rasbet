@@ -1,0 +1,170 @@
+todas as datas devem ser da forma yyyy-MM-dd
+todas as datas devem ser da forma: HH:mm
+
+Jorge
+[Registo]
+envio {
+    email:string,
+    password: string,
+    nome: nome,
+    apelido: nome,
+    nif: number,
+    cc: number,
+    morada: string,
+    telemovel: (codigo do pais)string,
+    birthday: string,
+}
+receber{
+    user id?
+    mesma info que login?
+    booleano?
+}
+
+Jorge
+[login]
+envio {
+    email: string
+    pass: string
+} 
+receber { 
+id: number,
+saldo: number,
+nome: string,
+apelido: string,
+role: string
+}
+
+Jorge
+[mudar info]
+e tudo opcional
+envio {
+    userID: int     -> no futuro será um token?
+    email?: string,
+    password?: string,
+    nome?: nome,
+    apelido?: nome,
+    morada?: string,
+    telemovel?: (codigo do pais)string,
+}
+receber {
+    string com mensagem de sucesso
+    ou erro 
+}
+
+Jorge
+[receber jogos]
+receber {
+    [
+        {
+            idjogo:string
+            desporto:string
+            descricao:string
+            data: string,
+            hora: string,
+            apostasPossiveis:[
+                {
+                    nome: string
+                    odd: number
+                }
+            ]
+            state: string
+        }
+    ]
+}
+
+
+Cris
+[executar bet]
+envio {
+    idUser: number
+    montante: number
+    metodoPag: string
+    [{
+        idEvento: number
+        prediction: string
+        odd: number
+    }]
+}
+
+Cris
+[historico apostas]
+envio {
+    idUser: number
+}
+receber {
+    [{
+        idbet:string
+        [{
+        descricao:string
+        prediction:string
+        resultado: string
+        montante: number
+        ganhos: number
+        }]
+    }]
+}
+
+João
+[historico de transacoes]
+envio {
+    idUser: number
+}
+receber {
+        [{
+        data: string,
+        hora: string,
+        descricao:string,
+        quantia: number,
+        saldoaposMov: number
+        }] 
+}
+
+
+João
+Cuidado Boolean que impede overwrite do supervisor ainda não existe
+[inserir odd]
+envio {
+    idUser: number
+    [{
+        eventID: number,
+        apostasPossiveis:[
+                {
+                    nome: string
+                    odd: number
+                }
+            ]
+    }] 
+}
+
+
+João
+TODO: provavel que tenhamos de integrar alguma forma de pagamento legit,
+    ou pelo menos o "esqueleto"...como deixar as cenas de forma genérica
+    para que seja mais facil fazer isso? é trabalho para o backend?
+    Refiro-me a p.ex depositar por mbway...temos de chamar API da SIBS p.ex...
+    Ou levantar, temos de mandar notify para admin? gerar uma transferencia automatica?
+[levantar ou depositar dito guito] {
+    envio {
+        idUser: string
+        montante: number (negativo para levantar, positivo para depositar)
+    }
+    receber {
+        saldo: number
+    }
+}
+
+
+Cris
+[mudar estado da aposta] {
+    envio {
+    idAposta: number 
+    idUser: number
+    estado: string
+    }
+    receber {
+        mensagem
+    }
+}
+
+
+[notificacoes? fazer? como fazer?]
