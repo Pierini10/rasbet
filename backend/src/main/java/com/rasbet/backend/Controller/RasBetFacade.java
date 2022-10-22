@@ -140,7 +140,7 @@ public class RasBetFacade {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "SQLException", e);
-        }        
+        }
         return r;
     }
 
@@ -227,9 +227,16 @@ public class RasBetFacade {
      *         4: PostTransactionBalance
      */
     @GetMapping("/getTransactionsHistory")
-    public List<List<String>> getTransactionsHistory(
+    public ArrayList<Transaction> getTransactionsHistory(
             @RequestParam(value = "userID") int userID) {
-        return new ArrayList<List<String>>();
+        try {
+
+            return TransactionDB.getTransactions(userID);
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "SQLException", e);
+        }
     }
 
     /**

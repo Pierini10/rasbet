@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Bets from "./view/bets/Bets";
-import Historico from "./view/historico/Historico";
+import HistoricoApostas from "./view/historico/HistoricoApostas";
+import HistoricoTransicoes from "./view/historicoTransicoes/historicoTransicoes";
 import Login from "./view/login/Login";
 import Profile from "./view/perfil/Perfil";
-import Registo from "./view/registro/Registo";
+import Registo from "./view/registo/Registo";
 
 const router = createBrowserRouter([
   {
@@ -27,8 +28,12 @@ const router = createBrowserRouter([
     element: <Profile />,
   },
   {
-    path: "/historico",
-    element: <Historico />,
+    path: "/historicoApostas",
+    element: <HistoricoApostas />,
+  },
+  {
+    path: "/historicoTransicoes",
+    element: <HistoricoTransicoes />,
   },
 ]);
 
