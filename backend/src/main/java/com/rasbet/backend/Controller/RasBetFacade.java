@@ -1,5 +1,6 @@
 package com.rasbet.backend.Controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.*;
 import com.rasbet.backend.Entities.*;
+import com.rasbet.backend.GamesAPI.GamesApi;
 
 @RestController
 public class RasBetFacade {
@@ -22,6 +24,11 @@ public class RasBetFacade {
      */
     @GetMapping("/checkConnectivity")
     public String checkConnection() {
+        try {
+            GamesApi.getEvents();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return "Backend is live!";
     }
 
