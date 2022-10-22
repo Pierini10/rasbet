@@ -1,21 +1,20 @@
 package com.rasbet.backend.Entities;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 public class Event {
-    private int id;
+    private String id;
     private String sport;
     private String state;
     private String datetime;
     private String description;
     private String result;
-    private ArrayList<Odd> odds;
+    private Map<String, Odd> odds;
 
 
-    public Event(int id, String sport, String state, String datetime, String description, String result, ArrayList<Odd> odds) {
+    public Event(String id, String sport, String datetime, String description, String result, Map<String, Odd> odds) {
         this.id = id;
         this.sport = sport;
-        this.state = state;
         this.datetime = datetime;
         this.description = description;
         this.result = result;
@@ -23,11 +22,11 @@ public class Event {
     }
 
 
-    public int getId() {
+    public String getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -71,11 +70,15 @@ public class Event {
         this.result = result;
     }
 
-    public ArrayList<Odd> getOdds() {
+    public Map<String, Odd> getOdds() {
         return this.odds;
     }
 
-    public void setOdds(ArrayList<Odd> odds) {
+    public Odd getOdd(String entity) {
+        return this.odds.get(entity);
+    }
+
+    public void setOdds(Map<String, Odd> odds) {
         this.odds = odds;
     }
 

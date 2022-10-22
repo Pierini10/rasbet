@@ -1,6 +1,5 @@
 package com.rasbet.backend.Controller;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +23,6 @@ public class RasBetFacade {
      */
     @GetMapping("/checkConnectivity")
     public String checkConnection() {
-        try {
-            GamesApi.getEvents();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return "Backend is live!";
     }
 
@@ -162,8 +156,15 @@ public class RasBetFacade {
      *         6: Event Status (0: Not started, 1: In progress, 2: Final Result)
      */
     @GetMapping("/getEvents")
-    public List<List<String>> getEvents() {
-        return new ArrayList<List<String>>();
+    public List<Event> getEvents() {
+        try {
+            EventsDB.update_Events(GamesApi.getEvents());
+            return EventsDB.get_Events();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "SQLException", e);
+        }
     }
 
     /**
