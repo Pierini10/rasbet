@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.rasbet.backend.Database.EventsDB;
 import com.rasbet.backend.Database.TransactionDB;
 import com.rasbet.backend.Database.UserDB;
+import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.GamesAPI.GamesApi;
