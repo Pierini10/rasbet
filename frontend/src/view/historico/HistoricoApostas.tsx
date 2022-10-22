@@ -1,5 +1,5 @@
 import Aposta from "../../components/Aposta";
-import "./Historico.css";
+import "./HistoricoApostas.css";
 const dummy_Date = {
   nome: "João",
   apelido: "Silva",
@@ -65,7 +65,7 @@ const dummy_Date = {
   ],
 };
 
-function Historico() {
+function HistoricoApostas() {
   return (
     <div className="grid h-screen bg-gray-400 place-items-center ">
       <div className=" max-w-5xl bg-white border-dotted h-[80%] container rounded-3xl border-black border">
@@ -104,4 +104,4 @@ function Historico() {
   );
 }
 
-export default Historico;
+export default HistoricoApostas;
