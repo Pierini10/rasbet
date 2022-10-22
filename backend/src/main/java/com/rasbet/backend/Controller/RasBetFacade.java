@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.rasbet.backend.Database.*;
-import com.rasbet.backend.Entities.*;
+import com.rasbet.backend.Database.TransactionDB;
+import com.rasbet.backend.Database.UserDB;
+import com.rasbet.backend.Entities.Transaction;
+import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.GamesAPI.GamesApi;
 
 @RestController
@@ -277,12 +279,19 @@ public class RasBetFacade {
     public double withdrawDeposit(
             @RequestParam(value = "userID") int userID,
             @RequestParam(value = "amount") double amount) {
-        return 0;
+        String transactionType = "levantamento";
+        if (amount > 0) {
+            transactionType = "deposito";
+        }
+        return TransactionDB.addTransaction(userID, transactionType, amount);
+
     }
 
     /**
      * TODO: Change bet status. Não percebi este requisito...
      * 
      */
+
+    // TODO: REMOVE LATER, FOR TESTS ONLY
 
 }

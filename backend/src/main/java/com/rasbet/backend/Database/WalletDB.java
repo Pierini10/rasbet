@@ -1,6 +1,7 @@
 package com.rasbet.backend.Database;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class WalletDB {
 
@@ -46,4 +47,13 @@ public class WalletDB {
         sqLiteJDBC2.close();
     }
 
+    public static void setBalence(int walletID, double balance) throws SQLException {
+        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+
+        String update = "UPDATE Wallet SET Balance = " + (balance) +
+                " WHERE Wallet_ID = "
+                + walletID;
+        sqLiteJDBC2.executeUpdate(update);
+        sqLiteJDBC2.close();
+    }
 }
