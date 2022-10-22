@@ -1,16 +1,41 @@
 package com.rasbet.backend.Entities;
 
 public class Transaction {
-    private String date;
     private String description;
-    private Double quantity;
+    private Double value;
     private Double balenceAfterTran;
+    private String date;
+    private String time;
 
-    // TODO: we need to add hour and change transiction type to a string?
-    public Transaction(String date, String description, Double quantity, Double balenceAfterTran) {
-        this.date = date;
+    public Transaction(String description, Double value, Double balenceAfterTran, String date, String time) {
         this.description = description;
-        this.quantity = quantity;
+        this.value = value;
+        this.balenceAfterTran = balenceAfterTran;
+        this.date = date;
+        this.time = time;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getValue() {
+        return this.value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
+    public Double getBalenceAfterTran() {
+        return this.balenceAfterTran;
+    }
+
+    public void setBalenceAfterTran(Double balenceAfterTran) {
         this.balenceAfterTran = balenceAfterTran;
     }
 
@@ -22,28 +47,12 @@ public class Transaction {
         this.date = date;
     }
 
-    public String getDescription() {
-        return this.description;
+    public String getTime() {
+        return this.time;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getQuantity() {
-        return this.quantity;
-    }
-
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
-    }
-
-    public Double getBalenceAfterTran() {
-        return this.balenceAfterTran;
-    }
-
-    public void setBalenceAfterTran(Double balenceAfterTran) {
-        this.balenceAfterTran = balenceAfterTran;
+    public void setTime(String time) {
+        this.time = time;
     }
 
 }
