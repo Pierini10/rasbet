@@ -7,15 +7,18 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.EventsDB;
+import com.rasbet.backend.Database.OddDB;
 import com.rasbet.backend.Database.TransactionDB;
 import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Transaction;
+import com.rasbet.backend.Entities.UpdateOddRequest;
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.GamesAPI.GamesApi;
 
@@ -258,11 +261,9 @@ public class RasBetFacade {
      * @return True if insertion was successful, false otherwise.
      */
     @PostMapping("/insertOdd")
-    public boolean insertOdd(
-            @RequestParam(value = "userID") int userID,
-            @RequestParam(value = "eventID") int eventID,
-            @RequestParam(value = "possibleBets") List<List<String>> possibleBets) {
-        return false;
+    public boolean insertOdd(@RequestBody UpdateOddRequest possibleBets) {
+
+        return OddDB.updateOdds(possibleBets);
     }
 
     /**
