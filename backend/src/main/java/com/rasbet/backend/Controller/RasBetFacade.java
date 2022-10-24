@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.rasbet.backend.Database.BetDB;
 import com.rasbet.backend.Database.TransactionDB;
 import com.rasbet.backend.Database.UserDB;
+import com.rasbet.backend.Entities.Bet;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.GamesAPI.GamesApi;
@@ -188,6 +190,57 @@ public class RasBetFacade {
             @RequestParam(value = "paymentMethod") String paymentMethod,
             @RequestParam(value = "simpleBets") List<List<String>> simpleBets) {
         return false;
+    }
+    
+   
+    @PostMapping("/makeBet")
+    public boolean makeBet(
+            @RequestParam(value = "idBet") int idBet, 
+            @RequestParam(value = "idUser") int idUser, 
+            @RequestParam(value = "state") String state) {
+        boolean r = true;
+
+        try {
+            Integer idState = BetDB.get_Bet_State(state);
+            Bet bet = new Bet(idBet, idUser, idState, idState, null);
+            BetDB.update_Bet(bet);
+        } catch (SQLException e) {
+            r = false;
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+        }
+        
+        return r;
+    }
+    
+    /**
+     * Change bet state.
+     * 
+     * vale a pena o userid??
+     * 
+     * @param idBet
+     * @param userID
+     * @param state
+     * @return True if the change was successful, false otherwise.
+     */
+    @PostMapping("/changeBetState")
+    public boolean changeBetState(
+            @RequestParam(value = "idBet") int idBet, 
+            @RequestParam(value = "idUser") int idUser, 
+            @RequestParam(value = "state") String state) {
+        boolean r = true;
+
+        try {
+            Integer idState = BetDB.get_Bet_State(state);
+            Bet bet = new Bet(idBet, idUser, idState, idState, null);
+            BetDB.update_Bet(bet);
+        } catch (SQLException e) {
+            r = false;
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+        }
+        
+        return r;
     }
 
     /**

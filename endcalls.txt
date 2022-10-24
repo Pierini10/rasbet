@@ -154,7 +154,7 @@ TODO: provavel que tenhamos de integrar alguma forma de pagamento legit,
 }
 
 
-Cris
+Cris DONE
 [mudar estado da aposta] {
     envio {
     idAposta: number 
