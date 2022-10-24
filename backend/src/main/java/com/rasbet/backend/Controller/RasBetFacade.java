@@ -194,29 +194,23 @@ public class RasBetFacade {
             @RequestParam(value = "userID") int userID,
             @RequestParam(value = "amount") double amount,
             @RequestParam(value = "paymentMethod") String paymentMethod,
-            @RequestParam(value = "simpleBets") List<List<String>> simpleBets) {
+            @RequestParam(value = "simpleBets") List<List<String>> simpleBets) 
+    {
+        // TODO:
+        //        boolean r = true;
+        //
+        //        try {
+        //            Integer idState = BetDB.get_Bet_State(state);
+        //            Bet bet = new Bet(idBet, idUser, idState, idState, null);
+        //            BetDB.update_Bet(bet);
+        //        } catch (SQLException e) {
+        //            r = false;
+        //            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+        //        }
+        //        
+        //        return r;
         return false;
-    }
-    
-   
-    @PostMapping("/makeBet")
-    public boolean makeBet(
-            @RequestParam(value = "idBet") int idBet, 
-            @RequestParam(value = "idUser") int idUser, 
-            @RequestParam(value = "state") String state) {
-        boolean r = true;
-
-        try {
-            Integer idState = BetDB.get_Bet_State(state);
-            Bet bet = new Bet(idBet, idUser, idState, idState, null);
-            BetDB.update_Bet(bet);
-        } catch (SQLException e) {
-            r = false;
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
-        }
-        
-        return r;
     }
     
     /**
