@@ -1,6 +1,5 @@
 package com.rasbet.backend.Controller;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,15 +7,20 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.BetDB;
+import com.rasbet.backend.Database.EventsDB;
+import com.rasbet.backend.Database.OddDB;
 import com.rasbet.backend.Database.TransactionDB;
 import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Bet;
+import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Transaction;
+import com.rasbet.backend.Entities.UpdateOddRequest;
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.GamesAPI.GamesApi;
 
@@ -28,11 +32,6 @@ public class RasBetFacade {
      */
     @GetMapping("/checkConnectivity")
     public String checkConnection() {
-        try {
-            GamesApi.getEvents();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return "Backend is live!";
     }
 
@@ -166,8 +165,15 @@ public class RasBetFacade {
      *         6: Event Status (0: Not started, 1: In progress, 2: Final Result)
      */
     @GetMapping("/getEvents")
-    public List<List<String>> getEvents() {
-        return new ArrayList<List<String>>();
+    public List<Event> getEvents() {
+        try {
+            EventsDB.update_Events(GamesApi.getEvents());
+            return EventsDB.get_Events();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "SQLException", e);
+        }
     }
 
     /**
@@ -308,11 +314,9 @@ public class RasBetFacade {
      * @return True if insertion was successful, false otherwise.
      */
     @PostMapping("/insertOdd")
-    public boolean insertOdd(
-            @RequestParam(value = "userID") int userID,
-            @RequestParam(value = "eventID") int eventID,
-            @RequestParam(value = "possibleBets") List<List<String>> possibleBets) {
-        return false;
+    public boolean insertOdd(@RequestBody UpdateOddRequest possibleBets) {
+
+        return OddDB.updateOdds(possibleBets);
     }
 
     /**
