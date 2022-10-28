@@ -26,7 +26,7 @@ public class UserDB {
         // Create a connection
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
-        String query = "SELECT * FROM Role WHERE Name=" + role + ";";
+        String query = "SELECT * FROM Role WHERE Name=" + SQLiteJDBC2.prepare_string(role) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         int id = rs.getInt("Role_ID");
 
