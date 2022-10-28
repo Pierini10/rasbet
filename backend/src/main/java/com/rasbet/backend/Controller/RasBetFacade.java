@@ -54,7 +54,6 @@ public class RasBetFacade {
      * @param phoneNumber
      * @param Birthday    (yyyy-MM-dd)
      * 
-     * @return True if user was registered successfully, false otherwise.
      */
     @PostMapping("/register")
     public void register(
@@ -72,10 +71,9 @@ public class RasBetFacade {
             UserDB.create_User(new_user);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "SQLException", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-    }
+    } 
 
     /**
      * Login user.
@@ -98,14 +96,12 @@ public class RasBetFacade {
         try {
             int status = UserDB.get_User(user);
             if (status < 0) {
-                throw new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Password is Wrong!");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Password is Wrong!");
             }
 
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "SQLException", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
         return user;
     }
@@ -122,10 +118,9 @@ public class RasBetFacade {
      * @param address
      * @param phoneNumber
      * 
-     * @return True if change was successful, false otherwise.
      */
     @PostMapping("/changeInfo")
-    public boolean changeInfo(
+    public void changeInfo(
             @RequestParam(value = "userID") int userID,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "pw", required = false) String password,
@@ -133,18 +128,14 @@ public class RasBetFacade {
             @RequestParam(value = "ln", required = false) String lastName,
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "pn", required = false) String phoneNumber) {
-        boolean r = true;
         try {
             User user = UserDB.get_User(userID);
             user.update_info(email, password, firstName, lastName, address, phoneNumber);
             UserDB.update_User(user);
         } catch (SQLException e) {
-            r = false;
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "SQLException", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return r;
     }
 
     /**
