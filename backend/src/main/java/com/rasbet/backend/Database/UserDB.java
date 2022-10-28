@@ -6,13 +6,41 @@ import com.rasbet.backend.Entities.User;
 
 public class UserDB {
 
+    public final static String NORMAL_ROLE = "Normal";
+    public final static String SPECIALIST_ROLE = "Specialist";
+    public final static String ADMIN_ROLE = "Administrator";
+
+    public static String get_Role(int id) throws SQLException{
+        // Create a connection
+        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+
+        String query = "SELECT * FROM Role WHERE Role_ID=" + id + ";";
+        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        String role = rs.getString("Name");
+
+        sqLiteJDBC2.closeRS(rs);
+        return role;
+    }
+
+    public static int get_RoleID(String role)throws SQLException{
+        // Create a connection
+        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+
+        String query = "SELECT * FROM Role WHERE Name=" + role + ";";
+        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        int id = rs.getInt("Role_ID");
+
+        sqLiteJDBC2.closeRS(rs);
+        return id;
+    }
+
     public static int create_User(User user) throws SQLException {
         // Create a Wallet
         int wallet_id = WalletDB.create_Wallet();
         if (wallet_id < 0) return -1;
 
-        // Get id of the normal user role TODO
-        int role_id = 0;
+        // Get id of the normal user role
+        int role_id = get_RoleID(NORMAL_ROLE);
 
         // Create a User
         String query = "INSERT INTO User (Wallet_ID, Email, Password, Role, Name, Surname, Birthday, NIF, CC, Address, Phone) VALUES ("
@@ -67,14 +95,12 @@ public class UserDB {
 
         // Get Balance
         double balance = WalletDB.get_Balance(wallet_id);
-        if (balance < 0)
-            return -1;
+        if (balance < 0) return -1;
         user.setBalance(balance);
 
         // Get role
-        String role = "Normal"; // TODO
-        if (role.equals(""))
-            return -1;
+        String role = get_Role(role_id);
+        if (role.equals("")) return -1;
         user.setRole(role);
 
         return 1;
