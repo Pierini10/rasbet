@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import com.rasbet.backend.Entities.Transaction;
+import com.rasbet.backend.Exceptions.NoAmountException;
 
 public class TransactionDB {
 
@@ -51,46 +52,49 @@ public class TransactionDB {
      * @param TransactionType the transaction type
      * @param value           the value of the transaction
      * @return the current balance of the user wallet
+     * @throws NoAmountException if the user has not enough money on his wallet
+     * @throws SQLException
      */
-    public static double addTransaction(int userId, String TransactionType, double value) {
-        try {
+    public static double addTransaction(int userId, String TransactionType, double value)
+            throws NoAmountException, SQLException {
 
-            int transactionType_ID = hasType(TransactionType);
+        int transactionType_ID = hasType(TransactionType);
 
-            if (transactionType_ID == -1) {
-                transactionType_ID = addType(TransactionType);
-            }
+        if (transactionType_ID == -1) {
+            transactionType_ID = addType(TransactionType);
+        }
 
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
-            String wallet_id = "SELECT * FROM User WHERE User_ID='" + userId + "'";
-            ResultSet rs = sqLiteJDBC2.executeQuery(wallet_id);
+        String wallet_id = "SELECT * FROM User WHERE User_ID='" + userId + "'";
+        ResultSet rs = sqLiteJDBC2.executeQuery(wallet_id);
 
-            int walletID = rs.getInt("Wallet_ID");
+        int walletID = rs.getInt("Wallet_ID");
 
-            double balanceValue = WalletDB.get_Balance(walletID);
+        double balanceValue = WalletDB.get_Balance(walletID);
 
-            if (balanceValue + value > 0) {
-                String fullDate = getDateAndTime();
-                String date = fullDate.split(" ")[0];
-                String time = fullDate.split(" ")[1];
+        if (balanceValue + value >= 0) {
+            String fullDate = getDateAndTime();
+            String date = fullDate.split(" ")[0];
+            String time = fullDate.split(" ")[1];
 
-                String insert = "INSERT into 'Transaction' (Wallet_ID,TransactionType,Value,PostTransactionBalance,'Date','Time') values ('"
-                        + walletID + "','" + transactionType_ID + "','" + value + "','" + (balanceValue + value) + "','"
-                        + date + "','" + time + "')";
-                sqLiteJDBC2.executeUpdate(insert);
+            String insert = "INSERT into 'Transaction' (Wallet_ID,TransactionType,Value,PostTransactionBalance,'Date','Time') values ('"
+                    + walletID + "','" + transactionType_ID + "','" + value + "','" + (balanceValue + value) + "','"
+                    + date + "','" + time + "')";
+            sqLiteJDBC2.executeUpdate(insert);
 
-                WalletDB.setBalence(walletID, balanceValue + value);
-            }
-
+            WalletDB.setBalence(walletID, balanceValue + value);
+        } else {
             sqLiteJDBC2.closeRS(rs);
             sqLiteJDBC2.close();
-
-            return balanceValue + value;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1.0;
+            throw new NoAmountException("Not enough money in wallet to finish the transaction");
         }
+
+        sqLiteJDBC2.closeRS(rs);
+        sqLiteJDBC2.close();
+
+        return balanceValue + value;
+
     }
 
     /** @return a string with the date and time in the correct format */
@@ -104,11 +108,11 @@ public class TransactionDB {
      * @param Name name of the transactionType to add
      * @return the id of the transactionType added
      */
-    private static int addType(String Name) {
+    private static int addType(String name) {
         try {
             SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
-            String insert = "Insert into TransactionType (Name) values ('" + Name + "') returning TransactionType_ID";
+            String insert = "Insert into TransactionType (Name) values ('" + name + "') returning TransactionType_ID";
             ResultSet rs = sqLiteJDBC2.executeQuery(insert);
 
             sqLiteJDBC2.closeRS(rs);

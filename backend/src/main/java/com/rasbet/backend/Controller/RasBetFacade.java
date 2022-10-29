@@ -22,7 +22,14 @@ import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Entities.UpdateOddRequest;
 import com.rasbet.backend.Entities.User;
+import com.rasbet.backend.Exceptions.NoAmountException;
+import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.GamesAPI.GamesApi;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 public class RasBetFacade {
@@ -73,7 +80,7 @@ public class RasBetFacade {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-    } 
+    }
 
     /**
      * Login user.
@@ -194,25 +201,24 @@ public class RasBetFacade {
             @RequestParam(value = "userID") int userID,
             @RequestParam(value = "amount") double amount,
             @RequestParam(value = "paymentMethod") String paymentMethod,
-            @RequestParam(value = "simpleBets") List<List<String>> simpleBets) 
-    {
+            @RequestParam(value = "simpleBets") List<List<String>> simpleBets) {
         // TODO:
-        //        boolean r = true;
+        // boolean r = true;
         //
-        //        try {
-        //            Integer idState = BetDB.get_Bet_State(state);
-        //            Bet bet = new Bet(idBet, idUser, idState, idState, null);
-        //            BetDB.update_Bet(bet);
-        //        } catch (SQLException e) {
-        //            r = false;
-        //            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
-        //        }
-        //        
-        //        return r;
+        // try {
+        // Integer idState = BetDB.get_Bet_State(state);
+        // Bet bet = new Bet(idBet, idUser, idState, idState, null);
+        // BetDB.update_Bet(bet);
+        // } catch (SQLException e) {
+        // r = false;
+        // System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        // throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+        // }
+        //
+        // return r;
         return false;
     }
-    
+
     /**
      * Change bet state.
      * 
@@ -225,8 +231,8 @@ public class RasBetFacade {
      */
     @PostMapping("/changeBetState")
     public boolean changeBetState(
-            @RequestParam(value = "idBet") int idBet, 
-            @RequestParam(value = "idUser") int idUser, 
+            @RequestParam(value = "idBet") int idBet,
+            @RequestParam(value = "idUser") int idUser,
             @RequestParam(value = "state") String state) {
         boolean r = true;
 
@@ -239,7 +245,7 @@ public class RasBetFacade {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
         }
-        
+
         return r;
     }
 
@@ -281,16 +287,21 @@ public class RasBetFacade {
      *         3: Amount
      *         4: PostTransactionBalance
      */
+    @Operation(summary = "Get user's transactions history.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User's transactions history."),
+            @ApiResponse(responseCode = "500", description = "SQLException.")
+    })
     @GetMapping("/getTransactionsHistory")
     public ArrayList<Transaction> getTransactionsHistory(
-            @RequestParam(value = "userID") int userID) {
+            @Parameter(name = "userID", description = "User ID that wants to see his transactions history") int userID) {
         try {
 
             return TransactionDB.getTransactions(userID);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "SQLException", e);
+                    HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
         }
     }
 
@@ -307,33 +318,56 @@ public class RasBetFacade {
      * 
      * @return True if insertion was successful, false otherwise.
      */
+    @Operation(summary = "Insert new ODD.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Insertion successful"),
+            @ApiResponse(responseCode = "400", description = "This User does not have authorization to change ODD'S"),
+            @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/insertOdd")
     public boolean insertOdd(@RequestBody UpdateOddRequest possibleBets) {
 
-        return OddDB.updateOdds(possibleBets);
+        try {
+            return OddDB.updateOdds(possibleBets);
+
+        } catch (NoAuthorizationException e) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "No authorization", e);
+        } catch (SQLException e) {
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
+        }
     }
 
     /**
      * Withdraw and deposit money.
-     * 
-     * TODO: ter dois links diferentes a vir para este metodo...
-     * tipo o link deposit e o link withdraw ambos vinham para aqui
-     * e o metodo fazia a operacao correspondente...
      * 
      * @param userID
      * @param amount (negative for withdraw, positive for deposit)
      * 
      * @return Balance after transaction or -1 if transaction failed.
      */
+    @Operation(summary = "Withdraw and deposit money.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Transaction was successful."),
+            @ApiResponse(responseCode = "400", description = "Transaction failed.") })
     @PostMapping("/withdrawDeposit")
     public double withdrawDeposit(
-            @RequestParam(value = "userID") int userID,
-            @RequestParam(value = "amount") double amount) {
+            @Parameter(name = "userID", description = "User ID that wants to make the transaction") int userID,
+            @Parameter(name = "amount", description = "Amount that is being transacted") double amount) {
         String transactionType = "levantamento";
         if (amount > 0) {
             transactionType = "deposito";
         }
-        return TransactionDB.addTransaction(userID, transactionType, amount);
+        try {
+            return TransactionDB.addTransaction(userID, transactionType, amount);
+        } catch (NoAmountException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (SQLException e) {
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
+        }
 
     }
 
