@@ -140,10 +140,8 @@ public class RasBetFacade {
 
     /**
      * Get current events information.
-     * 
-     * TODO: RETURN list of class event
-     * 
-     * @return List containing:
+     *
+     * @return List of Events containing:
      *         0: Event ID
      *         1: Sport Name
      *         2: Event Description (Porto x Benfica)
@@ -158,12 +156,23 @@ public class RasBetFacade {
     @GetMapping("/getEvents")
     public List<Event> getEvents() {
         try {
-            EventsDB.update_Events(GamesApi.getEvents());
             return EventsDB.get_Events();
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "SQLException", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+        /**
+     * Update events and bet information.
+     */
+    @GetMapping("/updateEvents")
+    public void updateEvents() {
+        try {
+            EventsDB.update_Database();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 

@@ -1,5 +1,6 @@
 package com.rasbet.backend.GamesAPI;
 
+import com.rasbet.backend.Database.EventsDB;
 import com.rasbet.backend.Entities.*;
 
 import java.io.BufferedReader;
@@ -80,12 +81,12 @@ public class GamesApi {
 				}
 
 				// Create the event
-				String sport = "Football"; // TODO
+				String sport = EventsDB.FOOTBALL; // TODO
 				String result = jsonEvent.getString("scores");
 				if (result.equals("null")) result = null;
 				String description = jsonEvent.get("homeTeam") + " v " + jsonEvent.get("awayTeam");
 				events.add(new Event(jsonEvent.getString("id"), sport, jsonEvent.getString("commenceTime"), description,
-						result, odds));
+						result, null, odds));
 			}
 			return events;
 		} catch (Exception e) {

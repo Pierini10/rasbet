@@ -1,6 +1,7 @@
 package com.rasbet.backend.Database;
 
 import java.sql.*;
+import java.util.List;
 
 public class SQLiteJDBC2 {
 
@@ -43,6 +44,11 @@ public class SQLiteJDBC2 {
 
     public static String prepare_string(String string) {
         return "\'" + string + "\'";
+    }
+
+    public static String prepareList(List<String> list){
+        String delimiter = ",";
+        return "(" + String.join(delimiter, list) + ")";
     }
 
 }

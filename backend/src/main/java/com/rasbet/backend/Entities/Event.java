@@ -12,12 +12,13 @@ public class Event {
     private Map<String, Odd> odds;
 
 
-    public Event(String id, String sport, String datetime, String description, String result, Map<String, Odd> odds) {
+    public Event(String id, String sport, String datetime, String description, String result, String state, Map<String, Odd> odds) {
         this.id = id;
         this.sport = sport;
         this.datetime = datetime;
         this.description = description;
         this.result = result;
+        this.state = state;
         this.odds = odds;
     }
 

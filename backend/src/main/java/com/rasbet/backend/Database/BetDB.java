@@ -8,6 +8,10 @@ import com.rasbet.backend.Entities.Bet;
 
 public class BetDB {
 
+    public final static String PENDING_STATUS = "Pending";
+    public final static String WIN_STATUS = "Win";
+    public final static String LOSS_STATUS = "Loss";
+
     /**
      * Updates the data of a bet in the database
      * 
@@ -44,11 +48,11 @@ public class BetDB {
     public static Integer get_Bet_State(String state) throws SQLException {
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
-        String query = "SELECT BetState_ID FROM BetSate WHERE Name =" + SQLiteJDBC2.prepare_string(state) + ";";
+        String query = "SELECT BetState_ID FROM BetState WHERE Name =" + SQLiteJDBC2.prepare_string(state) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
-
-        sqLiteJDBC2.close();
-
-        return rs.getInt("BetState_ID");
+        int id = rs.getInt("BetState_ID");
+        
+        sqLiteJDBC2.closeRS(rs);
+        return id;
     }
 }
