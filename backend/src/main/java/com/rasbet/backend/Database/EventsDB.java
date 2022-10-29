@@ -9,6 +9,7 @@ import java.util.Map;
 import com.rasbet.backend.Entities.Bet;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Odd;
+import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.GamesAPI.GamesApi;
 
 public class EventsDB {
@@ -118,7 +119,7 @@ public class EventsDB {
         else return d[1];
     }
 
-    public static void pay_bets(Map<Integer, Double> trans){
+    public static void pay_bets(Map<Integer, Double> trans) throws NoAmountException, SQLException{
         for (Map.Entry<Integer, Double> entry : trans.entrySet()){
             TransactionDB.addTransaction(entry.getKey(), "Win", entry.getValue());
         }
@@ -214,7 +215,11 @@ public class EventsDB {
             }
         }
         sqLiteJDBC2.close();
-        pay_bets(trans);
+        try {
+            pay_bets(trans);
+        } catch (NoAmountException e1) {
+            e1.printStackTrace();
+        }
     }
 
     // Updates all DB events

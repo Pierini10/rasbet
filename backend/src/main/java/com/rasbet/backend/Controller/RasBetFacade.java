@@ -170,7 +170,7 @@ public class RasBetFacade {
         }
     }
 
-        /**
+    /**
      * Update events and bet information.
      */
     @GetMapping("/updateEvents")
@@ -368,8 +368,10 @@ public class RasBetFacade {
 
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
-
     }
+
+        
+    
 
     /**
      * TODO: Change bet status. Não percebi este requisito...
@@ -377,5 +379,4 @@ public class RasBetFacade {
      */
 
     // TODO: REMOVE LATER, FOR TESTS ONLY
-
 }
