@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.OddSimple;
 import com.rasbet.backend.Entities.UpdateOddRequest;
+import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
 /**
  * OddDB
@@ -38,21 +39,19 @@ public class OddDB {
      * @param possibleBets List of odds to update.
      * @return True if odds were updated successfully, false otherwise, i think.
      */
-    // TODO: needs to test if user is admin
-    public static boolean updateOdds(UpdateOddRequest possibleBets) {
-        System.out.println(possibleBets.getUserID());
-        try {
-            for (EventOdds eventOdd : possibleBets.getPossibleBets()) {
-                for (OddSimple odd : eventOdd.getOdds()) {
 
-                    updateOdd(eventOdd.getEventID(), odd.getOdd(), odd.getEntity());
-                }
+    public static boolean updateOdds(UpdateOddRequest possibleBets) throws NoAuthorizationException, SQLException {
+
+        if (UserDB.get_Role(possibleBets.getUserID()) != UserDB.SPECIALIST_ROLE)
+            throw new NoAuthorizationException("User is not a specialist");
+
+        for (EventOdds eventOdd : possibleBets.getPossibleBets()) {
+            for (OddSimple odd : eventOdd.getOdds()) {
+
+                updateOdd(eventOdd.getEventID(), odd.getOdd(), odd.getEntity());
             }
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
+        return true;
 
     }
 

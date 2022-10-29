@@ -3,19 +3,19 @@ package com.rasbet.backend.Entities;
 import java.util.List;
 
 public class UpdateOddRequest {
-    private String userID;
-    List<EventOdds> possibleBets;
+    private int userID;
+    private List<EventOdds> possibleBets;
 
-    public UpdateOddRequest(String userID, List<EventOdds> possibleBets) {
+    public UpdateOddRequest(int userID, List<EventOdds> possibleBets) {
         this.userID = userID;
         this.possibleBets = possibleBets;
     }
 
-    public String getUserID() {
+    public int getUserID() {
         return this.userID;
     }
 
-    public void setUserID(String userID) {
+    public void setUserID(int userID) {
         this.userID = userID;
     }
 
