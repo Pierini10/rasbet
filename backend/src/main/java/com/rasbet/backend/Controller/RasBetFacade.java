@@ -72,16 +72,17 @@ public class RasBetFacade {
             @RequestParam(value = "CC") String CC,
             @RequestParam(value = "address") String address,
             @RequestParam(value = "pn") String phoneNumber,
-            @RequestParam(value = "bday") String birthday) {
-        try {
-            User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday);
-            UserDB.create_User(new_user);
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (BadPasswordException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+            @RequestParam(value = "bday") String birthday,
+            @RequestParam(value = "role") String role,
+            @RequestParam(value = "userRequestID") int userRequestID) {
+            try {
+                User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday, role);
+                UserDB.create_User(new_user, userRequestID);
+            } catch (SQLException | BadPasswordException | NoAuthorizationException e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            }
+        
     }
 
     /**

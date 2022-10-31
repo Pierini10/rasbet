@@ -25,7 +25,7 @@ public class User {
 
     // Basic all variables Constructer
     public User(String email, String password, String firstName, String lastName, String NIF, String CC, String address,
-            String phoneNumber, String birthday) throws BadPasswordException {
+            String phoneNumber, String birthday, String role) throws BadPasswordException {
         this.email = email;
         setPassword(password);
         this.firstName = firstName;
@@ -35,6 +35,7 @@ public class User {
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;
+        this.role = role;
     }
 
     // Basic email, password Constructer
