@@ -77,13 +77,14 @@ public class GamesApi {
 
 				for (int j = 0; j < odds_json.length(); j++) {
 					JSONObject odd_json = odds_json.getJSONObject(j);
-					odds.put(odd_json.getString("name"), new Odd(odd_json.getString("name"), odd_json.getDouble("price"), false));
+					odds.put(odd_json.getString("name"),
+							new Odd(odd_json.getString("name"), odd_json.getDouble("price"), false));
 				}
 
 				// Create the event
 				String sport = EventsDB.FOOTBALL; // TODO
-				String result = jsonEvent.getString("scores");
-				if (result.equals("null")) result = null;
+				String result = jsonEvent.getString("completed") == "true"
+						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
 				String description = jsonEvent.get("homeTeam") + " v " + jsonEvent.get("awayTeam");
 				events.add(new Event(jsonEvent.getString("id"), sport, jsonEvent.getString("commenceTime"), description,
 						result, null, odds));

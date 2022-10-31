@@ -1,6 +1,7 @@
 package com.rasbet.backend.Controller;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 public class RasBetFacade {
+
+    private LocalDateTime lastEventsUpdate;
+
+    private boolean can_update(){
+        LocalDateTime now = LocalDateTime.now();
+        if (lastEventsUpdate == null || lastEventsUpdate.isBefore(now.minusMinutes(5))){
+            lastEventsUpdate = now;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     /**
      * Check backend connection.
@@ -166,6 +180,7 @@ public class RasBetFacade {
     @GetMapping("/getEvents")
     public List<Event> getEvents() {
         try {
+            if (can_update()) updateEvents();
             return EventsDB.get_Events();
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

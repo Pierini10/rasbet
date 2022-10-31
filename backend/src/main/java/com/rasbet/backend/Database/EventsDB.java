@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rasbet.backend.Entities.Bet;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Odd;
 import com.rasbet.backend.Exceptions.NoAmountException;
@@ -234,24 +233,26 @@ public class EventsDB {
 
         int state_pending_id = get_EventStatusID(PENDING_STATUS);
 
-        // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
-        for (Event e : events) {
-            String query = "SELECT * FROM Event WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + ";";
-            ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        if (events != null){
+            // Create a connection
+            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            for (Event e : events) {
+                String query = "SELECT * FROM Event WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + ";";
+                ResultSet rs = sqLiteJDBC2.executeQuery(query);
 
-            if (rs.next()) {
-                if (rs.getInt("EventState_ID") == state_pending_id && e.getResult() != null) {
-                    oldEvents.add(e);
-                }
-            } else if (e.getResult() == null)
-                newEvents.add(e);
+                if (rs.next()) {
+                    if (rs.getInt("EventState_ID") == state_pending_id && e.getResult() != null) {
+                        oldEvents.add(e);
+                    }
+                } else if (e.getResult() == null)
+                    newEvents.add(e);
+            }
+            sqLiteJDBC2.close();
+
+            // Add new Oods and Events
+            update_Events(oldEvents);
+            add_Events(newEvents);
         }
-        sqLiteJDBC2.close();
-
-        // Add new Oods and Events
-        update_Events(oldEvents);
-        add_Events(newEvents);
     }
 
     // Gets all DB events
