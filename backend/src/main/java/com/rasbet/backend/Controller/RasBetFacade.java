@@ -24,7 +24,6 @@ import com.rasbet.backend.Entities.UpdateOddRequest;
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
-import com.rasbet.backend.GamesAPI.GamesApi;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
