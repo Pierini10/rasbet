@@ -2,9 +2,13 @@ package com.rasbet.backend.Database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.rasbet.backend.Entities.Bet;
+import com.rasbet.backend.Entities.Prediction;
 
 public class BetDB {
 
@@ -22,15 +26,16 @@ public class BetDB {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
+        Integer idState = BetDB.get_Bet_State(bet.getBetState());
+
         String idUser = bet.getIdUser() == null ? "" : ("User_ID = " + bet.getIdUser() + ", ");
-        String idBetState = bet.getIdBetState() == null ? "" : ("BetState_ID = " + bet.getIdBetState() + ", ");
+        String idBetState = idState == null ? "" : ("BetState_ID = " + idState + ", ");
         String amount = bet.getAmount() == null ? "" : ("Amount = " + bet.getAmount() + ", ");
         String dateTime = bet.getDateTime() == null ? ""
                 : ("DateTime = " + SQLiteJDBC2.prepare_string(bet.getDateTime().format(formatter)) + ", ");
 
         StringBuilder sb = new StringBuilder();
         sb.append(idUser).append(idBetState).append(amount).append(dateTime).setLength(sb.length() - 2);
-
 
         String query = "UPDATE Bet SET " + sb.toString() + " WHERE Bet_ID =" + bet.getId() + ";";
 
@@ -51,8 +56,49 @@ public class BetDB {
         String query = "SELECT BetState_ID FROM BetState WHERE Name =" + SQLiteJDBC2.prepare_string(state) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         int id = rs.getInt("BetState_ID");
-        
+
         sqLiteJDBC2.closeRS(rs);
         return id;
+    }
+
+    /**
+     * Get all bets made by an user
+     * 
+     * @param idUser
+     * @return
+     * @throws SQLException
+     */
+    public static List<Bet> get_Bets(Integer idUser) throws SQLException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        List<Bet> res = new ArrayList<>();
+
+        String query = "SELECT b.Bet_ID, b.Amount, b.GamesLeft, b.DateTime, bs.Name FROM Bet as b INNER JOIN BetState as bs ON b.BetState_ID = bs.BetState_ID WHERE b.User_ID = "
+                + idUser + ";";
+
+        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+
+        while(rs.next()) {
+            Integer id = rs.getInt("Bet_ID");
+
+            //acertar query
+            query = "SELECT sb.Prediction, sb.Odd, sb.Event_ID, bs.Name FROM ((SimpleBet as sb INNER JOIN BetState as bs ON sb.BetState_ID = bs.BetState_ID WHERE sb.Bet_ID = "
+            + id + ") INNER JOIN );";
+
+            ResultSet rs2 = sqLiteJDBC2.executeQuery(query);
+
+            List<Prediction> predictions = new ArrayList<>();
+            while (rs2.next()) {
+                Prediction p = new Prediction(rs2.getString("Prediction"), rs2.getFloat("Odd"), rs2.getString("Event_ID"), rs2.getString("Name"));
+                predictions.add(p);
+            }
+
+            Bet b = new Bet(rs.getInt("Bet_ID"), idUser, rs.getString("Name"), rs.getInt("GamesLeft"), rs.getInt("Amount"), LocalDateTime.parse(rs.getString("DateTime"), formatter), predictions);
+            res.add(b);
+        }
+
+        sqLiteJDBC2.close();
+
+        return res;
     }
 }

@@ -237,9 +237,14 @@ public class RasBetFacade {
         boolean r = true;
 
         try {
-            Integer idState = BetDB.get_Bet_State(state);
-            Bet bet = new Bet(idBet, idUser, idState, idState, null);
-            BetDB.update_Bet(bet);
+            String userPermissions = UserDB.get_Role(idUser);
+
+            if (userPermissions.equals("Administrator") || userPermissions.equals("Specialist")) {
+                Bet bet = new Bet(idBet, null, state, null, null, null, null);
+                BetDB.update_Bet(bet);
+            } else {
+                r = false;
+            }
         } catch (SQLException e) {
             r = false;
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -268,9 +273,19 @@ public class RasBetFacade {
      *         ]
      */
     @GetMapping("/getBetsHistory")
-    public List<List<String>> getBetsHistory(
+    public List<Bet> getBetsHistory(
             @RequestParam(value = "userID") int userID) {
-        return new ArrayList<List<String>>();
+        List<Bet> r;
+
+        try {
+            r = BetDB.get_Bets(userID);
+        } catch (SQLException e) {
+            r = null;
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+        }
+
+        return r;
     }
 
     /**
@@ -369,9 +384,6 @@ public class RasBetFacade {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
     }
-
-        
-    
 
     /**
      * TODO: Change bet status. Não percebi este requisito...
