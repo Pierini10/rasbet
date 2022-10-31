@@ -22,6 +22,7 @@ import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Entities.UpdateOddRequest;
 import com.rasbet.backend.Entities.User;
+import com.rasbet.backend.Exceptions.BadPasswordException;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
@@ -72,12 +73,14 @@ public class RasBetFacade {
             @RequestParam(value = "address") String address,
             @RequestParam(value = "pn") String phoneNumber,
             @RequestParam(value = "bday") String birthday) {
-        User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday);
         try {
+            User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday);
             UserDB.create_User(new_user);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (BadPasswordException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -383,7 +386,6 @@ public class RasBetFacade {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
     }
-
     /**
      * TODO: Change bet status. Não percebi este requisito...
      * 
