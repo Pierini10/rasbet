@@ -76,6 +76,10 @@ public class RasBetFacade {
      * @param Birthday    (yyyy-MM-dd)
      * 
      */
+    @Operation(summary = "Register user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Register successful"),
+            @ApiResponse(responseCode = "400", description = "Could not register") })
     @PostMapping("/register")
     public void register(
             @RequestParam(value = "email") String email,
@@ -113,6 +117,10 @@ public class RasBetFacade {
      *         4: Surname
      *         5: role
      */
+    @Operation(summary = "Login user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login successful"),
+            @ApiResponse(responseCode = "400", description = "Could not login") })
     @PostMapping("/login")
     public User login(
             @RequestParam(value = "email") String email,
@@ -150,13 +158,13 @@ public class RasBetFacade {
             @ApiResponse(responseCode = "400", description = "Could not change user info") })
     @PostMapping("/changeInfo")
     public void changeInfo(
-            @Parameter(name = "userID", description = "User ID that wants to change information") int userID,
-            @Parameter(name = "email", required = false, description = "New email") String email,
-            @Parameter(name = "password", required = false, description = "New password") String password,
-            @Parameter(name = "firstName", required = false, description = "New First Name") String firstName,
-            @Parameter(name = "lastName", required = false, description = "New Last Name") String lastName,
-            @Parameter(name = "address", required = false, description = "New address") String address,
-            @Parameter(name = "phoneNumber", required = false, description = "New Phone Number") String phoneNumber) {
+            @RequestParam(name = "userID") int userID,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "password", required = false) String password,
+            @RequestParam(name = "firstName", required = false) String firstName,
+            @RequestParam(name = "lastName", required = false) String lastName,
+            @RequestParam(name = "address", required = false) String address,
+            @RequestParam(name = "phoneNumber", required = false) String phoneNumber) {
         try {
             User user = UserDB.get_User(userID);
             user.update_info(email, password, firstName, lastName, address, phoneNumber);
@@ -230,10 +238,10 @@ public class RasBetFacade {
             @ApiResponse(responseCode = "400", description = "Addidicion failed.") })
     @PostMapping("/addEvent")
     public void addEvent(
-            @Parameter(name = "userID", description = "Id of the user that makes the request") int userID,
-            @Parameter(name = "sport", description = "Sport of the Event") String sport,
-            @Parameter(name = "datetime", description = "Start time of the Event") String datetime,
-            @Parameter(name = "description", description = "Description of the Event") String description) {
+            @RequestParam(name = "userID") int userID,
+            @RequestParam(name = "sport") String sport,
+            @RequestParam(name = "datetime") String datetime,
+            @RequestParam(name = "description") String description) {
         Event event = new Event(null, sport, datetime, description, null, null, null);
         try {
             UserDB.assert_is_Specialist(userID);

@@ -74,24 +74,32 @@ public class EventsDB {
         if (e != null) {
             // Event
             List<String> event_string = new ArrayList<>();
+            event_string.add(SQLiteJDBC2.prepare_string(e.getId()));
             event_string.add(Integer.toString(get_SportID(e.getSport())));
-            System.out.println("HEIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
             event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
             event_string.add(SQLiteJDBC2.prepare_string(e.getDatetime()));
             event_string.add(SQLiteJDBC2.prepare_string(e.getDescription()));
+            event_string.add(SQLiteJDBC2.prepare_string(e.getResult()));
             String event_str = SQLiteJDBC2.prepareList(event_string);
 
-            List<String> event_atr_string = new ArrayList<>();
-            event_atr_string.add("Sport_ID");
-            event_atr_string.add("EventState_ID");
-            event_atr_string.add("DateTime");
-            event_atr_string.add("Description");
-            String event_atr_str = SQLiteJDBC2.prepareList(event_atr_string);
+            List<String> odds_string = new ArrayList<>();
+            // Odds
+            for (Odd o : e.getOdds().values()) {
+                int odd_sup = o.getOdd_Sup() ? 1 : 0;
+                List<String> odd_string = new ArrayList<>();
+                odd_string.add(SQLiteJDBC2.prepare_string(e.getId()));
+                odd_string.add(SQLiteJDBC2.prepare_string(o.getEntity()));
+                odd_string.add(Double.toString(o.getOdd()));
+                odd_string.add(Integer.toString(odd_sup));
+                odds_string.add(SQLiteJDBC2.prepareList(odd_string));
+            }
 
             // Insert into Database
-            String insert_events = "INSERT INTO " + event_atr_str + " VALUES " + event_str + ";";
+            String insert_events = "INSERT INTO Event " + " VALUES " + event_str + ";";
+            String insert_odds = "INSERT INTO Odd VALUES " + String.join(",", odds_string) + ";";
             SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
             sqLiteJDBC2.executeUpdate(insert_events);
+            sqLiteJDBC2.executeUpdate(insert_odds);
             sqLiteJDBC2.close();
         }
     }
