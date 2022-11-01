@@ -26,6 +26,7 @@ import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.Exceptions.BadPasswordException;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
+import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -208,7 +209,36 @@ public class RasBetFacade {
     public void updateEvents() {
         try {
             EventsDB.update_Database();
-        } catch (SQLException e) {
+        } catch (SportDoesNotExistExeption | SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    /**
+     * Adds a new Event.
+     * 
+     * @param userID
+     * @param sport
+     * @param datetime
+     * @param description
+     * 
+     */
+    @Operation(summary = "Adds a new Event.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Event added was successful."),
+            @ApiResponse(responseCode = "400", description = "Addidicion failed.") })
+    @PostMapping("/addEvent")
+    public void addEvent(
+            @Parameter(name = "userID", description = "Id of the user that makes the request") int userID,
+            @Parameter(name = "sport", description = "Sport of the Event") String sport,
+            @Parameter(name = "datetime", description = "Start time of the Event") String datetime,
+            @Parameter(name = "description", description = "Description of the Event") String description) {
+        Event event = new Event(null, sport, datetime, description, null, null, null);
+        try {
+            UserDB.assert_is_Specialist(userID);
+            EventsDB.add_Event(event);
+        } catch (SportDoesNotExistExeption | NoAuthorizationException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

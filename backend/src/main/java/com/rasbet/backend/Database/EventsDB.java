@@ -9,6 +9,7 @@ import java.util.Map;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Odd;
 import com.rasbet.backend.Exceptions.NoAmountException;
+import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 import com.rasbet.backend.GamesAPI.GamesApi;
 
 public class EventsDB {
@@ -55,19 +56,47 @@ public class EventsDB {
         return sport;
     }
 
-    public static int get_SportID(String sport) throws SQLException {
+    public static int get_SportID(String sport) throws SQLException, SportDoesNotExistExeption {
         // Create a connection
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 
         String query = "SELECT * FROM Sport WHERE Name=" + SQLiteJDBC2.prepare_string(sport) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        if (!rs.next()) throw new SportDoesNotExistExeption(sport + " is not supported in this app!");
         int id = rs.getInt("Sport_ID");
 
         sqLiteJDBC2.closeRS(rs);
         return id;
     }
 
-    public static void add_Events(List<Event> newEvents) throws SQLException {
+    public static void add_Event(Event e) throws SQLException, SportDoesNotExistExeption {
+
+        if (e != null) {
+            // Event
+            List<String> event_string = new ArrayList<>();
+            event_string.add(Integer.toString(get_SportID(e.getSport())));
+            System.out.println("HEIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+            event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
+            event_string.add(SQLiteJDBC2.prepare_string(e.getDatetime()));
+            event_string.add(SQLiteJDBC2.prepare_string(e.getDescription()));
+            String event_str = SQLiteJDBC2.prepareList(event_string);
+
+            List<String> event_atr_string = new ArrayList<>();
+            event_atr_string.add("Sport_ID");
+            event_atr_string.add("EventState_ID");
+            event_atr_string.add("DateTime");
+            event_atr_string.add("Description");
+            String event_atr_str = SQLiteJDBC2.prepareList(event_atr_string);
+
+            // Insert into Database
+            String insert_events = "INSERT INTO " + event_atr_str + " VALUES " + event_str + ";";
+            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            sqLiteJDBC2.executeUpdate(insert_events);
+            sqLiteJDBC2.close();
+        }
+    }
+
+    public static void add_Events(List<Event> newEvents) throws SQLException, SportDoesNotExistExeption {
 
         if (!newEvents.isEmpty()) {
 
@@ -109,17 +138,20 @@ public class EventsDB {
         }
     }
 
-    public static String calculateWinner(String description, String result){
+    public static String calculateWinner(String description, String result) {
         String[] r = result.split("x", 2);
         int winner = (Integer.parseInt(r[0])) - (Integer.parseInt(r[1]));
         String[] d = description.split(" v ", 2);
-        if (winner == 0) return "Draw";
-        else if ( winner > 0) return d[0];
-        else return d[1];
+        if (winner == 0)
+            return "Draw";
+        else if (winner > 0)
+            return d[0];
+        else
+            return d[1];
     }
 
-    public static void pay_bets(Map<Integer, Double> trans) throws NoAmountException, SQLException{
-        for (Map.Entry<Integer, Double> entry : trans.entrySet()){
+    public static void pay_bets(Map<Integer, Double> trans) throws NoAmountException, SQLException {
+        for (Map.Entry<Integer, Double> entry : trans.entrySet()) {
             TransactionDB.addTransaction(entry.getKey(), "Win", entry.getValue());
         }
     }
@@ -198,11 +230,11 @@ public class EventsDB {
                         String update_bet = "UPDATE Bet SET "
                                 + "BetState_ID = " + bet_state_win_id
                                 + " WHERE  Bet_ID=" + entry.getKey() + ";";
-                                
-                            // Won Bet
-                            double money_won = bet.getDouble("Amount") * bet.getDouble("Totalodds");
-                            trans.put(bet.getInt("User_ID"), money_won);
-                            sqLiteJDBC2.executeUpdate(update_bet);
+
+                        // Won Bet
+                        double money_won = bet.getDouble("Amount") * bet.getDouble("Totalodds");
+                        trans.put(bet.getInt("User_ID"), money_won);
+                        sqLiteJDBC2.executeUpdate(update_bet);
                     } else {
                         String update_bet = "UPDATE Bet SET "
                                 + "GamesLeft = " + gamesleft
@@ -222,7 +254,7 @@ public class EventsDB {
     }
 
     // Updates all DB events
-    public static void update_Database() throws SQLException {
+    public static void update_Database() throws SQLException, SportDoesNotExistExeption {
 
         // Get events from API
         List<Event> events = GamesApi.getEvents();
@@ -233,7 +265,7 @@ public class EventsDB {
 
         int state_pending_id = get_EventStatusID(PENDING_STATUS);
 
-        if (events != null){
+        if (events != null) {
             // Create a connection
             SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
             for (Event e : events) {

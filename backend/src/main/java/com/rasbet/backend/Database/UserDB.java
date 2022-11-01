@@ -36,6 +36,13 @@ public class UserDB {
         return id;
     }
 
+    public static void assert_is_Specialist(int user_id) throws SQLException, NoAuthorizationException {
+        // Create a connection
+        User requestUser = get_User(user_id);
+        if (requestUser == null || !requestUser.getRole().equals(SPECIALIST_ROLE))
+            throw new NoAuthorizationException("Request is not made by specialist!!");
+    }
+
     public static int create_User(User user, int userRequestID) throws SQLException, NoAuthorizationException {
         int role_id;
 
@@ -143,7 +150,7 @@ public class UserDB {
         } else {
             user = null;
         }
-
+        
         sqLiteJDBC2.closeRS(rs);
 
         return user;
