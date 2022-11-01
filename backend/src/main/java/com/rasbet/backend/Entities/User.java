@@ -180,12 +180,12 @@ public class User {
         this.role = role;
     }
 
-    public void update_info(String email, String password, String firstName, String lastName, String address,String phoneNumber) {
-        if (!email.equals("")) this.email = email;
-        if (!password.equals("")) this.password = password; 
-        if (!firstName.equals("")) this.firstName = firstName; 
-        if (!lastName.equals("")) this.lastName = lastName; 
-        if (!address.equals("")) this.address = address; 
-        if (!phoneNumber.equals("")) this.phoneNumber = phoneNumber;
+    public void update_info(String email, String password, String firstName, String lastName, String address,String phoneNumber) throws BadPasswordException {
+        if (email != null && !email.equals("")) this.email = email;
+        if (password != null && !password.equals("")) setPassword(password); 
+        if (firstName != null && !firstName.equals("")) this.firstName = firstName; 
+        if (lastName != null && !lastName.equals("")) this.lastName = lastName; 
+        if (address != null && !address.equals("")) this.address = address; 
+        if (phoneNumber != null && !phoneNumber.equals("")) this.phoneNumber = phoneNumber;
     }
 }

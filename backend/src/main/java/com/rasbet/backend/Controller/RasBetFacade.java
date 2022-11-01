@@ -37,13 +37,12 @@ public class RasBetFacade {
 
     private LocalDateTime lastEventsUpdate;
 
-    private boolean can_update(){
+    private boolean can_update() {
         LocalDateTime now = LocalDateTime.now();
-        if (lastEventsUpdate == null || lastEventsUpdate.isBefore(now.minusMinutes(5))){
+        if (lastEventsUpdate == null || lastEventsUpdate.isBefore(now.minusMinutes(5))) {
             lastEventsUpdate = now;
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -89,14 +88,15 @@ public class RasBetFacade {
             @RequestParam(value = "bday") String birthday,
             @RequestParam(value = "role") String role,
             @RequestParam(value = "userRequestID") int userRequestID) {
-            try {
-                User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday, role);
-                UserDB.create_User(new_user, userRequestID);
-            } catch (SQLException | BadPasswordException | NoAuthorizationException e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-            }
-        
+        try {
+            User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday,
+                    role);
+            UserDB.create_User(new_user, userRequestID);
+        } catch (SQLException | BadPasswordException | NoAuthorizationException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+
     }
 
     /**
@@ -143,20 +143,24 @@ public class RasBetFacade {
      * @param phoneNumber
      * 
      */
+    @Operation(summary = "Changes user information.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Changing user successful"),
+            @ApiResponse(responseCode = "400", description = "Could not change user info") })
     @PostMapping("/changeInfo")
     public void changeInfo(
-            @RequestParam(value = "userID") int userID,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "pw", required = false) String password,
-            @RequestParam(value = "fn", required = false) String firstName,
-            @RequestParam(value = "ln", required = false) String lastName,
-            @RequestParam(value = "address", required = false) String address,
-            @RequestParam(value = "pn", required = false) String phoneNumber) {
+            @Parameter(name = "userID", description = "User ID that wants to change information") int userID,
+            @Parameter(name = "email", required = false, description = "New email") String email,
+            @Parameter(name = "password", required = false, description = "New password") String password,
+            @Parameter(name = "firstName", required = false, description = "New First Name") String firstName,
+            @Parameter(name = "lastName", required = false, description = "New Last Name") String lastName,
+            @Parameter(name = "address", required = false, description = "New address") String address,
+            @Parameter(name = "phoneNumber", required = false, description = "New Phone Number") String phoneNumber) {
         try {
             User user = UserDB.get_User(userID);
             user.update_info(email, password, firstName, lastName, address, phoneNumber);
             UserDB.update_User(user);
-        } catch (SQLException e) {
+        } catch (BadPasswordException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -177,10 +181,15 @@ public class RasBetFacade {
      *         ]
      *         6: Event Status (0: Not started, 1: In progress, 2: Final Result)
      */
+    @Operation(summary = "Gets current events information.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Getting events successful"),
+            @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/getEvents")
     public List<Event> getEvents() {
         try {
-            if (can_update()) updateEvents();
+            if (can_update())
+                updateEvents();
             return EventsDB.get_Events();
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -191,6 +200,10 @@ public class RasBetFacade {
     /**
      * Update events and bet information.
      */
+    @Operation(summary = "Updates events and bets information.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Update successful"),
+            @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/updateEvents")
     public void updateEvents() {
         try {
