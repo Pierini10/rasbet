@@ -2,6 +2,7 @@ package com.rasbet.backend.Controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,11 +18,11 @@ public class PromotionFacade {
     @PostMapping("/createPromotion")
     public void createPromotion(
             @Parameter(name = "id", description = "Id of the user that will add the promotion") int id,
-            @Parameter(name = "code", description = "Code to get the promotion") String code,
-            @Parameter(name = "descripton", description = "Description of the promotion") String description,
+            @RequestParam() String code,
+            @RequestParam() String description,
             @Parameter(name = "discount", description = "Discount of the promotion") double value,
             @Parameter(name = "minValue", description = "Minimum value to get the promotion") double minValue,
-            @Parameter(name = "type", description = "Type of the promotion (percentage/absolute") String type) {
+            @RequestParam() String type) {
 
         try {
             PromotionDB.createPromotion(id, code, description, value, minValue, type);
