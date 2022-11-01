@@ -20,7 +20,7 @@ public class TransactionDB {
      */
     public static ArrayList<Transaction> getTransactions(int userID) throws SQLException {
         ArrayList<Transaction> transactions = new ArrayList<>();
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         String walletIdQuery = "SELECT Wallet_ID FROM User WHERE User_ID = " + userID + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(walletIdQuery);
         int walletID = rs.getInt("Wallet_ID");
@@ -64,7 +64,7 @@ public class TransactionDB {
             transactionType_ID = addType(TransactionType);
         }
 
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         String wallet_id = "SELECT * FROM User WHERE User_ID='" + userId + "'";
         ResultSet rs = sqLiteJDBC2.executeQuery(wallet_id);
@@ -110,7 +110,7 @@ public class TransactionDB {
      */
     private static int addType(String name) {
         try {
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
             String insert = "Insert into TransactionType (Name) values ('" + name + "') returning TransactionType_ID";
             ResultSet rs = sqLiteJDBC2.executeQuery(insert);
@@ -132,7 +132,7 @@ public class TransactionDB {
      */
     public static int hasType(String type) {
         try {
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
             String query = "SELECT * FROM TransactionType WHERE Name='" + type + "'";
             ResultSet rs = sqLiteJDBC2.executeQuery(query);

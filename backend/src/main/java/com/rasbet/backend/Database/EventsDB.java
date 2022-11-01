@@ -22,7 +22,7 @@ public class EventsDB {
 
     public static String get_EventStatus(int id) throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         String query = "SELECT * FROM EventState WHERE EventState_ID=" + id + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
@@ -34,9 +34,9 @@ public class EventsDB {
 
     public static int get_EventStatusID(String status) throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
-        String query = "SELECT * FROM EventState WHERE Name=" + SQLiteJDBC2.prepare_string(status) + ";";
+        String query = "SELECT * FROM EventState WHERE Name=" + SQLiteJDBC.prepare_string(status) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         int id = rs.getInt("EventState_ID");
 
@@ -46,7 +46,7 @@ public class EventsDB {
 
     public static String get_Sport(int id) throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         String query = "SELECT * FROM Sport WHERE Sport_ID=" + id + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
@@ -58,9 +58,9 @@ public class EventsDB {
 
     public static int get_SportID(String sport) throws SQLException, SportDoesNotExistExeption {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
-        String query = "SELECT * FROM Sport WHERE Name=" + SQLiteJDBC2.prepare_string(sport) + ";";
+        String query = "SELECT * FROM Sport WHERE Name=" + SQLiteJDBC.prepare_string(sport) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         if (!rs.next()) throw new SportDoesNotExistExeption(sport + " is not supported in this app!");
         int id = rs.getInt("Sport_ID");
@@ -74,30 +74,30 @@ public class EventsDB {
         if (e != null) {
             // Event
             List<String> event_string = new ArrayList<>();
-            event_string.add(SQLiteJDBC2.prepare_string(e.getId()));
+            event_string.add(SQLiteJDBC.prepare_string(e.getId()));
             event_string.add(Integer.toString(get_SportID(e.getSport())));
             event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
-            event_string.add(SQLiteJDBC2.prepare_string(e.getDatetime()));
-            event_string.add(SQLiteJDBC2.prepare_string(e.getDescription()));
-            event_string.add(SQLiteJDBC2.prepare_string(e.getResult()));
-            String event_str = SQLiteJDBC2.prepareList(event_string);
+            event_string.add(SQLiteJDBC.prepare_string(e.getDatetime()));
+            event_string.add(SQLiteJDBC.prepare_string(e.getDescription()));
+            event_string.add(SQLiteJDBC.prepare_string(e.getResult()));
+            String event_str = SQLiteJDBC.prepareList(event_string);
 
             List<String> odds_string = new ArrayList<>();
             // Odds
             for (Odd o : e.getOdds().values()) {
                 int odd_sup = o.getOdd_Sup() ? 1 : 0;
                 List<String> odd_string = new ArrayList<>();
-                odd_string.add(SQLiteJDBC2.prepare_string(e.getId()));
-                odd_string.add(SQLiteJDBC2.prepare_string(o.getEntity()));
+                odd_string.add(SQLiteJDBC.prepare_string(e.getId()));
+                odd_string.add(SQLiteJDBC.prepare_string(o.getEntity()));
                 odd_string.add(Double.toString(o.getOdd()));
                 odd_string.add(Integer.toString(odd_sup));
-                odds_string.add(SQLiteJDBC2.prepareList(odd_string));
+                odds_string.add(SQLiteJDBC.prepareList(odd_string));
             }
 
             // Insert into Database
             String insert_events = "INSERT INTO Event " + " VALUES " + event_str + ";";
             String insert_odds = "INSERT INTO Odd VALUES " + String.join(",", odds_string) + ";";
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
             sqLiteJDBC2.executeUpdate(insert_events);
             sqLiteJDBC2.executeUpdate(insert_odds);
             sqLiteJDBC2.close();
@@ -115,23 +115,23 @@ public class EventsDB {
 
                 // Event
                 List<String> event_string = new ArrayList<>();
-                event_string.add(SQLiteJDBC2.prepare_string(e.getId()));
+                event_string.add(SQLiteJDBC.prepare_string(e.getId()));
                 event_string.add(Integer.toString(get_SportID(e.getSport())));
                 event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
-                event_string.add(SQLiteJDBC2.prepare_string(e.getDatetime()));
-                event_string.add(SQLiteJDBC2.prepare_string(e.getDescription()));
-                event_string.add(SQLiteJDBC2.prepare_string(e.getResult()));
-                events_string.add(SQLiteJDBC2.prepareList(event_string));
+                event_string.add(SQLiteJDBC.prepare_string(e.getDatetime()));
+                event_string.add(SQLiteJDBC.prepare_string(e.getDescription()));
+                event_string.add(SQLiteJDBC.prepare_string(e.getResult()));
+                events_string.add(SQLiteJDBC.prepareList(event_string));
 
                 // Odds
                 for (Odd o : e.getOdds().values()) {
                     int odd_sup = o.getOdd_Sup() ? 1 : 0;
                     List<String> odd_string = new ArrayList<>();
-                    odd_string.add(SQLiteJDBC2.prepare_string(e.getId()));
-                    odd_string.add(SQLiteJDBC2.prepare_string(o.getEntity()));
+                    odd_string.add(SQLiteJDBC.prepare_string(e.getId()));
+                    odd_string.add(SQLiteJDBC.prepare_string(o.getEntity()));
                     odd_string.add(Double.toString(o.getOdd()));
                     odd_string.add(Integer.toString(odd_sup));
-                    odds_string.add(SQLiteJDBC2.prepareList(odd_string));
+                    odds_string.add(SQLiteJDBC.prepareList(odd_string));
                 }
 
             }
@@ -139,7 +139,7 @@ public class EventsDB {
             // Insert into Database
             String insert_events = "INSERT INTO Event VALUES " + String.join(",", events_string) + ";";
             String insert_odds = "INSERT INTO Odd VALUES " + String.join(",", odds_string) + ";";
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
             sqLiteJDBC2.executeUpdate(insert_events);
             sqLiteJDBC2.executeUpdate(insert_odds);
             sqLiteJDBC2.close();
@@ -170,20 +170,20 @@ public class EventsDB {
         int bet_state_win_id = BetDB.get_Bet_State(BetDB.WIN_STATUS);
         int bet_state_loss_id = BetDB.get_Bet_State(BetDB.LOSS_STATUS);
         int finished_state_id = get_EventStatusID(FINISHED_STATUS);
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         Map<Integer, Double> trans = new HashMap<>();
 
         for (Event e : events) {
 
             // Update Event
             String update_event = "UPDATE Event SET "
-                    + "Result = " + SQLiteJDBC2.prepare_string(e.getResult())
+                    + "Result = " + SQLiteJDBC.prepare_string(e.getResult())
                     + ",EventState_ID = " + finished_state_id
-                    + " WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + ";";
+                    + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
             sqLiteJDBC2.executeUpdate(update_event);
 
             // Update Odds
-            String get_odds = "SELECT * FROM Odd WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + ";";
+            String get_odds = "SELECT * FROM Odd WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
             ResultSet rs_odds = sqLiteJDBC2.executeQuery(get_odds);
             while (rs_odds.next()) {
                 String entity = rs_odds.getString("Entity");
@@ -191,14 +191,14 @@ public class EventsDB {
                 if (rs_odds.getInt("OddSup") == 0 && rs_odds.getDouble("odd") != odd.getOdd()) {
                     String update_odd = "UPDATE Odd SET "
                             + "Odd = " + odd.getOdd()
-                            + " WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + ";";
+                            + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
                     sqLiteJDBC2.executeUpdate(update_odd);
                 }
             }
             rs_odds.close();
 
             // Update all simple bets
-            String get_bets = "SELECT * FROM SimpleBet WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId())
+            String get_bets = "SELECT * FROM SimpleBet WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId())
                     + " AND BetState_ID=" + bet_state_pending_id + ";";
             ResultSet bets = sqLiteJDBC2.executeQuery(get_bets);
             Map<Integer, Integer> simplebet_counter = new HashMap<>();
@@ -217,7 +217,7 @@ public class EventsDB {
 
                 String update_bet = "UPDATE SimpleBet SET "
                         + "BetState_ID = " + state_id
-                        + " WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + " AND Bet_ID="
+                        + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + " AND Bet_ID="
                         + bet_id + ";";
                 sqLiteJDBC2.executeUpdate(update_bet);
                 if (simplebet_counter.containsKey(bet_id))
@@ -275,9 +275,9 @@ public class EventsDB {
 
         if (events != null) {
             // Create a connection
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
             for (Event e : events) {
-                String query = "SELECT * FROM Event WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + ";";
+                String query = "SELECT * FROM Event WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
                 ResultSet rs = sqLiteJDBC2.executeQuery(query);
 
                 if (rs.next()) {
@@ -296,27 +296,27 @@ public class EventsDB {
     }
 
     // Gets all DB events
-    public static ArrayList<Event> get_Events() throws SQLException {
+    public static ArrayList<Event> get_Events(String sport) throws SQLException, SportDoesNotExistExeption {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
-
+        int sport_id = get_SportID(sport);
         ArrayList<Event> events = new ArrayList<>();
         int state = get_EventStatusID(PENDING_STATUS);
-        String query = "SELECT * FROM Event WHERE EventState_ID=" + state + ";";
+        String query = "SELECT * FROM Event WHERE EventState_ID=" + state + " AND Sport_ID=" + sport_id +  ";";
+
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
 
         while (rs.next()) {
             // Get Event
             Map<String, Odd> odds = new HashMap<>();
-            String id = rs.getString("Event_ID"), sport = get_Sport(rs.getInt("Sport_ID")),
-                    status = get_EventStatus(rs.getInt("EventState_ID"));
+            String id = rs.getString("Event_ID"), status = get_EventStatus(rs.getInt("EventState_ID"));
             events.add(new Event(id, sport, rs.getString("DateTime"), rs.getString("Description"),
                     rs.getString("Result"), status, odds));
         }
 
         for (Event e : events) {
             // Get all odds
-            String get_odds = "SELECT * FROM Odd WHERE Event_ID=" + SQLiteJDBC2.prepare_string(e.getId()) + ";";
+            String get_odds = "SELECT * FROM Odd WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
             ResultSet rs_odds = sqLiteJDBC2.executeQuery(get_odds);
             while (rs_odds.next()) {
                 boolean odd_sup;

@@ -13,7 +13,7 @@ public class UserDB {
 
     public static String get_Role(int id) throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         String query = "SELECT * FROM Role WHERE Role_ID=" + id + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
@@ -25,9 +25,9 @@ public class UserDB {
 
     public static int get_RoleID(String role) throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
-        String query = "SELECT * FROM Role WHERE Name=" + SQLiteJDBC2.prepare_string(role) + ";";
+        String query = "SELECT * FROM Role WHERE Name=" + SQLiteJDBC.prepare_string(role) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         System.out.println(rs.next() + "####################" + role);
         int id = rs.getInt("Role_ID");
@@ -64,20 +64,20 @@ public class UserDB {
         // Create a User
         String query = "INSERT INTO User (Wallet_ID, Email, Password, Role, Name, Surname, Birthday, NIF, CC, Address, Phone) VALUES ("
                 + wallet_id + ", "
-                + SQLiteJDBC2.prepare_string(user.getEmail()) + ", "
-                + SQLiteJDBC2.prepare_string(user.getPassword()) + ", "
+                + SQLiteJDBC.prepare_string(user.getEmail()) + ", "
+                + SQLiteJDBC.prepare_string(user.getPassword()) + ", "
                 + role_id + ", "
-                + SQLiteJDBC2.prepare_string(user.getFirstName()) + ", "
-                + SQLiteJDBC2.prepare_string(user.getLastName()) + ", "
-                + SQLiteJDBC2.prepare_string(user.getBirthday()) + ", "
-                + SQLiteJDBC2.prepare_string(user.getNIF()) + ", "
-                + SQLiteJDBC2.prepare_string(user.getCC()) + ", "
-                + SQLiteJDBC2.prepare_string(user.getAddress()) + ", "
-                + SQLiteJDBC2.prepare_string(user.getPhoneNumber())
+                + SQLiteJDBC.prepare_string(user.getFirstName()) + ", "
+                + SQLiteJDBC.prepare_string(user.getLastName()) + ", "
+                + SQLiteJDBC.prepare_string(user.getBirthday()) + ", "
+                + SQLiteJDBC.prepare_string(user.getNIF()) + ", "
+                + SQLiteJDBC.prepare_string(user.getCC()) + ", "
+                + SQLiteJDBC.prepare_string(user.getAddress()) + ", "
+                + SQLiteJDBC.prepare_string(user.getPhoneNumber())
                 + ");";
 
         try {
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
             sqLiteJDBC2.executeUpdate(query);
             sqLiteJDBC2.close();
         } catch (SQLException e) {
@@ -89,10 +89,10 @@ public class UserDB {
     }
 
     public static int get_User(User user) throws SQLException {
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         // Get a user by email
-        String query = "SELECT * FROM User WHERE Email=" + SQLiteJDBC2.prepare_string(user.getEmail()) + ";";
+        String query = "SELECT * FROM User WHERE Email=" + SQLiteJDBC.prepare_string(user.getEmail()) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
 
         if (!user.getPassword().equals(rs.getString("Password")))
@@ -128,7 +128,7 @@ public class UserDB {
     }
 
     public static User get_User(int id) throws SQLException {
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         // Get a user by email
         String query = "SELECT * FROM User WHERE User_ID=" + id + ";";
@@ -157,16 +157,16 @@ public class UserDB {
     }
 
     public static void update_User(User user) throws SQLException {
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         // Update a user
         String query = "UPDATE User SET "
-                + "Email = " + SQLiteJDBC2.prepare_string(user.getEmail()) + ", "
-                + "Password = " + SQLiteJDBC2.prepare_string(user.getPassword()) + ", "
-                + "Name = " + SQLiteJDBC2.prepare_string(user.getFirstName()) + ", "
-                + "Surname = " + SQLiteJDBC2.prepare_string(user.getLastName()) + ", "
-                + "Address = " + SQLiteJDBC2.prepare_string(user.getAddress()) + ", "
-                + "Phone = " + SQLiteJDBC2.prepare_string(user.getPhoneNumber())
+                + "Email = " + SQLiteJDBC.prepare_string(user.getEmail()) + ", "
+                + "Password = " + SQLiteJDBC.prepare_string(user.getPassword()) + ", "
+                + "Name = " + SQLiteJDBC.prepare_string(user.getFirstName()) + ", "
+                + "Surname = " + SQLiteJDBC.prepare_string(user.getLastName()) + ", "
+                + "Address = " + SQLiteJDBC.prepare_string(user.getAddress()) + ", "
+                + "Phone = " + SQLiteJDBC.prepare_string(user.getPhoneNumber())
                 + " WHERE User_ID=" + user.getId() + ";";
 
         sqLiteJDBC2.executeUpdate(query);
