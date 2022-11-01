@@ -26,10 +26,11 @@ import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.Exceptions.BadPasswordException;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
+import com.rasbet.backend.Exceptions.NoMinimumValueException;
+import com.rasbet.backend.Exceptions.NoPromotionCodeException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -46,14 +47,6 @@ public class RasBetFacade {
         } else {
             return false;
         }
-    }
-
-    /**
-     * Check backend connection.
-     */
-    @GetMapping("/checkConnectivity")
-    public String checkConnection() {
-        return "Backend is live!";
     }
 
     // TODO:
@@ -196,8 +189,7 @@ public class RasBetFacade {
             @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/getEvents")
     public List<Event> getEvents(
-        @RequestParam(name = "sport") String sport
-    ) {
+            @RequestParam(name = "sport") String sport) {
         try {
             if (can_update())
                 updateEvents();
@@ -380,7 +372,7 @@ public class RasBetFacade {
     })
     @GetMapping("/getTransactionsHistory")
     public ArrayList<Transaction> getTransactionsHistory(
-            @Parameter(name = "userID", description = "User ID that wants to see his transactions history") int userID) {
+            @RequestParam() int userID) {
         try {
 
             return TransactionDB.getTransactions(userID);
@@ -407,7 +399,7 @@ public class RasBetFacade {
     @Operation(summary = "Insert new ODD.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Insertion successful"),
-            @ApiResponse(responseCode = "400", description = "This User does not have authorization to change ODD'S"),
+            @ApiResponse(responseCode = "401", description = "This User does not have authorization to change ODD'S"),
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/insertOdd")
     public boolean insertOdd(@RequestBody UpdateOddRequest possibleBets) {
@@ -418,7 +410,7 @@ public class RasBetFacade {
         } catch (NoAuthorizationException e) {
 
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "No authorization", e);
+                    HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (SQLException e) {
 
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
@@ -436,18 +428,21 @@ public class RasBetFacade {
     @Operation(summary = "Withdraw and deposit money.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Transaction was successful."),
-            @ApiResponse(responseCode = "400", description = "Transaction failed.") })
+            @ApiResponse(responseCode = "400", description = "Transaction failed."),
+            @ApiResponse(responseCode = "500", description = "SQLException.") })
     @PostMapping("/withdrawDeposit")
     public double withdrawDeposit(
-            @Parameter(name = "userID", description = "User ID that wants to make the transaction") int userID,
-            @Parameter(name = "amount", description = "Amount that is being transacted") double amount) {
+            @RequestParam() int userID,
+            @RequestParam() double amount,
+            @RequestParam(required = false) String promotionCode,
+            @RequestParam(required = false) String method) {
         String transactionType = "levantamento";
         if (amount > 0) {
             transactionType = "deposito";
         }
         try {
-            return TransactionDB.addTransaction(userID, transactionType, amount);
-        } catch (NoAmountException e) {
+            return TransactionDB.addTransaction(userID, transactionType, amount, promotionCode);
+        } catch (NoAmountException | NoPromotionCodeException | NoMinimumValueException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (SQLException e) {
@@ -460,5 +455,4 @@ public class RasBetFacade {
      * 
      */
 
-    // TODO: REMOVE LATER, FOR TESTS ONLY
 }

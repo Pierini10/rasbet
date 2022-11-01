@@ -1,5 +1,7 @@
 package com.rasbet.backend.Controller;
 
+import java.sql.SQLException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -7,45 +9,92 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.PromotionDB;
+import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 public class PromotionFacade {
 
     @Operation(summary = "Create a promotion")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Promotion created"),
+            @ApiResponse(responseCode = "401", description = "No authorization"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+
     @PostMapping("/createPromotion")
     public void createPromotion(
-            @Parameter(name = "id", description = "Id of the user that will add the promotion") int id,
+            @RequestParam() int requesterId,
             @RequestParam() String code,
             @RequestParam() String description,
-            @Parameter(name = "discount", description = "Discount of the promotion") double value,
-            @Parameter(name = "minValue", description = "Minimum value to get the promotion") double minValue,
-            @RequestParam() String type) {
+            @RequestParam() double discount,
+            @RequestParam() double minValue,
+            @RequestParam() int type) {
 
         try {
-            PromotionDB.createPromotion(id, code, description, value, minValue, type);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
+            PromotionDB.createPromotion(requesterId, code, description, discount, minValue, type);
+        } catch (NoAuthorizationException e) {
+
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error creating promotion", e);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
     }
 
     @Operation(summary = "Delete a promotion")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Promotion created"),
+            @ApiResponse(responseCode = "401", description = "No authorization"),
+            @ApiResponse(responseCode = "500", description = "SQL error")
+    })
+    @PostMapping("/deletePromotion")
     public void deletePromotion(
-            @Parameter(name = "id", description = "Id of the user that will delete the promotion") int id,
-            @Parameter(name = "code", description = "Code of the promotion to delete") String code) {
+            @RequestParam() int requesterId,
+            @RequestParam() String code) {
         try {
-            PromotionDB.deletePromotion(id, code);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
+            PromotionDB.deletePromotion(requesterId, code);
+        } catch (NoAuthorizationException e) {
+
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error deleting promotion", e);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     // TODO: MISSING MODIFY PROMOTION
+
+    @Operation(summary = "Modify a promotion")
+    @PostMapping("/modifyPromotion")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Promotion created"),
+            @ApiResponse(responseCode = "401", description = "No authorization"),
+            @ApiResponse(responseCode = "500", description = "SQL error")
+    })
+    public void modifyPromotion(
+            @RequestParam() int requesterId,
+            @RequestParam() String code,
+            @RequestParam() String description,
+            @RequestParam() double discount,
+            @RequestParam() double minValue,
+            @RequestParam() int type) {
+        try {
+            PromotionDB.updatePromotion(requesterId, code, description, discount, minValue, type);
+        } catch (NoAuthorizationException e) {
+
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error modifying promotion", e);
+        }
+    }
 }

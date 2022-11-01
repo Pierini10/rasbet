@@ -1,6 +1,7 @@
 package com.rasbet.backend.Database;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,8 @@ public class EventsDB {
 
         String query = "SELECT * FROM Sport WHERE Name=" + SQLiteJDBC.prepare_string(sport) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
-        if (!rs.next()) throw new SportDoesNotExistExeption(sport + " is not supported in this app!");
+        if (!rs.next())
+            throw new SportDoesNotExistExeption(sport + " is not supported in this app!");
         int id = rs.getInt("Sport_ID");
 
         sqLiteJDBC2.closeRS(rs);
@@ -160,7 +162,11 @@ public class EventsDB {
 
     public static void pay_bets(Map<Integer, Double> trans) throws NoAmountException, SQLException {
         for (Map.Entry<Integer, Double> entry : trans.entrySet()) {
-            TransactionDB.addTransaction(entry.getKey(), "Win", entry.getValue());
+            try {
+                TransactionDB.addTransaction(entry.getKey(), "Win", entry.getValue(), null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -301,7 +307,7 @@ public class EventsDB {
         int sport_id = get_SportID(sport);
         ArrayList<Event> events = new ArrayList<>();
         int state = get_EventStatusID(PENDING_STATUS);
-        String query = "SELECT * FROM Event WHERE EventState_ID=" + state + " AND Sport_ID=" + sport_id +  ";";
+        String query = "SELECT * FROM Event WHERE EventState_ID=" + state + " AND Sport_ID=" + sport_id + ";";
 
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         ResultSet rs = sqLiteJDBC2.executeQuery(query);

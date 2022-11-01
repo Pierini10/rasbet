@@ -1,6 +1,7 @@
 package com.rasbet.backend.Database;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
@@ -41,6 +42,14 @@ public class UserDB {
         User requestUser = get_User(user_id);
         if (requestUser == null || !requestUser.getRole().equals(SPECIALIST_ROLE))
             throw new NoAuthorizationException("Request is not made by specialist!!");
+    }
+
+    public static boolean assert_is_Administrator(int user_id) throws SQLException {
+        // Create a connection
+        User requestUser = get_User(user_id);
+        if (requestUser == null || !requestUser.getRole().equals(ADMIN_ROLE))
+            return false;
+        return true;
     }
 
     public static int create_User(User user, int userRequestID) throws SQLException, NoAuthorizationException {
@@ -150,7 +159,7 @@ public class UserDB {
         } else {
             user = null;
         }
-        
+
         sqLiteJDBC2.closeRS(rs);
 
         return user;

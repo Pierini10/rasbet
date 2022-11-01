@@ -6,8 +6,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import com.rasbet.backend.Entities.Promotion;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Exceptions.NoAmountException;
+import com.rasbet.backend.Exceptions.NoMinimumValueException;
+import com.rasbet.backend.Exceptions.NoPromotionCodeException;
 
 public class TransactionDB {
 
@@ -52,11 +55,14 @@ public class TransactionDB {
      * @param TransactionType the transaction type
      * @param value           the value of the transaction
      * @return the current balance of the user wallet
-     * @throws NoAmountException if the user has not enough money on his wallet
+     * @throws NoAmountException        if the user has not enough money on his
+     *                                  wallet
      * @throws SQLException
+     * @throws NoPromotionCodeException
+     * @throws NoMinimumValueException
      */
-    public static double addTransaction(int userId, String TransactionType, double value)
-            throws NoAmountException, SQLException {
+    public static double addTransaction(int userId, String TransactionType, double value, String code)
+            throws NoAmountException, SQLException, NoPromotionCodeException, NoMinimumValueException {
 
         int transactionType_ID = hasType(TransactionType);
 
@@ -72,7 +78,10 @@ public class TransactionDB {
         int walletID = rs.getInt("Wallet_ID");
 
         double balanceValue = WalletDB.get_Balance(walletID);
-
+        if (code != null && TransactionType.equals("deposito")) {
+            Promotion promotion = PromotionDB.getPromotion(code);
+            value += promotion.calculatePromotionValue(value);
+        }
         if (balanceValue + value >= 0) {
             String fullDate = getDateAndTime();
             String date = fullDate.split(" ")[0];
@@ -147,4 +156,5 @@ public class TransactionDB {
             return -1;
         }
     }
+
 }
