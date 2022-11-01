@@ -22,7 +22,7 @@ public class OddDB {
      */
     private static boolean updateOdd(String eventID, Double odd, String name) throws SQLException {
         try {
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
             String query = "Update Odd SET Odd =" + odd + ", OddSup = 1  WHERE Event_ID = + '" + eventID
                     + "' AND Entity = '" + name + "';";
             sqLiteJDBC2.executeUpdate(query);

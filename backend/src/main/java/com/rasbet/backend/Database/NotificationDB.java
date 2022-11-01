@@ -16,7 +16,7 @@ public class NotificationDB {
         if (UserDB.get_Role(requestUser) != UserDB.ADMIN_ROLE) {
             throw new NoAuthorizationException("This user is not an admin");
         }
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         String query = "INSERT INTO Notification (idUser, Description) VALUES ('" + idUser + "', '" + description
                 + "');";
 
@@ -25,7 +25,7 @@ public class NotificationDB {
 
     public static void deleteNotification(int idUser, String description, int requestUser) throws SQLException {
 
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         String query = "DELETE FROM Notification WHERE idUser = " + idUser + " AND Description = " + description + ";";
         sqLiteJDBC2.executeUpdate(query);
     }

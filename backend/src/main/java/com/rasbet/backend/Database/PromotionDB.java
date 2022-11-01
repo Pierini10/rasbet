@@ -15,7 +15,7 @@ public class PromotionDB {
         }
         NotificationDB.deleteNotification(-1, description, id);
         
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         String query = "INSERT INTO Promotion (Code, Value, MinValue, Type) VALUES ('" + code + "', '"
                 + value + ", " + minValue + ", '" + type + "');";
         sqLiteJDBC2.executeUpdate(query);
@@ -26,7 +26,7 @@ public class PromotionDB {
         if (UserDB.get_Role(id) != UserDB.ADMIN_ROLE) {
             throw new NoAuthorizationException("This user is not an admin");
         }
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         String query = "DELETE FROM Promotion WHERE code = " + code + ";";
         sqLiteJDBC2.executeUpdate(query);
     }

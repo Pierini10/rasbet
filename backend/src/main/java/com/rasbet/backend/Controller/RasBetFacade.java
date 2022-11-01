@@ -195,12 +195,14 @@ public class RasBetFacade {
             @ApiResponse(responseCode = "200", description = "Getting events successful"),
             @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/getEvents")
-    public List<Event> getEvents() {
+    public List<Event> getEvents(
+        @RequestParam(name = "sport") String sport
+    ) {
         try {
             if (can_update())
                 updateEvents();
-            return EventsDB.get_Events();
-        } catch (SQLException e) {
+            return EventsDB.get_Events(sport);
+        } catch (SportDoesNotExistExeption | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
