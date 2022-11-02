@@ -26,6 +26,15 @@ public class NotificationDB {
         sqLiteJDBC2.close();
     }
 
+    public static void createAutomaticNotification(int idUser, String description) throws SQLException {
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+        String query = "INSERT INTO Notification (IdUser, Description) VALUES ('" + idUser + "', '" + description
+                + "');";
+
+        sqLiteJDBC2.executeUpdate(query);
+        sqLiteJDBC2.close();
+    }
+
     public static void deleteNotification(int idUser, String description, int requestUser)
             throws SQLException {
 
