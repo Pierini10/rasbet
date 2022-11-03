@@ -6,6 +6,9 @@ public class EventOdds {
     private String eventID;
     private List<OddSimple> odds;
 
+    public EventOdds() {
+    }
+
     public EventOdds(String eventID, List<OddSimple> odds) {
         this.eventID = eventID;
         this.odds = odds;
