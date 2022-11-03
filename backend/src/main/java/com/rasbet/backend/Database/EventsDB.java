@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.rasbet.backend.Entities.Event;
+import com.rasbet.backend.Entities.Notification;
 import com.rasbet.backend.Entities.Odd;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
@@ -43,6 +44,19 @@ public class EventsDB {
 
         sqLiteJDBC2.closeRS(rs);
         return id;
+    }
+
+    public static boolean checkEventsAreOpen(List<Integer> events) throws SQLException {
+        boolean r = true;
+
+        for (Integer idEvent : events) {
+            if (get_EventStatus(idEvent) != PENDING_STATUS) {
+                r = false;
+                break;
+            }
+        }
+
+        return r;
     }
 
     public static String get_Sport(int id) throws SQLException {
@@ -178,6 +192,7 @@ public class EventsDB {
         int finished_state_id = get_EventStatusID(FINISHED_STATUS);
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         Map<Integer, Double> trans = new HashMap<>();
+        List<Notification> notifications = new ArrayList<>();
 
         for (Event e : events) {
 
@@ -217,8 +232,9 @@ public class EventsDB {
                 if (state_id == bet_state_loss_id) {
                     String update_bet = "UPDATE Bet SET "
                             + "BetState_ID = " + state_id
-                            + " WHERE  Bet_ID=" + bet_id + ";";
-                    sqLiteJDBC2.executeUpdate(update_bet);
+                            + " WHERE  Bet_ID=" + bet_id + " RETURNING User_ID;";
+                    ResultSet rs = sqLiteJDBC2.executeQuery(update_bet);
+                    notifications.add(new Notification(rs.getInt("User_ID"), "You lost bet number " + bet_id));
                 }
 
                 String update_bet = "UPDATE SimpleBet SET "
@@ -248,7 +264,11 @@ public class EventsDB {
                         // Won Bet
                         double money_won = bet.getDouble("Amount") * bet.getDouble("Totalodds");
                         trans.put(bet.getInt("User_ID"), money_won);
+
+                        notifications
+                                .add(new Notification(bet.getInt("User_ID"), "You Won bet number " + entry.getKey()));
                         sqLiteJDBC2.executeUpdate(update_bet);
+
                     } else {
                         String update_bet = "UPDATE Bet SET "
                                 + "GamesLeft = " + gamesleft
@@ -260,11 +280,30 @@ public class EventsDB {
             }
         }
         sqLiteJDBC2.close();
+        NotificationDB.createAutomaticNotification(notifications);
         try {
             pay_bets(trans);
         } catch (NoAmountException e1) {
             e1.printStackTrace();
         }
+    }
+
+    /**
+     * Updates the state of a event
+     * 
+     * @param idEvent
+     * @param state
+     * @throws SQLException
+     */
+    public static void update_Event_State(Integer idEvent, String state) throws SQLException {
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+
+        Integer idState = EventsDB.get_EventStatusID(state);
+
+        String query = "UPDATE Event SET EventState_ID = " + idState + " WHERE Event_ID = " + idEvent + ";";
+
+        sqLiteJDBC2.executeUpdate(query);
+        sqLiteJDBC2.close();
     }
 
     // Updates all DB events

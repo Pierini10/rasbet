@@ -3,6 +3,7 @@ package com.rasbet.backend.Database;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.rasbet.backend.Entities.Notification;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
 /**
@@ -26,12 +27,14 @@ public class NotificationDB {
         sqLiteJDBC2.close();
     }
 
-    public static void createAutomaticNotification(int idUser, String description) throws SQLException {
+    public static void createAutomaticNotification(List<Notification> request) throws SQLException {
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
-        String query = "INSERT INTO Notification (IdUser, Description) VALUES ('" + idUser + "', '" + description
-                + "');";
-
-        sqLiteJDBC2.executeUpdate(query);
+        for (Notification notification : request) {
+            String query = "INSERT INTO Notification (IdUser, Description) VALUES ('" + notification.getIdUser()
+                    + "', '" + notification.getDescription()
+                    + "');";
+            sqLiteJDBC2.executeUpdate(query);
+        }
         sqLiteJDBC2.close();
     }
 

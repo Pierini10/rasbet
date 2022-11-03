@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +17,13 @@ import org.springframework.web.server.ResponseStatusException;
 import com.rasbet.backend.Database.BetDB;
 import com.rasbet.backend.Database.EventsDB;
 import com.rasbet.backend.Database.OddDB;
+import com.rasbet.backend.Database.SportsDB;
 import com.rasbet.backend.Database.TransactionDB;
 import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Bet;
 import com.rasbet.backend.Entities.Event;
+import com.rasbet.backend.Entities.HistoryBets;
+import com.rasbet.backend.Entities.Prediction;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Entities.UpdateOddRequest;
 import com.rasbet.backend.Entities.User;
@@ -249,6 +253,8 @@ public class RasBetFacade {
     /**
      * Make a bet.
      * 
+     * TODO: ver como passar a lista no HTTP Request
+     * 
      * @param userID
      * @param amount
      * @param paymentMethod
@@ -261,40 +267,56 @@ public class RasBetFacade {
      */
     @PostMapping("/makeBet")
     public boolean makeBet(
-            @RequestParam(value = "userID") int userID,
-            @RequestParam(value = "amount") double amount,
+            @RequestParam(value = "userID") int idUser,
+            @RequestParam(value = "amount") Float amount,
             @RequestParam(value = "paymentMethod") String paymentMethod,
-            @RequestParam(value = "simpleBets") List<List<String>> simpleBets) {
-        // TODO:
-        // boolean r = true;
-        //
-        // try {
-        // Integer idState = BetDB.get_Bet_State(state);
-        // Bet bet = new Bet(idBet, idUser, idState, idState, null);
-        // BetDB.update_Bet(bet);
-        // } catch (SQLException e) {
-        // r = false;
-        // System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        // throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
-        // }
-        //
-        // return r;
-        return false;
+            @RequestBody List<Prediction> simpleBets) {
+        boolean r = true;
+        
+        try {
+            List<Integer> idEvents = simpleBets.stream().map(sb -> sb.getIdEvent()).collect(Collectors.toList());
+            r = EventsDB.checkEventsAreOpen(idEvents);
+
+            if (r) {
+                Bet bet = new Bet(null, idUser, null, simpleBets.size(), amount, null, null, simpleBets);
+                bet.calculateTotalOdds();
+                BetDB.add_Bet(bet);
+
+                TransactionDB.addTransaction(idUser, paymentMethod, amount.doubleValue(), null);   
+            }
+        } catch (SQLException e) {
+        r = false;
+        System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+        } catch (NoAmountException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoPromotionCodeException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoMinimumValueException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return r;
     }
 
     /**
-     * Change bet state.
+     * Change event state.
      * 
-     * vale a pena o userid??
-     * 
-     * @param idBet
-     * @param userID
+     * @param idEvent 
+     * @param userID User that is trying to change the state
      * @param state
      * @return True if the change was successful, false otherwise.
      */
-    @PostMapping("/changeBetState")
-    public boolean changeBetState(
-            @RequestParam(value = "idBet") int idBet,
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Change successful"),
+        @ApiResponse(responseCode = "400", description = "This User does not have authorization to change bet state"),
+        @ApiResponse(responseCode = "500", description = "SqlException") })
+    @PostMapping("/changeEventState")
+    public boolean changeEventState(
+            @RequestParam(value = "idEvent") int idEvent,
             @RequestParam(value = "idUser") int idUser,
             @RequestParam(value = "state") String state) {
         boolean r = true;
@@ -303,8 +325,7 @@ public class RasBetFacade {
             String userPermissions = UserDB.get_Role(idUser);
 
             if (userPermissions.equals("Administrator") || userPermissions.equals("Specialist")) {
-                Bet bet = new Bet(idBet, null, state, null, null, null, null);
-                BetDB.update_Bet(bet);
+                EventsDB.update_Event_State(idEvent, state);
             } else {
                 r = false;
             }
@@ -320,9 +341,7 @@ public class RasBetFacade {
     /**
      * Get user's bets history.
      * 
-     * @param userID
-     * 
-     *               TODO: list of class bet
+     * @param userID 
      * 
      * @return List containing:
      *         0: Bet ID
@@ -336,9 +355,9 @@ public class RasBetFacade {
      *         ]
      */
     @GetMapping("/getBetsHistory")
-    public List<Bet> getBetsHistory(
+    public HistoryBets getBetsHistory(
             @RequestParam(value = "userID") int userID) {
-        List<Bet> r;
+        HistoryBets r;
 
         try {
             r = BetDB.get_Bets(userID);
@@ -450,9 +469,22 @@ public class RasBetFacade {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
     }
+    
     /**
-     * TODO: Change bet status. Não percebi este requisito...
+     * Get all sports
      * 
+     * @return List of sports
      */
+    @Operation(summary = "Insert new ODD.")
+    @GetMapping("/getAllSports")
+    public List<String> getAllSports() {
 
+        try {
+            return SportsDB.getSports();
+
+        } catch (SQLException e) {
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
+        }
+    }
 }

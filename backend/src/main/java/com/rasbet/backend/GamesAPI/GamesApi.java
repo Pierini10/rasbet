@@ -1,23 +1,25 @@
 package com.rasbet.backend.GamesAPI;
 
-import com.rasbet.backend.Database.EventsDB;
-import com.rasbet.backend.Entities.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.rasbet.backend.Database.EventsDB;
+import com.rasbet.backend.Entities.Event;
+import com.rasbet.backend.Entities.Odd;
+import com.rasbet.backend.Exceptions.readJsonException;
 
 public class GamesApi {
 
@@ -72,6 +74,9 @@ public class GamesApi {
 				}
 
 				// Get all the odds
+				if (markets == null)
+					throw new readJsonException("No markets found");
+
 				JSONArray odds_json = markets.getJSONObject(0).getJSONArray("outcomes");
 				Map<String, Odd> odds = new HashMap<>();
 
