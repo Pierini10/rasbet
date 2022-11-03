@@ -272,7 +272,7 @@ public class RasBetFacade {
             @RequestParam(value = "paymentMethod") String paymentMethod,
             @RequestBody List<Prediction> simpleBets) {
         boolean r = true;
-        
+
         try {
             List<Integer> idEvents = simpleBets.stream().map(sb -> sb.getIdEvent()).collect(Collectors.toList());
             r = EventsDB.checkEventsAreOpen(idEvents);
@@ -282,12 +282,12 @@ public class RasBetFacade {
                 bet.calculateTotalOdds();
                 BetDB.add_Bet(bet);
 
-                TransactionDB.addTransaction(idUser, paymentMethod, amount.doubleValue(), null);   
+                TransactionDB.addTransaction(idUser, paymentMethod, amount.doubleValue(), null);
             }
         } catch (SQLException e) {
-        r = false;
-        System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+            r = false;
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
         } catch (NoAmountException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -298,22 +298,22 @@ public class RasBetFacade {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return r;
     }
 
     /**
      * Change event state.
      * 
-     * @param idEvent 
-     * @param userID User that is trying to change the state
+     * @param idEvent
+     * @param userID  User that is trying to change the state
      * @param state
      * @return True if the change was successful, false otherwise.
      */
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Change successful"),
-        @ApiResponse(responseCode = "400", description = "This User does not have authorization to change bet state"),
-        @ApiResponse(responseCode = "500", description = "SqlException") })
+            @ApiResponse(responseCode = "200", description = "Change successful"),
+            @ApiResponse(responseCode = "400", description = "This User does not have authorization to change bet state"),
+            @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/changeEventState")
     public boolean changeEventState(
             @RequestParam(value = "idEvent") int idEvent,
@@ -341,7 +341,7 @@ public class RasBetFacade {
     /**
      * Get user's bets history.
      * 
-     * @param userID 
+     * @param userID
      * 
      * @return List containing:
      *         0: Bet ID
@@ -421,10 +421,10 @@ public class RasBetFacade {
             @ApiResponse(responseCode = "401", description = "This User does not have authorization to change ODD'S"),
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/insertOdd")
-    public boolean insertOdd(@RequestBody UpdateOddRequest possibleBets) {
+    public void insertOdd(@RequestBody UpdateOddRequest possibleBets) {
 
         try {
-            return OddDB.updateOdds(possibleBets);
+            OddDB.updateOdds(possibleBets);
 
         } catch (NoAuthorizationException e) {
 
@@ -432,7 +432,7 @@ public class RasBetFacade {
                     HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (SQLException e) {
 
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -469,7 +469,7 @@ public class RasBetFacade {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
     }
-    
+
     /**
      * Get all sports
      * 

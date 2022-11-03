@@ -20,16 +20,16 @@ public class OddDB {
      * @return True if odds were updated successfully, false otherwise, i think.
      * @throws SQLException
      */
-    private static boolean updateOdd(String eventID, Double odd, String name) throws SQLException {
+    private static void updateOdd(String eventID, Double odd, String name) throws SQLException {
         try {
             SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
             String query = "Update Odd SET Odd =" + odd + ", OddSup = 1  WHERE Event_ID = + '" + eventID
                     + "' AND Entity = '" + name + "';";
             sqLiteJDBC2.executeUpdate(query);
-            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+
         }
     }
 
@@ -40,10 +40,9 @@ public class OddDB {
      * @return True if odds were updated successfully, false otherwise, i think.
      */
 
-    public static boolean updateOdds(UpdateOddRequest possibleBets) throws NoAuthorizationException, SQLException {
+    public static void updateOdds(UpdateOddRequest possibleBets) throws NoAuthorizationException, SQLException {
 
-        if (UserDB.get_Role(possibleBets.getUserID()) != UserDB.SPECIALIST_ROLE)
-            throw new NoAuthorizationException("User is not a specialist");
+        UserDB.assert_is_Specialist(possibleBets.getUserID());
 
         for (EventOdds eventOdd : possibleBets.getPossibleBets()) {
             for (OddSimple odd : eventOdd.getOdds()) {
@@ -51,7 +50,6 @@ public class OddDB {
                 updateOdd(eventOdd.getEventID(), odd.getOdd(), odd.getEntity());
             }
         }
-        return true;
 
     }
 

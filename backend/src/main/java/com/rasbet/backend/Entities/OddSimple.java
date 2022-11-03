@@ -5,6 +5,9 @@ public class OddSimple {
     private String entity;
     private double odd;
 
+    public OddSimple() {
+    }
+
     public OddSimple(String entity, double odd) {
         this.entity = entity;
         this.odd = odd;

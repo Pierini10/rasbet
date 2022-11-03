@@ -6,6 +6,9 @@ public class UpdateOddRequest {
     private int userID;
     private List<EventOdds> possibleBets;
 
+    public UpdateOddRequest() {
+    }
+
     public UpdateOddRequest(int userID, List<EventOdds> possibleBets) {
         this.userID = userID;
         this.possibleBets = possibleBets;
