@@ -7,6 +7,9 @@ public class RequestNotifications {
     private int idUser;
     private List<String> description;
 
+    public RequestNotifications() {
+    }
+
     public RequestNotifications(int idRequestUser, int idUser, List<String> description) {
         this.idRequestUser = idRequestUser;
         this.idUser = idUser;
