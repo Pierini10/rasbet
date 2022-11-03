@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.rasbet.backend.Entities.Event;
+import com.rasbet.backend.Entities.Notification;
 import com.rasbet.backend.Entities.Odd;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
@@ -178,6 +179,7 @@ public class EventsDB {
         int finished_state_id = get_EventStatusID(FINISHED_STATUS);
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         Map<Integer, Double> trans = new HashMap<>();
+        List<Notification> notifications = new ArrayList<>();
 
         for (Event e : events) {
 
@@ -217,8 +219,9 @@ public class EventsDB {
                 if (state_id == bet_state_loss_id) {
                     String update_bet = "UPDATE Bet SET "
                             + "BetState_ID = " + state_id
-                            + " WHERE  Bet_ID=" + bet_id + ";";
-                    sqLiteJDBC2.executeUpdate(update_bet);
+                            + " WHERE  Bet_ID=" + bet_id + " RETURNING User_ID;";
+                    ResultSet rs = sqLiteJDBC2.executeQuery(update_bet);
+                    notifications.add(new Notification(rs.getInt("User_ID"), "Bet " + bet_id + " lost"));
                 }
 
                 String update_bet = "UPDATE SimpleBet SET "
@@ -260,6 +263,7 @@ public class EventsDB {
             }
         }
         sqLiteJDBC2.close();
+        NotificationDB.createAutomaticNotification(notifications);
         try {
             pay_bets(trans);
         } catch (NoAmountException e1) {
