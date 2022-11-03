@@ -9,18 +9,20 @@ public class Bet {
     private Integer idUser;
     private String betState;
     private Integer gamesLeft;
-    private Integer amount;
+    private Float amount;
     private LocalDateTime dateTime;
+    private Float totalOdds;
     private List<Prediction> predictions;
 
-    public Bet(Integer id, Integer idUser, String betState, Integer gamesLeft, Integer amount,
-            LocalDateTime dateTime, List<Prediction> predictions) {
+    public Bet(Integer id, Integer idUser, String betState, Integer gamesLeft, Float amount,
+            LocalDateTime dateTime, Float totalOdds, List<Prediction> predictions) {
         this.id = id;
         this.idUser = idUser;
         this.betState = betState;
         this.gamesLeft = gamesLeft;
         this.amount = amount;
         this.dateTime = dateTime;
+        this.totalOdds = totalOdds;
         this.setPredictions(predictions);
     }
 
@@ -41,12 +43,16 @@ public class Bet {
         return gamesLeft;
     }
 
-    public Integer getAmount() {
+    public Float getAmount() {
         return amount;
     }
 
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    public Float getTotalOdds() {
+        return totalOdds;
     }
 
     public List<Prediction> getPredictions() {
@@ -68,7 +74,7 @@ public class Bet {
         this.idUser = idUser;
     }
 
-    public void setIdBetState(String betState) {
+    public void setBetState(String betState) {
         this.betState = betState;
     }
 
@@ -76,12 +82,16 @@ public class Bet {
         this.gamesLeft = gamesLeft;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(Float amount) {
         this.amount = amount;
     }
 
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public void setTotalOdds(Float totalOdds) {
+        this.totalOdds = totalOdds;
     }
 
     public void setPredictions(List<Prediction> predictions) {
@@ -92,7 +102,7 @@ public class Bet {
         }
     }
 
-    public void update_info(Integer id, Integer idUser, String betState, Integer gamesLeft, Integer amount,
+    public void update_info(Integer id, Integer idUser, String betState, Integer gamesLeft, Float amount,
             LocalDateTime dateTime) {
         if (id != null)
             this.id = id;
@@ -108,5 +118,18 @@ public class Bet {
             this.dateTime = dateTime;
         if (predictions != null)
             this.setPredictions(predictions);
+    }
+
+    //clone
+    public Bet clone() {
+        return new Bet(id, idUser, betState, gamesLeft, amount, dateTime, totalOdds, this.getPredictions());
+    }
+
+
+    public void calculateTotalOdds() {
+        this.totalOdds = (float) 1;
+        for (Prediction prediction : this.predictions) {
+            this.totalOdds *= prediction.getOdd();
+        }
     }
 }

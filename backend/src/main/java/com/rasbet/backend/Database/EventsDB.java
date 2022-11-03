@@ -44,6 +44,19 @@ public class EventsDB {
         return id;
     }
 
+    public static boolean checkEventsAreOpen(List<Integer> events) throws SQLException {
+        boolean r = true;
+
+        for (Integer idEvent : events) {
+            if (get_EventStatus(idEvent) != PENDING_STATUS) {
+                r = false;
+                break;
+            }
+        }
+
+        return r;
+    }
+
     public static String get_Sport(int id) throws SQLException {
         // Create a connection
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
@@ -110,17 +123,20 @@ public class EventsDB {
         }
     }
 
-    public static String calculateWinner(String description, String result){
+    public static String calculateWinner(String description, String result) {
         String[] r = result.split("x", 2);
         int winner = (Integer.parseInt(r[0])) - (Integer.parseInt(r[1]));
         String[] d = description.split(" v ", 2);
-        if (winner == 0) return "Draw";
-        else if ( winner > 0) return d[0];
-        else return d[1];
+        if (winner == 0)
+            return "Draw";
+        else if (winner > 0)
+            return d[0];
+        else
+            return d[1];
     }
 
-    public static void pay_bets(Map<Integer, Double> trans) throws NoAmountException, SQLException{
-        for (Map.Entry<Integer, Double> entry : trans.entrySet()){
+    public static void pay_bets(Map<Integer, Double> trans) throws NoAmountException, SQLException {
+        for (Map.Entry<Integer, Double> entry : trans.entrySet()) {
             TransactionDB.addTransaction(entry.getKey(), "Win", entry.getValue());
         }
     }
@@ -199,11 +215,11 @@ public class EventsDB {
                         String update_bet = "UPDATE Bet SET "
                                 + "BetState_ID = " + bet_state_win_id
                                 + " WHERE  Bet_ID=" + entry.getKey() + ";";
-                                
-                            // Won Bet
-                            double money_won = bet.getDouble("Amount") * bet.getDouble("Totalodds");
-                            trans.put(bet.getInt("User_ID"), money_won);
-                            sqLiteJDBC2.executeUpdate(update_bet);
+
+                        // Won Bet
+                        double money_won = bet.getDouble("Amount") * bet.getDouble("Totalodds");
+                        trans.put(bet.getInt("User_ID"), money_won);
+                        sqLiteJDBC2.executeUpdate(update_bet);
                     } else {
                         String update_bet = "UPDATE Bet SET "
                                 + "GamesLeft = " + gamesleft
@@ -220,6 +236,24 @@ public class EventsDB {
         } catch (NoAmountException e1) {
             e1.printStackTrace();
         }
+    }
+
+    /**
+     * Updates the state of a event
+     * 
+     * @param idEvent
+     * @param state
+     * @throws SQLException
+     */
+    public static void update_Event_State(Integer idEvent, String state) throws SQLException {
+        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+
+        Integer idState = EventsDB.get_EventStatusID(state);
+
+        String query = "UPDATE Event SET EventState_ID = " + idState + " WHERE Event_ID = " + idEvent + ";";
+
+        sqLiteJDBC2.executeUpdate(query);
+        sqLiteJDBC2.close();
     }
 
     // Updates all DB events
@@ -255,7 +289,7 @@ public class EventsDB {
     }
 
     // Gets all DB events
-    public static ArrayList<Event> get_Events() throws SQLException {
+    public static List<Event> get_Events() throws SQLException {
         // Create a connection
         SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
 

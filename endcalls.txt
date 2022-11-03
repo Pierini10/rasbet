@@ -86,7 +86,7 @@ envio {
     }]
 }
 
-Cris
+Cris DONE
 [historico apostas]
 envio {
     idUser: number
