@@ -18,7 +18,7 @@ public class SportsDB {
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         List<String> res = new ArrayList<>();
 
-        String query = "SELECT Name FROM Sports;";
+        String query = "SELECT Name FROM Sport;";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
 
         while (rs.next()) {

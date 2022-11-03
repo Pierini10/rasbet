@@ -295,7 +295,7 @@ public class EventsDB {
      * @param state
      * @throws SQLException
      */
-    public static void update_Event_State(Integer idEvent, String state) throws SQLException {
+    public static void update_Event_State(String idEvent, String state) throws SQLException {
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         Integer idState = EventsDB.get_EventStatusID(state);

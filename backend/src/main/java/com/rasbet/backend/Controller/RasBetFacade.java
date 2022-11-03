@@ -316,13 +316,15 @@ public class RasBetFacade {
         @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/changeEventState")
     public boolean changeEventState(
-            @RequestParam(value = "idEvent") int idEvent,
+            @RequestParam(value = "idEvent") String idEvent,
             @RequestParam(value = "idUser") int idUser,
             @RequestParam(value = "state") String state) {
         boolean r = true;
 
         try {
+            System.out.println(idUser);
             String userPermissions = UserDB.get_Role(idUser);
+            System.out.println(userPermissions);
 
             if (userPermissions.equals("Administrator") || userPermissions.equals("Specialist")) {
                 EventsDB.update_Event_State(idEvent, state);
@@ -422,7 +424,7 @@ public class RasBetFacade {
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/insertOdd")
     public boolean insertOdd(@RequestBody UpdateOddRequest possibleBets) {
-
+        System.out.println(possibleBets.getUserID());
         try {
             return OddDB.updateOdds(possibleBets);
 
