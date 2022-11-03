@@ -221,7 +221,7 @@ public class EventsDB {
                             + "BetState_ID = " + state_id
                             + " WHERE  Bet_ID=" + bet_id + " RETURNING User_ID;";
                     ResultSet rs = sqLiteJDBC2.executeQuery(update_bet);
-                    notifications.add(new Notification(rs.getInt("User_ID"), "Bet " + bet_id + " lost"));
+                    notifications.add(new Notification(rs.getInt("User_ID"), "You lost bet number " + bet_id));
                 }
 
                 String update_bet = "UPDATE SimpleBet SET "
@@ -251,7 +251,11 @@ public class EventsDB {
                         // Won Bet
                         double money_won = bet.getDouble("Amount") * bet.getDouble("Totalodds");
                         trans.put(bet.getInt("User_ID"), money_won);
+
+                        notifications
+                                .add(new Notification(bet.getInt("User_ID"), "You Won bet number " + entry.getKey()));
                         sqLiteJDBC2.executeUpdate(update_bet);
+
                     } else {
                         String update_bet = "UPDATE Bet SET "
                                 + "GamesLeft = " + gamesleft
