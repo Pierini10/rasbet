@@ -6,8 +6,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import com.rasbet.backend.Entities.Promotion;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Exceptions.NoAmountException;
+import com.rasbet.backend.Exceptions.NoMinimumValueException;
+import com.rasbet.backend.Exceptions.NoPromotionCodeException;
 
 public class TransactionDB {
 
@@ -20,7 +23,7 @@ public class TransactionDB {
      */
     public static ArrayList<Transaction> getTransactions(int userID) throws SQLException {
         ArrayList<Transaction> transactions = new ArrayList<>();
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         String walletIdQuery = "SELECT Wallet_ID FROM User WHERE User_ID = " + userID + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(walletIdQuery);
         int walletID = rs.getInt("Wallet_ID");
@@ -52,11 +55,14 @@ public class TransactionDB {
      * @param TransactionType the transaction type
      * @param value           the value of the transaction
      * @return the current balance of the user wallet
-     * @throws NoAmountException if the user has not enough money on his wallet
+     * @throws NoAmountException        if the user has not enough money on his
+     *                                  wallet
      * @throws SQLException
+     * @throws NoPromotionCodeException
+     * @throws NoMinimumValueException
      */
-    public static double addTransaction(int userId, String TransactionType, double value)
-            throws NoAmountException, SQLException {
+    public static double addTransaction(int userId, String TransactionType, double value, String code)
+            throws NoAmountException, SQLException, NoPromotionCodeException, NoMinimumValueException {
 
         int transactionType_ID = hasType(TransactionType);
 
@@ -64,7 +70,7 @@ public class TransactionDB {
             transactionType_ID = addType(TransactionType);
         }
 
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         String wallet_id = "SELECT * FROM User WHERE User_ID='" + userId + "'";
         ResultSet rs = sqLiteJDBC2.executeQuery(wallet_id);
@@ -72,7 +78,10 @@ public class TransactionDB {
         int walletID = rs.getInt("Wallet_ID");
 
         double balanceValue = WalletDB.get_Balance(walletID);
-
+        if (code != null && TransactionType.equals("deposito")) {
+            Promotion promotion = PromotionDB.getPromotion(code);
+            value += promotion.calculatePromotionValue(value);
+        }
         if (balanceValue + value >= 0) {
             String fullDate = getDateAndTime();
             String date = fullDate.split(" ")[0];
@@ -110,7 +119,7 @@ public class TransactionDB {
      */
     private static int addType(String name) {
         try {
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
             String insert = "Insert into TransactionType (Name) values ('" + name + "') returning TransactionType_ID";
             ResultSet rs = sqLiteJDBC2.executeQuery(insert);
@@ -132,7 +141,7 @@ public class TransactionDB {
      */
     public static int hasType(String type) {
         try {
-            SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
             String query = "SELECT * FROM TransactionType WHERE Name='" + type + "'";
             ResultSet rs = sqLiteJDBC2.executeQuery(query);
@@ -147,4 +156,5 @@ public class TransactionDB {
             return -1;
         }
     }
+
 }

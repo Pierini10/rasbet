@@ -1,9 +1,9 @@
 package com.rasbet.backend.Controller;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -27,23 +27,30 @@ import com.rasbet.backend.Entities.Prediction;
 import com.rasbet.backend.Entities.Transaction;
 import com.rasbet.backend.Entities.UpdateOddRequest;
 import com.rasbet.backend.Entities.User;
+import com.rasbet.backend.Exceptions.BadPasswordException;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
+import com.rasbet.backend.Exceptions.NoMinimumValueException;
+import com.rasbet.backend.Exceptions.NoPromotionCodeException;
+import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 public class RasBetFacade {
 
-    /**
-     * Check backend connection.
-     */
-    @GetMapping("/checkConnectivity")
-    public String checkConnection() {
-        return "Backend is live!";
+    private LocalDateTime lastEventsUpdate;
+
+    private boolean can_update() {
+        LocalDateTime now = LocalDateTime.now();
+        if (lastEventsUpdate == null || lastEventsUpdate.isBefore(now.minusMinutes(5))) {
+            lastEventsUpdate = now;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // TODO:
@@ -66,6 +73,10 @@ public class RasBetFacade {
      * @param Birthday    (yyyy-MM-dd)
      * 
      */
+    @Operation(summary = "Register user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Register successful"),
+            @ApiResponse(responseCode = "400", description = "Could not register") })
     @PostMapping("/register")
     public void register(
             @RequestParam(value = "email") String email,
@@ -76,14 +87,18 @@ public class RasBetFacade {
             @RequestParam(value = "CC") String CC,
             @RequestParam(value = "address") String address,
             @RequestParam(value = "pn") String phoneNumber,
-            @RequestParam(value = "bday") String birthday) {
-        User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday);
+            @RequestParam(value = "bday") String birthday,
+            @RequestParam(value = "role") String role,
+            @RequestParam(value = "userRequestID") int userRequestID) {
         try {
-            UserDB.create_User(new_user);
-        } catch (SQLException e) {
+            User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday,
+                    role);
+            UserDB.create_User(new_user, userRequestID);
+        } catch (SQLException | BadPasswordException | NoAuthorizationException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
+
     }
 
     /**
@@ -99,6 +114,10 @@ public class RasBetFacade {
      *         4: Surname
      *         5: role
      */
+    @Operation(summary = "Login user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login successful"),
+            @ApiResponse(responseCode = "400", description = "Could not login") })
     @PostMapping("/login")
     public User login(
             @RequestParam(value = "email") String email,
@@ -130,20 +149,24 @@ public class RasBetFacade {
      * @param phoneNumber
      * 
      */
+    @Operation(summary = "Changes user information.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Changing user successful"),
+            @ApiResponse(responseCode = "400", description = "Could not change user info") })
     @PostMapping("/changeInfo")
     public void changeInfo(
-            @RequestParam(value = "userID") int userID,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "pw", required = false) String password,
-            @RequestParam(value = "fn", required = false) String firstName,
-            @RequestParam(value = "ln", required = false) String lastName,
-            @RequestParam(value = "address", required = false) String address,
-            @RequestParam(value = "pn", required = false) String phoneNumber) {
+            @RequestParam(name = "userID") int userID,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "password", required = false) String password,
+            @RequestParam(name = "firstName", required = false) String firstName,
+            @RequestParam(name = "lastName", required = false) String lastName,
+            @RequestParam(name = "address", required = false) String address,
+            @RequestParam(name = "phoneNumber", required = false) String phoneNumber) {
         try {
             User user = UserDB.get_User(userID);
             user.update_info(email, password, firstName, lastName, address, phoneNumber);
             UserDB.update_User(user);
-        } catch (SQLException e) {
+        } catch (BadPasswordException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -164,11 +187,18 @@ public class RasBetFacade {
      *         ]
      *         6: Event Status (0: Not started, 1: In progress, 2: Final Result)
      */
+    @Operation(summary = "Gets current events information.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Getting events successful"),
+            @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/getEvents")
-    public List<Event> getEvents() {
+    public List<Event> getEvents(
+            @RequestParam(name = "sport") String sport) {
         try {
-            return EventsDB.get_Events();
-        } catch (SQLException e) {
+            if (can_update())
+                updateEvents();
+            return EventsDB.get_Events(sport);
+        } catch (SportDoesNotExistExeption | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -177,11 +207,44 @@ public class RasBetFacade {
     /**
      * Update events and bet information.
      */
+    @Operation(summary = "Updates events and bets information.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Update successful"),
+            @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/updateEvents")
     public void updateEvents() {
         try {
             EventsDB.update_Database();
-        } catch (SQLException e) {
+        } catch (SportDoesNotExistExeption | SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    /**
+     * Adds a new Event.
+     * 
+     * @param userID
+     * @param sport
+     * @param datetime
+     * @param description
+     * 
+     */
+    @Operation(summary = "Adds a new Event.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Event added was successful."),
+            @ApiResponse(responseCode = "400", description = "Addidicion failed.") })
+    @PostMapping("/addEvent")
+    public void addEvent(
+            @RequestParam(name = "userID") int userID,
+            @RequestParam(name = "sport") String sport,
+            @RequestParam(name = "datetime") String datetime,
+            @RequestParam(name = "description") String description) {
+        Event event = new Event(null, sport, datetime, description, null, null, null);
+        try {
+            UserDB.assert_is_Specialist(userID);
+            EventsDB.add_Event(event);
+        } catch (SportDoesNotExistExeption | NoAuthorizationException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -219,13 +282,19 @@ public class RasBetFacade {
                 bet.calculateTotalOdds();
                 BetDB.add_Bet(bet);
 
-                TransactionDB.addTransaction(idUser, paymentMethod, amount.doubleValue());   
+                TransactionDB.addTransaction(idUser, paymentMethod, amount.doubleValue(), null);   
             }
         } catch (SQLException e) {
         r = false;
         System.err.println(e.getClass().getName() + ": " + e.getMessage());
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
         } catch (NoAmountException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoPromotionCodeException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoMinimumValueException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -322,7 +391,7 @@ public class RasBetFacade {
     })
     @GetMapping("/getTransactionsHistory")
     public ArrayList<Transaction> getTransactionsHistory(
-            @Parameter(name = "userID", description = "User ID that wants to see his transactions history") int userID) {
+            @RequestParam() int userID) {
         try {
 
             return TransactionDB.getTransactions(userID);
@@ -349,7 +418,7 @@ public class RasBetFacade {
     @Operation(summary = "Insert new ODD.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Insertion successful"),
-            @ApiResponse(responseCode = "400", description = "This User does not have authorization to change ODD'S"),
+            @ApiResponse(responseCode = "401", description = "This User does not have authorization to change ODD'S"),
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/insertOdd")
     public boolean insertOdd(@RequestBody UpdateOddRequest possibleBets) {
@@ -360,7 +429,7 @@ public class RasBetFacade {
         } catch (NoAuthorizationException e) {
 
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "No authorization", e);
+                    HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (SQLException e) {
 
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
@@ -378,18 +447,21 @@ public class RasBetFacade {
     @Operation(summary = "Withdraw and deposit money.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Transaction was successful."),
-            @ApiResponse(responseCode = "400", description = "Transaction failed.") })
+            @ApiResponse(responseCode = "400", description = "Transaction failed."),
+            @ApiResponse(responseCode = "500", description = "SQLException.") })
     @PostMapping("/withdrawDeposit")
     public double withdrawDeposit(
-            @Parameter(name = "userID", description = "User ID that wants to make the transaction") int userID,
-            @Parameter(name = "amount", description = "Amount that is being transacted") double amount) {
+            @RequestParam() int userID,
+            @RequestParam() double amount,
+            @RequestParam(required = false) String promotionCode,
+            @RequestParam(required = false) String method) {
         String transactionType = "levantamento";
         if (amount > 0) {
             transactionType = "deposito";
         }
         try {
-            return TransactionDB.addTransaction(userID, transactionType, amount);
-        } catch (NoAmountException e) {
+            return TransactionDB.addTransaction(userID, transactionType, amount, promotionCode);
+        } catch (NoAmountException | NoPromotionCodeException | NoMinimumValueException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (SQLException e) {
@@ -397,27 +469,22 @@ public class RasBetFacade {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
     }
-
-
+    
     /**
-     * Checks Sports on DB
+     * Get all sports
      * 
-     * @return List with the name of all sports
+     * @return List of sports
      */
-    @Operation(summary = "Check all sports.")
-    @PostMapping("/checkSports")
-    public List<String> checkSports() {
+    @Operation(summary = "Insert new ODD.")
+    @GetMapping("/getAllSports")
+    public List<String> getAllSports() {
+
         try {
             return SportsDB.getSports();
+
         } catch (SQLException e) {
+
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
     }
-
-    /**
-     * TODO: Change bet status. Não percebi este requisito...
-     * 
-     */
-
-    // TODO: REMOVE LATER, FOR TESTS ONLY
 }

@@ -1,6 +1,9 @@
 package com.rasbet.backend.Entities;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import com.rasbet.backend.Database.EventsDB;
 
 public class Event {
     private String id;
@@ -13,15 +16,33 @@ public class Event {
 
 
     public Event(String id, String sport, String datetime, String description, String result, String state, Map<String, Odd> odds) {
+        if (id == null) id = generateId(description, datetime);
         this.id = id;
         this.sport = sport;
         this.datetime = datetime;
         this.description = description;
         this.result = result;
         this.state = state;
+        if (odds == null && sport.equals(EventsDB.FOOTBALL)){
+            String[] r = description.split(" v ", 2);
+            odds = new HashMap<>();
+            odds.put(r[0], new Odd(r[0], -1, false));
+            odds.put(r[1], new Odd(r[1], -1, false));
+            odds.put("Draw", new Odd("Draw", -1, false));
+        }
         this.odds = odds;
     }
 
+    private static String generateId(String des, String date){
+        String id = "";
+        char[] de = des.toCharArray();
+        for (int i = 0;i < des.length(); i++) id += de[i] + 10;
+
+        char[] da = date.toCharArray();
+        for (int i = 0;i < date.length(); i++) id += da[i] + 10;
+
+        return id;
+    }
 
     public String getId() {
         return this.id;

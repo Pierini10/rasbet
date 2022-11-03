@@ -8,7 +8,7 @@ public class WalletDB {
     // Creates a Wallet in the DB and returns the wallet id
     public static int create_Wallet() throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         // Create a wallet
         String query = "INSERT INTO Wallet (Balance) VALUES (0) RETURNING Wallet_ID;";
@@ -23,7 +23,7 @@ public class WalletDB {
     // Get the balance of a Wallet in the DB, by it's wallet id
     public static double get_Balance(int wallet_id) throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         // Create a wallet
         String query = "SELECT * FROM Wallet WHERE Wallet_ID=" + wallet_id + ";";
@@ -38,7 +38,7 @@ public class WalletDB {
     // Delete a Wallet in the DB, by it's wallet id
     public static void delete_Wallet(int wallet_id) throws SQLException {
         // Create a connection
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         // Create a wallet
         String query = "DELETE FROM Wallet WHERE Wallet_ID=" + wallet_id + ";";
@@ -48,7 +48,7 @@ public class WalletDB {
     }
 
     public static void setBalence(int walletID, double balance) throws SQLException {
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
         String update = "UPDATE Wallet SET Balance = " + (balance) +
                 " WHERE Wallet_ID = "

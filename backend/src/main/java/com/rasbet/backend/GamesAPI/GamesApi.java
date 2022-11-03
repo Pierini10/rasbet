@@ -1,23 +1,25 @@
 package com.rasbet.backend.GamesAPI;
 
-import com.rasbet.backend.Database.EventsDB;
-import com.rasbet.backend.Entities.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.rasbet.backend.Database.EventsDB;
+import com.rasbet.backend.Entities.Event;
+import com.rasbet.backend.Entities.Odd;
+import com.rasbet.backend.Exceptions.readJsonException;
 
 public class GamesApi {
 
@@ -72,18 +74,22 @@ public class GamesApi {
 				}
 
 				// Get all the odds
+				if (markets == null)
+					throw new readJsonException("No markets found");
+
 				JSONArray odds_json = markets.getJSONObject(0).getJSONArray("outcomes");
 				Map<String, Odd> odds = new HashMap<>();
 
 				for (int j = 0; j < odds_json.length(); j++) {
 					JSONObject odd_json = odds_json.getJSONObject(j);
-					odds.put(odd_json.getString("name"), new Odd(odd_json.getString("name"), odd_json.getDouble("price"), false));
+					odds.put(odd_json.getString("name"),
+							new Odd(odd_json.getString("name"), odd_json.getDouble("price"), false));
 				}
 
 				// Create the event
 				String sport = EventsDB.FOOTBALL; // TODO
-				String result = jsonEvent.getString("scores");
-				if (result.equals("null")) result = null;
+				String result = jsonEvent.getString("completed") == "true"
+						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
 				String description = jsonEvent.get("homeTeam") + " v " + jsonEvent.get("awayTeam");
 				events.add(new Event(jsonEvent.getString("id"), sport, jsonEvent.getString("commenceTime"), description,
 						result, null, odds));

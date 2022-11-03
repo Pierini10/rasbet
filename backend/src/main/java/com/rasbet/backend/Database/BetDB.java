@@ -25,7 +25,7 @@ public class BetDB {
      */
     public static void update_Bet(Bet bet) throws SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
 
         Integer idState = BetDB.get_Bet_State(bet.getBetState());
 
@@ -33,15 +33,15 @@ public class BetDB {
         String idBetState = idState == null ? "" : ("BetState_ID = " + idState + ", ");
         String amount = bet.getAmount() == null ? "" : ("Amount = " + bet.getAmount() + ", ");
         String dateTime = bet.getDateTime() == null ? ""
-                : ("DateTime = " + SQLiteJDBC2.prepare_string(bet.getDateTime().format(formatter)) + ", ");
+                : ("DateTime = " + SQLiteJDBC.prepare_string(bet.getDateTime().format(formatter)) + ", ");
 
         StringBuilder sb = new StringBuilder();
         sb.append(idUser).append(idBetState).append(amount).append(dateTime).setLength(sb.length() - 2);
 
         String query = "UPDATE Bet SET " + sb.toString() + " WHERE Bet_ID =" + bet.getId() + ";";
 
-        sqLiteJDBC2.executeUpdate(query);
-        sqLiteJDBC2.close();
+        sqLiteJDBC.executeUpdate(query);
+        sqLiteJDBC.close();
     }
 
     /**
@@ -52,14 +52,13 @@ public class BetDB {
      * @throws SQLException
      */
     public static Integer get_Bet_State(String state) throws SQLException {
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
 
-        String query = "SELECT BetState_ID FROM BetState WHERE Name =" + SQLiteJDBC2.prepare_string(state) + ";";
-        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        String query = "SELECT BetState_ID FROM BetState WHERE Name =" + SQLiteJDBC.prepare_string(state) + ";";
+        ResultSet rs = sqLiteJDBC.executeQuery(query);
         int id = rs.getInt("BetState_ID");
 
-        sqLiteJDBC2.closeRS(rs);
-        sqLiteJDBC2.close();
+        sqLiteJDBC.closeRS(rs);
         return id;
     }
 
@@ -72,9 +71,8 @@ public class BetDB {
      */
     public static HistoryBets get_Bets(Integer idUser) throws SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
-        List<Bet> bets = new ArrayList<>();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+        List<Bet> res = new ArrayList<>();
 
         String query = "SELECT b.Bet_ID, b.Amount, b.GamesLeft, b.DateTime, bs.Name FROM Bet as b INNER JOIN BetState as bs ON b.BetState_ID = bs.BetState_ID WHERE b.User_ID = "
                 + idUser + ";";
@@ -101,13 +99,13 @@ public class BetDB {
             Bet b = new Bet(rs.getInt("Bet_ID"), idUser, rs.getString("Name"), rs.getInt("GamesLeft"),
                     rs.getFloat("Amount"), LocalDateTime.parse(rs.getString("DateTime"), formatter),
                     rs.getFloat("Totalodds"), predictions);
-            bets.add(b);
+            res.add(b);
         }
 
         sqLiteJDBC2.closeRS(rs);
         sqLiteJDBC2.close();
 
-        HistoryBets h = new HistoryBets(null, bets);
+        HistoryBets h = new HistoryBets(null, res);
         h.calculateWPercentage();
 
         return h;
@@ -122,7 +120,7 @@ public class BetDB {
     public static void add_Bet(Bet bet) throws SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         StringBuilder sb = new StringBuilder();
 
         Integer idBetState = get_Bet_State(PENDING_STATUS);
@@ -133,7 +131,7 @@ public class BetDB {
         sb.append(idBetState).append(", ");
         sb.append(bet.getAmount()).append(", ");
         sb.append(bet.getGamesLeft()).append(", ");
-        sb.append(SQLiteJDBC2.prepare_string(dateTime.format(formatter))).append(", ");
+        sb.append(SQLiteJDBC.prepare_string(dateTime.format(formatter))).append(", ");
         sb.append(bet.getTotalOdds()).append(") RETURNING Bet_ID;");
 
         String query = sb.toString();

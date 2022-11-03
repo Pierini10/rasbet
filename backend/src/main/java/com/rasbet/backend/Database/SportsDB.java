@@ -15,7 +15,7 @@ public class SportsDB {
      * @throws SQLException
      */
     public static List<String> getSports() throws SQLException {
-        SQLiteJDBC2 sqLiteJDBC2 = new SQLiteJDBC2();
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         List<String> res = new ArrayList<>();
 
         String query = "SELECT Name FROM Sports;";
