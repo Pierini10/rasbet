@@ -53,12 +53,6 @@ public class RasBetFacade {
         }
     }
 
-    // TODO:
-    // Logout ? probably token related...
-    // Notifications?
-    //
-    // Create class for user, event, bet, transaction
-
     /**
      * Register user.
      * 
@@ -284,7 +278,7 @@ public class RasBetFacade {
                 bet.calculateTotalOdds();
                 BetDB.add_Bet(bet);
 
-                TransactionDB.addTransaction(idUser, "bet", amount.doubleValue(), null);
+                TransactionDB.addTransaction(idUser, "Bet", -amount.doubleValue(), null);
             } else {
                 throw new ResponseStatusException(HttpStatus.valueOf(400), "The events are not open");
             }

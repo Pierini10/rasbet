@@ -87,7 +87,7 @@ public class GamesApi {
 				}
 
 				// Create the event
-				String sport = EventsDB.FOOTBALL; // TODO
+				String sport = EventsDB.FOOTBALL;
 				String result = jsonEvent.getString("completed") == "true"
 						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
 				String description = jsonEvent.get("homeTeam") + " v " + jsonEvent.get("awayTeam");

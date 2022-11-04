@@ -1,6 +1,5 @@
 package com.rasbet.backend.Entities;
 
-/** TODO: IMPLEMENT THIS CLASS WITH THE ODD ONE */
 public class OddSimple {
     private String entity;
     private double odd;

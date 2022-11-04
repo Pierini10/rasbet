@@ -40,14 +40,17 @@ public class HistoryBets {
         }
     }
 
-
     // calculate percentage
     public void calculateWPercentage() {
         int wins = 0;
 
-        for (Bet bet : this.bets) {
-            if (bet.getBetState().equals("Win")) wins++;
+        if (this.bets.size() != 0) {
+            for (Bet bet : this.bets) {
+                if (bet.getBetState().equals("Win"))
+                    wins++;
+            }
+            this.winPercentage = (float) (wins / this.bets.size()) * 100;
         }
-        this.winPercentage = (float) (wins / this.bets.size()) * 100;
+
     }
 }

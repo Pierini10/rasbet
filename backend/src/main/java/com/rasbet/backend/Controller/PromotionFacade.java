@@ -70,8 +70,6 @@ public class PromotionFacade {
         }
     }
 
-    // TODO: MISSING MODIFY PROMOTION
-
     @Operation(summary = "Modify a promotion")
     @PostMapping("/modifyPromotion")
     @ApiResponses({
