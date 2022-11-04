@@ -1,6 +1,8 @@
 package com.rasbet.backend.Database;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.rasbet.backend.Entities.Notification;
@@ -79,5 +81,22 @@ public class NotificationDB {
             throw new NoAuthorizationException("This user is not an admin");
         }
 
+    }
+
+    public static List<String> getNotifications(int idUser, int requestUser)
+            throws SQLException, NoAuthorizationException {
+        List<String> notifications = new ArrayList<>();
+        if (UserDB.assert_is_Administrator(requestUser) || requestUser == idUser) {
+            SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
+            String query = "SELECT Description FROM Notification WHERE IdUser = " + idUser + ";";
+            ResultSet rs = sqLiteJDBC.executeQuery(query);
+            while (rs.next()) {
+                notifications.add(rs.getString("Description"));
+            }
+            sqLiteJDBC.close();
+            return notifications;
+        } else {
+            throw new NoAuthorizationException("This user is not an admin");
+        }
     }
 }
