@@ -18,33 +18,6 @@ public class BetDB {
     public final static String LOSS_STATUS = "Loss";
 
     /**
-     * Updates the data of a bet in the database
-     * 
-     * @param bet New bet data
-     * @throws SQLException
-     */
-    public static void update_Bet(Bet bet) throws SQLException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
-
-        Integer idState = BetDB.get_Bet_State(bet.getBetState());
-
-        String idUser = bet.getIdUser() == null ? "" : ("User_ID = " + bet.getIdUser() + ", ");
-        String idBetState = idState == null ? "" : ("BetState_ID = " + idState + ", ");
-        String amount = bet.getAmount() == null ? "" : ("Amount = " + bet.getAmount() + ", ");
-        String dateTime = bet.getDateTime() == null ? ""
-                : ("DateTime = " + SQLiteJDBC.prepare_string(bet.getDateTime().format(formatter)) + ", ");
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(idUser).append(idBetState).append(amount).append(dateTime).setLength(sb.length() - 2);
-
-        String query = "UPDATE Bet SET " + sb.toString() + " WHERE Bet_ID =" + bet.getId() + ";";
-
-        sqLiteJDBC.executeUpdate(query);
-        sqLiteJDBC.close();
-    }
-
-    /**
      * Gets the ID of a bet state
      * 
      * @param state
@@ -54,7 +27,7 @@ public class BetDB {
     public static Integer get_Bet_State(String state) throws SQLException {
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
 
-        String query = "SELECT BetState_ID FROM BetState WHERE Name =" + SQLiteJDBC.prepare_string(state) + ";";
+        String query = "SELECT BetState_ID FROM BetState WHERE Name = " + SQLiteJDBC.prepare_string(state) + ";";
         ResultSet rs = sqLiteJDBC.executeQuery(query);
         int id = rs.getInt("BetState_ID");
 
@@ -70,36 +43,42 @@ public class BetDB {
      * @throws SQLException
      */
     public static HistoryBets get_Bets(Integer idUser) throws SQLException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         List<Bet> res = new ArrayList<>();
 
-        String query = "SELECT b.Bet_ID, b.Amount, b.GamesLeft, b.DateTime, bs.Name FROM Bet as b INNER JOIN BetState as bs ON b.BetState_ID = bs.BetState_ID WHERE b.User_ID = "
+        String query = "SELECT b.Bet_ID, b.Amount, b.GamesLeft, b.DateTime, b.Totalodds, bs.Name FROM Bet as b INNER JOIN BetState as bs ON b.BetState_ID = bs.BetState_ID WHERE b.User_ID = "
                 + idUser + ";";
 
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
 
         while (rs.next()) {
-            Integer id = rs.getInt("Bet_ID");
+            Bet b = new Bet(rs.getInt("Bet_ID"), idUser, rs.getString("Name"), rs.getFloat("Amount"),
+                    rs.getString("DateTime"), rs.getFloat("Totalodds"),
+                    rs.getInt("GamesLeft"), new ArrayList<>());
+            res.add(b);
+        }
 
-            // acertar query
-            query = "SELECT sb.Prediction, sb.Odd, sb.Event_ID, sb.Totalodds, bs.Name FROM ((SimpleBet as sb INNER JOIN BetState as bs ON sb.BetState_ID = bs.BetState_ID WHERE sb.Bet_ID = "
-                    + id + ") INNER JOIN );";
+        for (Bet bet : res) {
+            query = "SELECT sb.Prediction, sb.Event_ID, sb.Odd, bs.Name FROM SimpleBet as sb INNER JOIN BetState as bs ON sb.BetState_ID = bs.BetState_ID WHERE sb.Bet_ID = "
+                    + bet.getId() + ";";
 
             ResultSet rs2 = sqLiteJDBC2.executeQuery(query);
 
             List<Prediction> predictions = new ArrayList<>();
             while (rs2.next()) {
                 Prediction p = new Prediction(rs2.getString("Prediction"), rs2.getFloat("Odd"),
-                        rs2.getString("Event_ID"), null, rs2.getString("Name"));
+                        null, rs2.getString("Event_ID"), rs2.getString("Name"));
+
                 predictions.add(p);
             }
-            sqLiteJDBC2.closeRS(rs2);
 
-            Bet b = new Bet(rs.getInt("Bet_ID"), idUser, rs.getString("Name"), rs.getInt("GamesLeft"),
-                    rs.getFloat("Amount"), LocalDateTime.parse(rs.getString("DateTime"), formatter),
-                    rs.getFloat("Totalodds"), predictions);
-            res.add(b);
+            for (Prediction prediction : predictions) {
+                ResultSet rs3 = sqLiteJDBC2.executeQuery("SELECT Description FROM Event WHERE Event_ID = "
+                        + SQLiteJDBC.prepare_string(prediction.getIdEvent()) + ";");
+
+                prediction.setEvent(rs3.getString("Description"));
+            }
+            bet.setPredictions(predictions);
         }
 
         sqLiteJDBC2.closeRS(rs);
@@ -119,11 +98,10 @@ public class BetDB {
      */
     public static void add_Bet(Bet bet) throws SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
-        StringBuilder sb = new StringBuilder();
-
         Integer idBetState = get_Bet_State(PENDING_STATUS);
+
+        SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
+        StringBuilder sb = new StringBuilder();
         LocalDateTime dateTime = LocalDateTime.now();
 
         sb.append("INSERT INTO Bet (User_ID, BetState_ID, Amount, GamesLeft, DateTime, Totalodds) VALUES (");
@@ -135,20 +113,22 @@ public class BetDB {
         sb.append(bet.getTotalOdds()).append(") RETURNING Bet_ID;");
 
         String query = sb.toString();
-        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        ResultSet rs = sqLiteJDBC.executeQuery(query);
+        Integer bet_ID = rs.getInt("Bet_ID");
 
         for (Prediction prediction : bet.getPredictions()) {
             StringBuilder sb2 = new StringBuilder();
-            sb.append("INSERT INTO SimpleBet (Bet_ID, Prediction, Odd, Event_ID) VALUES (");
-            sb.append(rs.getInt("Bet_ID")).append(", ");
-            sb.append(prediction.getPrediction()).append(", ");
-            sb.append(prediction.getOdd()).append(", ");
-            sb.append(prediction.getIdEvent()).append(");");
+            sb2.append("INSERT INTO SimpleBet (Bet_ID, BetState_ID, Prediction, Odd, Event_ID) VALUES (");
+            sb2.append(bet_ID).append(", ");
+            sb2.append(idBetState).append(", ");
+            sb2.append(SQLiteJDBC.prepare_string(prediction.getPrediction())).append(", ");
+            sb2.append(prediction.getOdd()).append(", ");
+            sb2.append(SQLiteJDBC.prepare_string(prediction.getIdEvent())).append(");");
 
             query = sb2.toString();
-            sqLiteJDBC2.executeQuery(query);
+            sqLiteJDBC.executeUpdate(query);
         }
 
-        sqLiteJDBC2.close();
+        sqLiteJDBC.closeRS(rs);
     }
 }

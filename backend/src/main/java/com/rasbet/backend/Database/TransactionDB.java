@@ -95,12 +95,10 @@ public class TransactionDB {
             WalletDB.setBalence(walletID, balanceValue + value);
         } else {
             sqLiteJDBC2.closeRS(rs);
-            sqLiteJDBC2.close();
             throw new NoAmountException("Not enough money in wallet to finish the transaction");
         }
 
         sqLiteJDBC2.closeRS(rs);
-        sqLiteJDBC2.close();
 
         return balanceValue + value;
 
@@ -124,10 +122,10 @@ public class TransactionDB {
             String insert = "Insert into TransactionType (Name) values ('" + name + "') returning TransactionType_ID";
             ResultSet rs = sqLiteJDBC2.executeQuery(insert);
 
+            Integer res = rs.getInt("TransactionType_ID");
             sqLiteJDBC2.closeRS(rs);
-            sqLiteJDBC2.close();
 
-            return rs.getInt("TransactionType_ID");
+            return res;
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
@@ -148,7 +146,6 @@ public class TransactionDB {
             int result = rs.getInt("TransactionType_ID");
 
             sqLiteJDBC2.closeRS(rs);
-            sqLiteJDBC2.close();
 
             return result;
         } catch (SQLException e) {

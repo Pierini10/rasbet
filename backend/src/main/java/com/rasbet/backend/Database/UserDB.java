@@ -44,12 +44,11 @@ public class UserDB {
             throw new NoAuthorizationException("Request is not made by specialist!!");
     }
 
-    public static boolean assert_is_Administrator(int user_id) throws SQLException {
+    public static void assert_is_Administrator(int user_id) throws SQLException, NoAuthorizationException {
         // Create a connection
         User requestUser = get_User(user_id);
         if (requestUser == null || !requestUser.getRole().equals(ADMIN_ROLE))
-            return false;
-        return true;
+            throw new NoAuthorizationException("Request is not made by Administrator!!");
     }
 
     public static int create_User(User user, int userRequestID) throws SQLException, NoAuthorizationException {

@@ -207,7 +207,7 @@ public class RasBetFacade {
     /**
      * Update events and bet information.
      */
-    @Operation(summary = "Updates events and bets information.")
+    @Operation(summary = "Updates events and bets information. Every 5 minutes.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update successful"),
             @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
@@ -253,8 +253,6 @@ public class RasBetFacade {
     /**
      * Make a bet.
      * 
-     * TODO: ver como passar a lista no HTTP Request
-     * 
      * @param userID
      * @param amount
      * @param paymentMethod
@@ -265,41 +263,41 @@ public class RasBetFacade {
      * 
      * @return True if bet was successful, false otherwise.
      */
+    @Operation(summary = "Makes a bet.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bet was made"),
+            @ApiResponse(responseCode = "400", description = "Bet was not possible to make"),
+            @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/makeBet")
-    public boolean makeBet(
+    public void makeBet(
             @RequestParam(value = "userID") int idUser,
             @RequestParam(value = "amount") Float amount,
             @RequestParam(value = "paymentMethod") String paymentMethod,
             @RequestBody List<Prediction> simpleBets) {
-        boolean r = true;
 
         try {
-            List<Integer> idEvents = simpleBets.stream().map(sb -> sb.getIdEvent()).collect(Collectors.toList());
-            r = EventsDB.checkEventsAreOpen(idEvents);
+            List<String> idEvents = simpleBets.stream().map(sb -> sb.getIdEvent()).collect(Collectors.toList());
+            Boolean r = EventsDB.checkEventsAreOpen(idEvents);
 
             if (r) {
-                Bet bet = new Bet(null, idUser, null, simpleBets.size(), amount, null, null, simpleBets);
+                Bet bet = new Bet(null, idUser, null, amount, null, null, simpleBets.size(), simpleBets);
                 bet.calculateTotalOdds();
                 BetDB.add_Bet(bet);
 
-                TransactionDB.addTransaction(idUser, paymentMethod, amount.doubleValue(), null);
+                TransactionDB.addTransaction(idUser, "bet", amount.doubleValue(), null);
+            } else {
+                throw new ResponseStatusException(HttpStatus.valueOf(400), "The events are not open");
             }
         } catch (SQLException e) {
-            r = false;
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
         } catch (NoAmountException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.valueOf(400), "No amount", e);
         } catch (NoPromotionCodeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.valueOf(400), "No promotion code", e);
         } catch (NoMinimumValueException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.valueOf(400), "Below minimum amount", e);
         }
-
-        return r;
     }
 
     /**
@@ -310,34 +308,27 @@ public class RasBetFacade {
      * @param state
      * @return True if the change was successful, false otherwise.
      */
+    @Operation(summary = "Change state of event.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Change successful"),
             @ApiResponse(responseCode = "400", description = "This User does not have authorization to change bet state"),
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/changeEventState")
-    public boolean changeEventState(
+    public void changeEventState(
             @RequestParam(value = "idEvent") String idEvent,
             @RequestParam(value = "idUser") int idUser,
             @RequestParam(value = "state") String state) {
-        boolean r = true;
 
         try {
-            System.out.println(idUser);
-            String userPermissions = UserDB.get_Role(idUser);
-            System.out.println(userPermissions);
+            EventsDB.update_Event_State(idEvent, idUser, state);
 
-            if (userPermissions.equals("Administrator") || userPermissions.equals("Specialist")) {
-                EventsDB.update_Event_State(idEvent, state);
-            } else {
-                r = false;
-            }
         } catch (SQLException e) {
-            r = false;
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
+        } catch (NoAuthorizationException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, e.getMessage());
         }
-
-        return r;
     }
 
     /**
@@ -356,6 +347,11 @@ public class RasBetFacade {
      *         4: Profit
      *         ]
      */
+    @Operation(summary = "Get user's bet history.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User's bet history."),
+            @ApiResponse(responseCode = "500", description = "SQLException.")
+    })
     @GetMapping("/getBetsHistory")
     public HistoryBets getBetsHistory(
             @RequestParam(value = "userID") int userID) {
@@ -366,7 +362,7 @@ public class RasBetFacade {
         } catch (SQLException e) {
             r = null;
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "SQLException", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
         }
 
         return r;
@@ -377,7 +373,6 @@ public class RasBetFacade {
      * 
      * @param userID
      * 
-     *               TODO: return list of class transaction
      * 
      * @return List containing:
      *         0: Date (yyyy-MM-dd)
@@ -477,7 +472,10 @@ public class RasBetFacade {
      * 
      * @return List of sports
      */
-    @Operation(summary = "Insert new ODD.")
+    @Operation(summary = "Get all sports.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All sports."),
+            @ApiResponse(responseCode = "500", description = "SQLException.") })
     @GetMapping("/getAllSports")
     public List<String> getAllSports() {
 
