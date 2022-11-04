@@ -1,6 +1,5 @@
 package com.rasbet.backend.Entities;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,25 +7,26 @@ public class Bet {
     private Integer id;
     private Integer idUser;
     private String betState;
-    private Integer gamesLeft;
     private Float amount;
-    private LocalDateTime dateTime;
+    private String dateTime;
     private Float totalOdds;
+    private Integer gamesLeft;
     private List<Prediction> predictions;
 
-    public Bet(Integer id, Integer idUser, String betState, Integer gamesLeft, Float amount,
-            LocalDateTime dateTime, Float totalOdds, List<Prediction> predictions) {
+    public Bet(Integer id, Integer idUser, String betState, Float amount, String dateTime, Float totalOdds,
+            Integer gamesLeft, List<Prediction> predictions) {
         this.id = id;
-        this.idUser = idUser;
+                this.idUser = idUser;
         this.betState = betState;
-        this.gamesLeft = gamesLeft;
         this.amount = amount;
         this.dateTime = dateTime;
         this.totalOdds = totalOdds;
+        this.gamesLeft = gamesLeft;
         this.setPredictions(predictions);
     }
 
     // basic getters
+
     public Integer getId() {
         return id;
     }
@@ -39,20 +39,20 @@ public class Bet {
         return betState;
     }
 
-    public Integer getGamesLeft() {
-        return gamesLeft;
-    }
-
     public Float getAmount() {
         return amount;
     }
 
-    public LocalDateTime getDateTime() {
+    public String getDateTime() {
         return dateTime;
     }
 
     public Float getTotalOdds() {
         return totalOdds;
+    }
+
+    public Integer getGamesLeft() {
+        return gamesLeft;
     }
 
     public List<Prediction> getPredictions() {
@@ -66,6 +66,7 @@ public class Bet {
     }
 
     // basic setters
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -78,20 +79,20 @@ public class Bet {
         this.betState = betState;
     }
 
-    public void setGamesLeft(Integer gamesLeft) {
-        this.gamesLeft = gamesLeft;
-    }
-
     public void setAmount(Float amount) {
         this.amount = amount;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(String dateTime) {
         this.dateTime = dateTime;
     }
 
     public void setTotalOdds(Float totalOdds) {
         this.totalOdds = totalOdds;
+    }
+
+    public void setGamesLeft(Integer gamesLeft) {
+        this.gamesLeft = gamesLeft;
     }
 
     public void setPredictions(List<Prediction> predictions) {
@@ -102,29 +103,10 @@ public class Bet {
         }
     }
 
-    public void update_info(Integer id, Integer idUser, String betState, Integer gamesLeft, Float amount,
-            LocalDateTime dateTime) {
-        if (id != null)
-            this.id = id;
-        if (idUser != null)
-            this.idUser = idUser;
-        if (betState != null)
-            this.betState = betState;
-        if (gamesLeft != null)
-            this.gamesLeft = gamesLeft;
-        if (amount != null)
-            this.amount = amount;
-        if (dateTime != null)
-            this.dateTime = dateTime;
-        if (predictions != null)
-            this.setPredictions(predictions);
-    }
-
-    //clone
+    // clone
     public Bet clone() {
-        return new Bet(id, idUser, betState, gamesLeft, amount, dateTime, totalOdds, this.getPredictions());
+        return new Bet(id, idUser, betState, amount, dateTime, totalOdds, gamesLeft, this.getPredictions());
     }
-
 
     public void calculateTotalOdds() {
         this.totalOdds = (float) 1;

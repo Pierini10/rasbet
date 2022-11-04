@@ -4,10 +4,10 @@ public class Prediction {
     private String prediction;
     private Float odd;
     private String event;
-    private Integer idEvent;
+    private String idEvent;
     private String betState;
 
-    public Prediction(String prediction, Float odd, String event, Integer idEvent, String betState) {
+    public Prediction(String prediction, Float odd, String event, String idEvent, String betState) {
         this.prediction = prediction;
         this.odd = odd;
         this.event = event;
@@ -15,7 +15,10 @@ public class Prediction {
         this.betState = betState;
     }
 
-    //basic getters
+    public Prediction() {
+    }
+
+    // basic getters
     public String getPrediction() {
         return prediction;
     }
@@ -28,7 +31,7 @@ public class Prediction {
         return event;
     }
 
-    public Integer getIdEvent() {
+    public String getIdEvent() {
         return idEvent;
     }
 
@@ -36,7 +39,7 @@ public class Prediction {
         return betState;
     }
 
-    //basic setters
+    // basic setters
     public void setPrediction(String prediction) {
         this.prediction = prediction;
     }
@@ -49,16 +52,15 @@ public class Prediction {
         this.event = event;
     }
 
+    public void setIdEvent(String idEvent) {
+        this.idEvent = idEvent;
+    }
+
     public void setBetState(String betState) {
         this.betState = betState;
     }
 
-    public void setIdBetState(String betState) {
-        this.betState = betState;
-    }
-
-
-    //clone
+    // clone
     public Prediction clone() {
         return new Prediction(prediction, odd, event, idEvent, betState);
     }

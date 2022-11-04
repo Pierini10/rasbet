@@ -11,6 +11,7 @@ import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Notification;
 import com.rasbet.backend.Entities.Odd;
 import com.rasbet.backend.Exceptions.NoAmountException;
+import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 import com.rasbet.backend.GamesAPI.GamesApi;
 
@@ -46,15 +47,21 @@ public class EventsDB {
         return id;
     }
 
-    public static boolean checkEventsAreOpen(List<Integer> events) throws SQLException {
+    public static boolean checkEventsAreOpen(List<String> events) throws SQLException {
         boolean r = true;
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
-        for (Integer idEvent : events) {
-            if (get_EventStatus(idEvent) != PENDING_STATUS) {
+        for (String idEvent : events) {
+            String query = "SELECT EventState_ID FROM Event WHERE Event_ID=" + SQLiteJDBC.prepare_string(idEvent) + ";";
+            ResultSet rs = sqLiteJDBC2.executeQuery(query);
+            
+            if (!get_EventStatus(rs.getInt("EventState_ID")).equals(PENDING_STATUS)) {
                 r = false;
                 break;
             }
         }
+
+        sqLiteJDBC2.close();
 
         return r;
     }
@@ -294,16 +301,20 @@ public class EventsDB {
      * @param idEvent
      * @param state
      * @throws SQLException
+     * @throws NoAuthorizationException
      */
-    public static void update_Event_State(String idEvent, String state) throws SQLException {
-        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+    public static void update_Event_State(String idEvent, Integer idUser, String state) throws SQLException, NoAuthorizationException {
+        UserDB.assert_is_Administrator(idUser);
+
+        SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
 
         Integer idState = EventsDB.get_EventStatusID(state);
 
-        String query = "UPDATE Event SET EventState_ID = " + idState + " WHERE Event_ID = " + idEvent + ";";
+        String query = "UPDATE Event SET EventState_ID = " + idState + " WHERE Event_ID = "
+                + SQLiteJDBC.prepare_string(idEvent) + ";";
 
-        sqLiteJDBC2.executeUpdate(query);
-        sqLiteJDBC2.close();
+        sqLiteJDBC.executeUpdate(query);
+        sqLiteJDBC.close();
     }
 
     // Updates all DB events
