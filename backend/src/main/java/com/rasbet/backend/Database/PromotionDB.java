@@ -15,9 +15,8 @@ public class PromotionDB {
             int type)
             throws SQLException, NoAuthorizationException {
 
-        if (!UserDB.assert_is_Administrator(id)) {
-            throw new NoAuthorizationException("This user is not an admin");
-        }
+        UserDB.assert_is_Administrator(id);
+
         NotificationDB.createNotification(-1, description, id);
 
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
@@ -28,9 +27,8 @@ public class PromotionDB {
     }
 
     public static void deletePromotion(int id, String code) throws SQLException, NoAuthorizationException {
-        if (!UserDB.assert_is_Administrator(id)) {
-            throw new NoAuthorizationException("This user is not an admin");
-        }
+        UserDB.assert_is_Administrator(id);
+
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
         String query = "DELETE FROM Promotion WHERE Code = '" + code + "';";
 
@@ -41,9 +39,8 @@ public class PromotionDB {
     public static void updatePromotion(int id, String code, String description, double value, double minValue,
             int type)
             throws SQLException, NoAuthorizationException {
-        if (!UserDB.assert_is_Administrator(id)) {
-            throw new NoAuthorizationException("This user is not an admin");
-        }
+        UserDB.assert_is_Administrator(id);
+        
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
         String query = "UPDATE Promotion SET Value = '" + value + "', MinValue = '" + minValue + "', Type = '" + type
                 + "' WHERE Code = '" + code + "';";
