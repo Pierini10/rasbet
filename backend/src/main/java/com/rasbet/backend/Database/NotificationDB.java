@@ -82,7 +82,6 @@ public class NotificationDB {
     public static List<String> getNotifications(int idUser, int requestUser)
             throws SQLException, NoAuthorizationException {
         List<String> notifications = new ArrayList<>();
-        UserDB.assert_is_Administrator(requestUser);
 
         if (requestUser == idUser) {
             SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
