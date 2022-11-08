@@ -143,8 +143,12 @@ public class TransactionDB {
 
             String query = "SELECT * FROM TransactionType WHERE Name='" + type + "'";
             ResultSet rs = sqLiteJDBC2.executeQuery(query);
-            int result = rs.getInt("TransactionType_ID");
-
+            int result;
+            if (rs.next()) {
+                result = rs.getInt("TransactionType_ID");
+            } else {
+                result = -1;
+            }
             sqLiteJDBC2.closeRS(rs);
 
             return result;
