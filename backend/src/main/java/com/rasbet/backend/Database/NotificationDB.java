@@ -83,7 +83,7 @@ public class NotificationDB {
             throws SQLException, NoAuthorizationException {
         List<String> notifications = new ArrayList<>();
 
-        if (requestUser == idUser) {
+        if (requestUser == idUser || idUser == -1) {
             SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
             String query = "SELECT Description FROM Notification WHERE IdUser = " + idUser + ";";
             ResultSet rs = sqLiteJDBC.executeQuery(query);
