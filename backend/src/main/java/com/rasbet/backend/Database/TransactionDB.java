@@ -14,6 +14,18 @@ import com.rasbet.backend.Exceptions.NoPromotionCodeException;
 
 public class TransactionDB {
 
+    public final static String MBWAY = "MBWay";
+    public final static String MB = "MB";
+    public final static String CREDIT = "Cedit";
+    public final static String WALLET = "Wallet";
+
+    public static boolean needsDeposit(String paymentMethod) throws IllegalArgumentException {
+        if (paymentMethod.equals(MBWAY) || paymentMethod.equals(MB) || paymentMethod.equals(CREDIT)) return true;
+        else if (paymentMethod.equals(WALLET)) return false;
+        else throw new IllegalArgumentException("Invalid payment method");
+    }
+
+
     /**
      * Get all transactions from a user.
      * 

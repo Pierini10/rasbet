@@ -15,10 +15,12 @@ import org.springframework.web.server.ResponseStatusException;
 import com.rasbet.backend.Database.BetDB;
 import com.rasbet.backend.Database.EventsDB;
 import com.rasbet.backend.Database.TransactionDB;
+import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Bet;
 import com.rasbet.backend.Entities.HistoryBets;
 import com.rasbet.backend.Entities.Prediction;
 import com.rasbet.backend.Exceptions.NoAmountException;
+import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.NoMinimumValueException;
 import com.rasbet.backend.Exceptions.NoPromotionCodeException;
 
@@ -62,20 +64,17 @@ public class BetFacade {
                 Bet bet = new Bet(null, idUser, null, amount, null, null, simpleBets.size(), simpleBets);
                 bet.calculateTotalOdds();
                 BetDB.add_Bet(bet);
-
+                if (TransactionDB.needsDeposit(paymentMethod))
+                    TransactionDB.addTransaction(idUser, "Deposit", amount.doubleValue(), null);
+                UserDB.assert_is_Normal(idUser);
                 TransactionDB.addTransaction(idUser, "Bet", -amount.doubleValue(), null);
             } else {
                 throw new ResponseStatusException(HttpStatus.valueOf(400), "The events are not open");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NoAmountException | NoPromotionCodeException |
+         NoMinimumValueException | IllegalArgumentException | NoAuthorizationException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
-        } catch (NoAmountException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(400), "No amount", e);
-        } catch (NoPromotionCodeException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(400), "No promotion code", e);
-        } catch (NoMinimumValueException e) {
-            throw new ResponseStatusException(HttpStatus.valueOf(400), "Below minimum amount", e);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 

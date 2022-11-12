@@ -44,6 +44,13 @@ public class UserDB {
             throw new NoAuthorizationException("Request is not made by specialist!!");
     }
 
+    public static void assert_is_Normal(int user_id) throws SQLException, NoAuthorizationException {
+        // Create a connection
+        User requestUser = get_User(user_id);
+        if (requestUser == null || !requestUser.getRole().equals(NORMAL_ROLE))
+            throw new NoAuthorizationException("Request is not made by a normal user!!");
+    }
+
     public static void assert_is_Administrator(int user_id) throws SQLException, NoAuthorizationException {
         // Create a connection
         User requestUser = get_User(user_id);
