@@ -2,6 +2,7 @@ package com.rasbet.backend.Database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
@@ -30,7 +31,6 @@ public class UserDB {
 
         String query = "SELECT * FROM Role WHERE Name=" + SQLiteJDBC.prepare_string(role) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
-        System.out.println(rs.next() + "####################" + role);
         int id = rs.getInt("Role_ID");
 
         sqLiteJDBC2.closeRS(rs);
@@ -77,9 +77,9 @@ public class UserDB {
                 + role_id + ", "
                 + SQLiteJDBC.prepare_string(user.getFirstName()) + ", "
                 + SQLiteJDBC.prepare_string(user.getLastName()) + ", "
-                + SQLiteJDBC.prepare_string(user.getBirthday()) + ", "
-                + SQLiteJDBC.prepare_string(user.getNIF()) + ", "
-                + SQLiteJDBC.prepare_string(user.getCC()) + ", "
+                + SQLiteJDBC.prepare_string(user.getBirthday().toString()) + ", "
+                + user.getNIF() + ", "
+                + user.getCC() + ", "
                 + SQLiteJDBC.prepare_string(user.getAddress()) + ", "
                 + SQLiteJDBC.prepare_string(user.getPhoneNumber())
                 + ");";
@@ -109,11 +109,11 @@ public class UserDB {
         user.setId(rs.getInt("User_ID"));
         user.setFirstName(rs.getString("Name"));
         user.setLastName(rs.getString("Surname"));
-        user.setNIF(rs.getString("NIF"));
-        user.setCC(rs.getString("CC"));
+        user.setNIF(rs.getInt("NIF"));
+        user.setCC(rs.getInt("CC"));
         user.setAddress(rs.getString("Address"));
         user.setPhoneNumber(rs.getString("Phone"));
-        user.setBirthday(rs.getString("Birthday"));
+        user.setBirthday(LocalDate.parse(rs.getString("Birthday")));
         int wallet_id = rs.getInt("Wallet_ID");
         int role_id = rs.getInt("Role");
 
