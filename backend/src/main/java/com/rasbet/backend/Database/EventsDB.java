@@ -2,6 +2,7 @@ package com.rasbet.backend.Database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,7 +101,7 @@ public class EventsDB {
             event_string.add(SQLiteJDBC.prepare_string(e.getId()));
             event_string.add(Integer.toString(get_SportID(e.getSport())));
             event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
-            event_string.add(SQLiteJDBC.prepare_string(e.getDatetime()));
+            event_string.add(SQLiteJDBC.prepare_string(e.getDatetime().toString()));
             event_string.add(SQLiteJDBC.prepare_string(e.getDescription()));
             event_string.add(SQLiteJDBC.prepare_string(e.getResult()));
             String event_str = SQLiteJDBC.prepareList(event_string);
@@ -141,7 +142,7 @@ public class EventsDB {
                 event_string.add(SQLiteJDBC.prepare_string(e.getId()));
                 event_string.add(Integer.toString(get_SportID(e.getSport())));
                 event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
-                event_string.add(SQLiteJDBC.prepare_string(e.getDatetime()));
+                event_string.add(SQLiteJDBC.prepare_string(e.getDatetime().toString()));
                 event_string.add(SQLiteJDBC.prepare_string(e.getDescription()));
                 event_string.add(SQLiteJDBC.prepare_string(e.getResult()));
                 events_string.add(SQLiteJDBC.prepareList(event_string));
@@ -366,7 +367,7 @@ public class EventsDB {
             // Get Event
             Map<String, Odd> odds = new HashMap<>();
             String id = rs.getString("Event_ID"), status = get_EventStatus(rs.getInt("EventState_ID"));
-            events.add(new Event(id, sport, rs.getString("DateTime"), rs.getString("Description"),
+            events.add(new Event(id, sport, LocalDateTime.parse(rs.getString("DateTime")), rs.getString("Description"),
                     rs.getString("Result"), status, odds));
         }
 

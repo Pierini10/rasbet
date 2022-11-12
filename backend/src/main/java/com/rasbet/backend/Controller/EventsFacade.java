@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -91,7 +92,7 @@ public class EventsFacade {
      * @param userID
      * @param sport
      * @param datetime
-     * @param description
+     * @param description (yyyy-MM-ddThh:mm:ss)
      * 
      */
     @Operation(summary = "Adds a new Event.")
@@ -102,8 +103,8 @@ public class EventsFacade {
     public void addEvent(
             @RequestParam(name = "userID") int userID,
             @RequestParam(name = "sport") String sport,
-            @RequestParam(name = "datetime") String datetime,
-            @RequestParam(name = "description") String description) {
+            @RequestParam(name = "datetime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime datetime,
+            @RequestParam(name = "description")  String description) {
         Event event = new Event(null, sport, datetime, description, null, null, null);
         try {
             UserDB.assert_is_Specialist(userID);

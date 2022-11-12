@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,11 +88,12 @@ public class GamesApi {
 				}
 
 				// Create the event
+				DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 				String sport = EventsDB.FOOTBALL;
 				String result = jsonEvent.getString("completed") == "true"
 						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
 				String description = jsonEvent.get("homeTeam") + " v " + jsonEvent.get("awayTeam");
-				events.add(new Event(jsonEvent.getString("id"), sport, jsonEvent.getString("commenceTime"), description,
+				events.add(new Event(jsonEvent.getString("id"), sport,LocalDateTime.parse(jsonEvent.getString("commenceTime"), formatter), description,
 						result, null, odds));
 			}
 			return events;

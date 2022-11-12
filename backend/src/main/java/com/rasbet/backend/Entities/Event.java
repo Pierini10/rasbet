@@ -1,7 +1,9 @@
 package com.rasbet.backend.Entities;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.rasbet.backend.Database.EventsDB;
 
@@ -9,21 +11,22 @@ public class Event {
     private String id;
     private String sport;
     private String state;
-    private String datetime;
+    private LocalDateTime datetime;
     private String description;
     private String result;
     private Map<String, Odd> odds;
 
-
-    public Event(String id, String sport, String datetime, String description, String result, String state, Map<String, Odd> odds) {
-        if (id == null) id = generateId(description, datetime);
+    public Event(String id, String sport, LocalDateTime datetime, String description, String result, String state,
+            Map<String, Odd> odds) {
+        if (id == null)
+            id = generateId(description, datetime.toString());
         this.id = id;
         this.sport = sport;
         this.datetime = datetime;
-        this.description = description;
+        setDescription(description);
         this.result = result;
         this.state = state;
-        if (odds == null && sport.equals(EventsDB.FOOTBALL)){
+        if (odds == null && sport.equals(EventsDB.FOOTBALL)) {
             String[] r = description.split(" v ", 2);
             odds = new HashMap<>();
             odds.put(r[0], new Odd(r[0], -1, false));
@@ -33,13 +36,15 @@ public class Event {
         this.odds = odds;
     }
 
-    private static String generateId(String des, String date){
+    private static String generateId(String des, String date) {
         String id = "";
         char[] de = des.toCharArray();
-        for (int i = 0;i < des.length(); i++) id += de[i] + 10;
+        for (int i = 0; i < des.length(); i++)
+            id += de[i] + 10;
 
         char[] da = date.toCharArray();
-        for (int i = 0;i < date.length(); i++) id += da[i] + 10;
+        for (int i = 0; i < date.length(); i++)
+            id += da[i] + 10;
 
         return id;
     }
@@ -68,11 +73,11 @@ public class Event {
         this.state = state;
     }
 
-    public String getDatetime() {
+    public LocalDateTime getDatetime() {
         return this.datetime;
     }
 
-    public void setDatetime(String datetime) {
+    public void setDatetime(LocalDateTime datetime) {
         this.datetime = datetime;
     }
 
@@ -81,7 +86,10 @@ public class Event {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        if (Pattern.compile("^.+[ ]v[ ].+$").matcher(description).matches())
+            this.description = description;
+        else
+            throw new IllegalArgumentException("Event Description is not valid");
     }
 
     public String getResult() {
@@ -103,6 +111,5 @@ public class Event {
     public void setOdds(Map<String, Odd> odds) {
         this.odds = odds;
     }
-
 
 }
