@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.rasbet.backend.BackendApplication;
 import com.rasbet.backend.Database.EventsDB;
 import com.rasbet.backend.Database.OddDB;
 import com.rasbet.backend.Database.SportsDB;
@@ -28,18 +29,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 public class EventsFacade {
-
-    private LocalDateTime lastEventsUpdate;
-
-    private boolean can_update() {
-        LocalDateTime now = LocalDateTime.now();
-        if (lastEventsUpdate == null || lastEventsUpdate.isBefore(now.minusMinutes(5))) {
-            lastEventsUpdate = now;
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     /**
      * Get current events information.
@@ -60,8 +49,7 @@ public class EventsFacade {
     public List<Event> getEvents(
             @RequestParam(name = "sport") String sport) {
         try {
-            if (can_update())
-                updateEvents();
+            BackendApplication.t.signal(false);
             return EventsDB.get_Events(sport);
         } catch (SportDoesNotExistExeption | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -78,12 +66,7 @@ public class EventsFacade {
             @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/updateEvents")
     public void updateEvents() {
-        try {
-            EventsDB.update_Database();
-        } catch (SportDoesNotExistExeption | SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        BackendApplication.t.signal(true);
     }
 
     /**

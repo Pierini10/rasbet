@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
@@ -38,7 +39,16 @@ public class GamesApi {
 
 	// Populate the JSONObject
 	public static JSONObject readJsonFromUrl() throws IOException, JSONException {
-		InputStream is = new URL(GET_URL).openStream();
+		URL url = new URL(GET_URL);
+		HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+    	HttpURLConnection.setFollowRedirects(false);
+    	huc.setConnectTimeout(10 * 1000);
+    	huc.setRequestMethod("GET");
+    	huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
+    	huc.connect();
+		InputStream is = huc.getInputStream();
+
+
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			String jsonText = "{\'futebol\': " + readAll(rd) + "}";
@@ -49,7 +59,7 @@ public class GamesApi {
 		}
 	}
 
-	public static ArrayList<Event> getEvents() {
+	public static ArrayList<Event> getEvents() throws Exception {
 		try {
 			ArrayList<Event> events = new ArrayList<>();
 
@@ -97,7 +107,7 @@ public class GamesApi {
 						result, null, odds));
 			}
 			return events;
-		} catch (Exception e) {
+		} catch (JSONException | readJsonException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			return null;
 		}

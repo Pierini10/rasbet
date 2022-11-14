@@ -319,7 +319,7 @@ public class EventsDB {
     }
 
     // Updates all DB events
-    public static void update_Database() throws SQLException, SportDoesNotExistExeption {
+    public static void update_Database() throws Exception {
 
         // Get events from API
         List<Event> events = GamesApi.getEvents();
@@ -387,6 +387,7 @@ public class EventsDB {
         }
 
         sqLiteJDBC2.close();
+
         return events;
     }
 
