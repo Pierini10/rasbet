@@ -3,8 +3,10 @@ package com.rasbet.backend.Controller;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +23,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 public class UserFacade {
+
+    @Autowired
+    PasswordEncoder encoder;
 
     /**
      * Register user.
@@ -54,7 +59,7 @@ public class UserFacade {
             @RequestParam(value = "role") String role,
             @RequestParam(value = "userRequestID") int userRequestID) {
         try {
-            User new_user = new User(email, password, firstName, lastName, NIF, CC, address, phoneNumber, birthday,
+            User new_user = new User(email, password, this.encoder.encode(password), firstName, lastName, NIF, CC, address, phoneNumber, birthday,
                     role);
             UserDB.create_User(new_user, userRequestID);
         } catch (SQLException | BadPasswordException | NoAuthorizationException e) {
@@ -127,7 +132,8 @@ public class UserFacade {
             @RequestParam(name = "phoneNumber", required = false) String phoneNumber) {
         try {
             User user = UserDB.get_User(userID);
-            user.update_info(email, password, firstName, lastName, address, phoneNumber);
+            assert user != null;
+            user.update_info(email, password,  this.encoder.encode(password), firstName, lastName, address, phoneNumber);
             UserDB.update_User(user);
         } catch (BadPasswordException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
