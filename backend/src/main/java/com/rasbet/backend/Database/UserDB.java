@@ -187,4 +187,25 @@ public class UserDB {
         sqLiteJDBC2.executeUpdate(query);
         sqLiteJDBC2.close();
     }
+
+    public static String getPasswordByEmail(String email)
+    {
+        String password = "";
+        try
+        {
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+            String query = "SELECT * FROM User WHERE Email=" + SQLiteJDBC.prepare_string(email) + ";";;
+            ResultSet rs = sqLiteJDBC2.executeQuery(query);
+            if (rs.next()) {
+                password = rs.getString("Password");
+            }
+            sqLiteJDBC2.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return password;
+    }
 }
