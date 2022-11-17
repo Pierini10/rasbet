@@ -38,7 +38,7 @@ public class GamesApi {
 	}
 
 	// Populate the JSONObject
-	// Change to use API
+	// Change to use API 2.0
 	public static JSONObject readJsonFromUrl() throws IOException, JSONException {
 		URL url = new URL(GET_URL);
 		HttpURLConnection huc = (HttpURLConnection) url.openConnection();
