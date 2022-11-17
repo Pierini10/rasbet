@@ -18,7 +18,7 @@ public class SQLiteJDBC {
         } catch (ClassNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-        this.c = DriverManager.getConnection("jdbc:sqlite:database/rasbet_db.db");
+        this.c = DriverManager.getConnection("jdbc:sqlite:../database/rasbet_db.db");
         this.s = this.c.createStatement();
 
     }
