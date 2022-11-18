@@ -50,7 +50,7 @@ public class SportsDB {
     public static int getCompetition_ID(String competition) throws SQLException {
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
 
-        String query = "SELECT Name FROM Competition WHERE Competition_ID=" + SQLiteJDBC.prepare_string(competition) + ";";
+        String query = "SELECT Competition_ID FROM Competition WHERE Name=" + SQLiteJDBC.prepare_string(competition) + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         int res = -1;
 

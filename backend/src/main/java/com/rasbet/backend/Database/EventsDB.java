@@ -322,7 +322,7 @@ public class EventsDB {
     public static void update_Database() throws Exception {
 
         // Get events from API
-        List<Event> events = GamesApi.getEvents(false);
+        List<Event> events = GamesApi.getallEvents();
 
         // Create structs for new events
         List<Event> newEvents = new ArrayList<>();

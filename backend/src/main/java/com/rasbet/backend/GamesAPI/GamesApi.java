@@ -71,6 +71,26 @@ public class GamesApi {
 		}
 	}
 
+	private static String build_sports_api_URL(String sport, String region, String mkt) {
+		return SPORTS_API_URL + "/v4/sports/" + sport + 
+		"/odds/?apiKey=" + SPORTS_API_KEY + 
+		"&regions=" + region +
+		"&markets=" + mkt;
+	}
+
+	public static List<Event> getallEvents() throws Exception {
+		Map<String, Pair<String, String>> sports_name = getSports();
+		List<Event> events = new ArrayList<Event>();
+
+		events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"), true));
+
+		for (String sport : sports) {
+			events.addAll(getEvents(build_sports_api_URL(sport, "eu", "h2h"), sports_name.get(sport), false));
+		}
+
+		return events;
+	}
+
 	private static Map<String, Pair<String, String>> getSports() throws IOException, JSONException, SQLException{
 		Map<String, Pair<String, String>> sports_map = new HashMap<String, Pair<String, String>>();
 		sports_map.put("soccer_primeira_liga", Pair.of("Soccer", "Primeira Liga"));
@@ -102,13 +122,13 @@ public class GamesApi {
 
 	}
 
-	public static ArrayList<Event> getEvents(boolean sports_API) throws Exception {
+	private static ArrayList<Event> getEvents(String url , Pair<String, String> pair, boolean custom_api) throws Exception {
 		try {
 			ArrayList<Event> events = new ArrayList<>();
-			Map<String, Pair<String, String>> sports = getSports();
+			
 
 			// Get info from API
-			JSONArray jsonArray = readJsonFromUrl(GET_URL);
+			JSONArray jsonArray = readJsonFromUrl(url);
 
 			// Go through all events
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -119,7 +139,8 @@ public class GamesApi {
 				LocalDateTime lastUpdate = null;
 				JSONArray markets = null;
 				for (int j = 0; j < bookmakers.length(); j++) {
-					String string = bookmakers.getJSONObject(j).getString("lastUpdate");
+					String lastUpdateString = custom_api ? "lastUpdate" : "last_update";
+					String string = bookmakers.getJSONObject(j).getString(lastUpdateString);
 					LocalDateTime new_lastUpdate = LocalDateTime.parse(string.substring(0, string.length() - 1));
 					if (lastUpdate == null || new_lastUpdate.isAfter(lastUpdate)) {
 						lastUpdate = new_lastUpdate;
@@ -142,12 +163,20 @@ public class GamesApi {
 
 				// Create the event
 				DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-				String result = jsonEvent.getString("completed") == "true"
+				String homeString = custom_api ? "homeTeam" : "home_team";
+				String awayString = custom_api ? "awayTeam" : "away_team";
+				String comanceString = custom_api ? "commenceTime" : "commence_time";
+				String result = custom_api && jsonEvent.getString("completed") == "true"
 						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
-				String description = jsonEvent.get("homeTeam") + " v " + jsonEvent.get("awayTeam");
-				Pair<String, String> pair = sports_API ? sports.get(jsonEvent.getString("sport_key")) : sports.get("soccer_primeira_liga");
-				events.add(new Event(jsonEvent.getString("id"), pair.getFirst(), pair.getSecond(),LocalDateTime.parse(jsonEvent.getString("commenceTime"), formatter), description,
-						result, null, odds));
+				String description = jsonEvent.get(homeString) + " v " + jsonEvent.get(awayString);
+				events.add(new Event(jsonEvent.getString("id"), 
+				pair.getFirst(), 
+				pair.getSecond(), 
+				LocalDateTime.parse(jsonEvent.getString(comanceString), formatter), 
+				description,
+				result, 
+				null, 
+				odds));
 			}
 			return events;
 		} catch (JSONException | readJsonException e) {
