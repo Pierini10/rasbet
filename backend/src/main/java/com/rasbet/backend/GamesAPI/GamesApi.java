@@ -8,17 +8,22 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.data.util.Pair;
 
-import com.rasbet.backend.Database.EventsDB;
+import com.rasbet.backend.Database.SportsDB;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Odd;
 import com.rasbet.backend.Exceptions.readJsonException;
@@ -27,6 +32,13 @@ public class GamesApi {
 
 	private static final String GET_URL = "http://ucras.di.uminho.pt/v1/games";
 	private static final String SPORTS_API_URL = "https://api.the-odds-api.com";
+	private static final String SPORTS_API_KEY = "e54ee6aaa6143d3ed4d01dda39f95630";
+
+	private static final List<String> sports = Stream.of(
+		"soccer_epl",
+		"soccer_fifa_world_cup",
+		"basketball_nba"
+		).collect(Collectors.toList());
 
 	// Read all api output
 	private static String readAll(Reader rd) throws IOException {
@@ -43,9 +55,8 @@ public class GamesApi {
 		URL url = new URL(api_url);
 		HttpURLConnection huc = (HttpURLConnection) url.openConnection();
     	HttpURLConnection.setFollowRedirects(false);
-    	huc.setConnectTimeout(10 * 1000);
+    	huc.setConnectTimeout(30 * 1000);
     	huc.setRequestMethod("GET");
-    	huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
     	huc.connect();
 		InputStream is = huc.getInputStream();
 
@@ -60,9 +71,41 @@ public class GamesApi {
 		}
 	}
 
-	public static ArrayList<Event> getEvents() throws Exception {
+	private static Map<String, Pair<String, String>> getSports() throws IOException, JSONException, SQLException{
+		Map<String, Pair<String, String>> sports_map = new HashMap<String, Pair<String, String>>();
+		sports_map.put("soccer_primeira_liga", Pair.of("Soccer", "Primeira Liga"));
+		Map<String, List<String>> db_sports = new HashMap<String, List<String>>();
+		db_sports.put("Soccer", Stream.of("Primeira Liga").collect(Collectors.toList()));
+
+		JSONArray jsonArray = readJsonFromUrl(SPORTS_API_URL + "/v4/sports/?apiKey=" + SPORTS_API_KEY);
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonSport = jsonArray.getJSONObject(i);
+			String sport_key = jsonSport.getString("key");
+			if (sports.contains(sport_key)) {
+				String sport_group = jsonSport.getString("group");
+				String sport_title = jsonSport.getString("title");
+				sports_map.put(sport_key, Pair.of(sport_group, sport_title));
+				if (db_sports.keySet().contains(sport_group)){
+					db_sports.get(sport_group).add(sport_title);
+				}
+				else {
+					List<String> sport_list = new ArrayList<String>();
+					sport_list.add(sport_title);
+					db_sports.put(sport_group, sport_list);
+				}
+			}
+		}
+
+		SportsDB.addSports(db_sports);		
+		return sports_map;
+
+	}
+
+	public static ArrayList<Event> getEvents(boolean sports_API) throws Exception {
 		try {
 			ArrayList<Event> events = new ArrayList<>();
+			Map<String, Pair<String, String>> sports = getSports();
 
 			// Get info from API
 			JSONArray jsonArray = readJsonFromUrl(GET_URL);
@@ -99,11 +142,11 @@ public class GamesApi {
 
 				// Create the event
 				DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-				String sport = EventsDB.FOOTBALL;
 				String result = jsonEvent.getString("completed") == "true"
 						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
 				String description = jsonEvent.get("homeTeam") + " v " + jsonEvent.get("awayTeam");
-				events.add(new Event(jsonEvent.getString("id"), sport,LocalDateTime.parse(jsonEvent.getString("commenceTime"), formatter), description,
+				Pair<String, String> pair = sports_API ? sports.get(jsonEvent.getString("sport_key")) : sports.get("soccer_primeira_liga");
+				events.add(new Event(jsonEvent.getString("id"), pair.getFirst(), pair.getSecond(),LocalDateTime.parse(jsonEvent.getString("commenceTime"), formatter), description,
 						result, null, odds));
 			}
 			return events;

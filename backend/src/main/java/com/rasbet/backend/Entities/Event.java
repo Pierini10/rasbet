@@ -5,28 +5,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.rasbet.backend.Database.EventsDB;
-
 public class Event {
     private String id;
     private String sport;
+    private String competition;
     private String state;
     private LocalDateTime datetime;
     private String description;
     private String result;
     private Map<String, Odd> odds;
 
-    public Event(String id, String sport, LocalDateTime datetime, String description, String result, String state,
+    public Event(String id, String sport, String competition, LocalDateTime datetime, String description, String result, String state,
             Map<String, Odd> odds) {
         if (id == null)
             id = generateId(description, datetime.toString());
         this.id = id;
         this.sport = sport;
+        this.competition = competition;
         this.datetime = datetime;
         setDescription(description);
         this.result = result;
         this.state = state;
-        if (odds == null && sport.equals(EventsDB.FOOTBALL)) {
+        if (odds == null) {
             String[] r = description.split(" v ", 2);
             odds = new HashMap<>();
             odds.put(r[0], new Odd(r[0], -1, false));
@@ -63,6 +63,14 @@ public class Event {
 
     public void setSport(String sport) {
         this.sport = sport;
+    }
+
+    public String getCompetition() {
+        return this.competition;
+    }
+
+    public void setCompetition(String competition) {
+        this.competition = competition;
     }
 
     public String getState() {

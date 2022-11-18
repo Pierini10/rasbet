@@ -22,8 +22,6 @@ public class EventsDB {
     public final static String FINISHED_STATUS = "Finished";
     public final static String CLOSED_STATUS = "Closed";
 
-    public final static String FOOTBALL = "Football";
-
     public static String get_EventStatus(int id) throws SQLException {
         // Create a connection
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
@@ -100,6 +98,7 @@ public class EventsDB {
             List<String> event_string = new ArrayList<>();
             event_string.add(SQLiteJDBC.prepare_string(e.getId()));
             event_string.add(Integer.toString(get_SportID(e.getSport())));
+            event_string.add(Integer.toString(SportsDB.getCompetition_ID(e.getCompetition())));
             event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
             event_string.add(SQLiteJDBC.prepare_string(e.getDatetime().toString()));
             event_string.add(SQLiteJDBC.prepare_string(e.getDescription()));
@@ -141,6 +140,7 @@ public class EventsDB {
                 List<String> event_string = new ArrayList<>();
                 event_string.add(SQLiteJDBC.prepare_string(e.getId()));
                 event_string.add(Integer.toString(get_SportID(e.getSport())));
+                event_string.add(Integer.toString(SportsDB.getCompetition_ID(e.getCompetition())));
                 event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
                 event_string.add(SQLiteJDBC.prepare_string(e.getDatetime().toString()));
                 event_string.add(SQLiteJDBC.prepare_string(e.getDescription()));
@@ -322,7 +322,7 @@ public class EventsDB {
     public static void update_Database() throws Exception {
 
         // Get events from API
-        List<Event> events = GamesApi.getEvents();
+        List<Event> events = GamesApi.getEvents(false);
 
         // Create structs for new events
         List<Event> newEvents = new ArrayList<>();
@@ -367,7 +367,8 @@ public class EventsDB {
             // Get Event
             Map<String, Odd> odds = new HashMap<>();
             String id = rs.getString("Event_ID"), status = get_EventStatus(rs.getInt("EventState_ID"));
-            events.add(new Event(id, sport, LocalDateTime.parse(rs.getString("DateTime")), rs.getString("Description"),
+            String competition = SportsDB.getCompetition(rs.getInt("Competition_ID"));
+            events.add(new Event(id, sport, competition, LocalDateTime.parse(rs.getString("DateTime")), rs.getString("Description"),
                     rs.getString("Result"), status, odds));
         }
 
