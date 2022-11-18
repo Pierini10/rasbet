@@ -26,6 +26,7 @@ import com.rasbet.backend.Exceptions.readJsonException;
 public class GamesApi {
 
 	private static final String GET_URL = "http://ucras.di.uminho.pt/v1/games";
+	private static final String SPORTS_API_URL = "https://api.the-odds-api.com";
 
 	// Read all api output
 	private static String readAll(Reader rd) throws IOException {
@@ -38,9 +39,8 @@ public class GamesApi {
 	}
 
 	// Populate the JSONObject
-	// Change to use API 2.0
-	public static JSONObject readJsonFromUrl() throws IOException, JSONException {
-		URL url = new URL(GET_URL);
+	public static JSONArray readJsonFromUrl(String api_url) throws IOException, JSONException {
+		URL url = new URL(api_url);
 		HttpURLConnection huc = (HttpURLConnection) url.openConnection();
     	HttpURLConnection.setFollowRedirects(false);
     	huc.setConnectTimeout(10 * 1000);
@@ -52,8 +52,8 @@ public class GamesApi {
 
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-			String jsonText = "{\'futebol\': " + readAll(rd) + "}";
-			JSONObject json = new JSONObject(jsonText);
+			String jsonText = readAll(rd);
+			JSONArray json = new JSONArray(jsonText);
 			return json;
 		} finally {
 			is.close();
@@ -65,8 +65,7 @@ public class GamesApi {
 			ArrayList<Event> events = new ArrayList<>();
 
 			// Get info from API
-			JSONObject json = readJsonFromUrl();
-			JSONArray jsonArray = json.getJSONArray("futebol");
+			JSONArray jsonArray = readJsonFromUrl(GET_URL);
 
 			// Go through all events
 			for (int i = 0; i < jsonArray.length(); i++) {
