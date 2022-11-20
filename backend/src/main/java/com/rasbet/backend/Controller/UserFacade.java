@@ -3,13 +3,14 @@ package com.rasbet.backend.Controller;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+import com.rasbet.backend.Requests.SignUpRequest;
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.UserDB;
@@ -27,19 +28,12 @@ public class UserFacade {
     @Autowired
     PasswordEncoder encoder;
 
+    @Autowired
+    JwtDecoder jwtDecoder;
+
     /**
      * Register user.
-     * 
-     * @param email
-     * @param password
-     * @param firstName
-     * @param lastName
-     * @param NIF
-     * @param CC          (Citizen Card)
-     * @param address
-     * @param phoneNumber
-     * @param birthday    (dd-MM-yyyy)
-     * 
+     *
      */
     @Operation(summary = "Register user.")
     @ApiResponses(value = {
@@ -47,61 +41,40 @@ public class UserFacade {
             @ApiResponse(responseCode = "400", description = "Could not register") })
     @PostMapping("/register")
     public void register(
-            @RequestParam(value = "email") String email,
-            @RequestParam(value = "pw") String password,
-            @RequestParam(value = "fn") String firstName,
-            @RequestParam(value = "ln") String lastName,
-            @RequestParam(value = "NIF") int NIF,
-            @RequestParam(value = "CC") int CC,
-            @RequestParam(value = "address") String address,
-            @RequestParam(value = "pn") String phoneNumber,
-            @RequestParam(value = "bday") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate birthday,
-            @RequestParam(value = "role") String role,
-            @RequestParam(value = "userRequestID") int userRequestID) {
+            @RequestBody SignUpRequest signUpRequest,
+            @RequestHeader(value = "token", required = false) String token
+    )
+    {
         try {
-            User new_user = new User(email, password, this.encoder.encode(password), firstName, lastName, NIF, CC, address, phoneNumber, birthday,
-                    role);
-            UserDB.create_User(new_user, userRequestID);
-        } catch (SQLException | BadPasswordException | NoAuthorizationException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+            User new_user = new User(
+                    signUpRequest.getEmail(),
+                    signUpRequest.getPassword(),
+                    this.encoder.encode(signUpRequest.getPassword()),
+                    signUpRequest.getFirstName(),
+                    signUpRequest.getLastName(),
+                    signUpRequest.getNIF(),
+                    signUpRequest.getCC(),
+                    signUpRequest.getAddress(),
+                    signUpRequest.getPhoneNumber(),
+                    signUpRequest.getBirthday(),
+                    signUpRequest.getRole()
+            );
 
-    }
-
-    /**
-     * Login user.
-     * 
-     * @param email
-     * @param password
-     * 
-     * @return User containing:
-     *         0: User ID
-     *         1: Balance
-     *         3: Name
-     *         4: Surname
-     *         5: role
-     */
-    @Operation(summary = "Login user.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login successful"),
-            @ApiResponse(responseCode = "400", description = "Could not login") })
-    @PostMapping("/login")
-    public User login(
-            @RequestParam(value = "email") String email,
-            @RequestParam(value = "pw") String password) {
-        User user = new User(email, password);
-        try {
-            int status = UserDB.get_User(user);
-            if (status < 0) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Password is Wrong!");
+            // Get user role from bearer token (if there is a token available).
+            String userRequestRole = UserDB.NORMAL_ROLE;
+            if(token != null)
+            {
+                RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
+                userRequestRole = rasbetTokenDecoder.getRole();
             }
 
-        } catch (SQLException e) {
+            UserDB.create_User(new_user, userRequestRole);
+        }
+        catch (SQLException | BadPasswordException | NoAuthorizationException e)
+        {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return user;
     }
 
     /**
