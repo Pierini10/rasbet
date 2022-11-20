@@ -58,15 +58,17 @@ public class UserDB {
             throw new NoAuthorizationException("Request is not made by Administrator!!");
     }
 
-    public static int create_User(User user, int userRequestID) throws SQLException, NoAuthorizationException {
+    public static int create_User(User user, String userRequestRole) throws SQLException, NoAuthorizationException {
         int role_id;
 
-        if (!user.getRole().equals(NORMAL_ROLE)) {
-            User requestUser = get_User(userRequestID);
-            if (requestUser == null || !requestUser.getRole().equals(ADMIN_ROLE))
+        if (!user.getRole().equals(NORMAL_ROLE))
+        {
+            if (!userRequestRole.equals(ADMIN_ROLE))
                 throw new NoAuthorizationException("Request is not made by admin!!");
             role_id = get_RoleID(user.getRole());
-        } else {
+        }
+        else
+        {
             // Get id of the normal user role
             role_id = get_RoleID(NORMAL_ROLE);
         }
@@ -207,5 +209,25 @@ public class UserDB {
         }
 
         return password;
+    }
+
+    public static String getRoleByEmail(String email)
+    {
+        String role = "";
+        try
+        {
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+            String query = "SELECT * FROM User WHERE Email=" + SQLiteJDBC.prepare_string(email) + ";";;
+            ResultSet rs = sqLiteJDBC2.executeQuery(query);
+            if (rs.next()) {
+                role = get_Role(rs.getInt("Role"));
+            }
+            sqLiteJDBC2.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return role;
     }
 }
