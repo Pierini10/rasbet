@@ -1,6 +1,9 @@
 package com.rasbet.backend.Security;
 
 import com.rasbet.backend.Security.Service.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -31,7 +34,12 @@ public class AuthFacade
     //  email: test@auth.com
     //  passw: Test3aut!
     //
-    @PostMapping("/token")
+    @Operation(summary = "Login user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login successful"),
+            @ApiResponse(responseCode = "400", description = "Could not login") ,
+            @ApiResponse(responseCode = "401", description = "Invalid credentials")})
+    @PostMapping("/login")
     public String token(Authentication authentication)
     {
         LOG.debug("Token requested for user '{}'.", authentication.getName());
