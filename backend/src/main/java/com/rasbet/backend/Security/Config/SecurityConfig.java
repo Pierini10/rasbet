@@ -42,7 +42,7 @@ public class SecurityConfig
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
-                .antMatchers("/" , "/register").permitAll()
+                .antMatchers("/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
