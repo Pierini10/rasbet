@@ -15,11 +15,16 @@ public class RasbetUserDetailsService implements UserDetailsService {
     {
         String password = UserDB.getPasswordByEmail(email);
         if(password.equals("")){
-            throw new UsernameNotFoundException("Email" + email + "is not associated with any user.");
+            throw new UsernameNotFoundException("Email " + email + " is not associated with any user.");
         }
+
+        String role = UserDB.getRoleByEmail(email);
+        if(role.equals(""))
+            role = UserDB.NORMAL_ROLE;
+
         return User.withUsername(email)
                 .password(password)
-                .roles("USER")
+                .roles(role)
                 .build();
     }
 }
