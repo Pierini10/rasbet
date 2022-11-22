@@ -3,6 +3,7 @@ package com.rasbet.backend.Controller;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +33,7 @@ public class UserFacade {
      * @param CC          (Citizen Card)
      * @param address
      * @param phoneNumber
-     * @param Birthday    (dd-MM-yyyy)
+     * @param birthday    (dd-MM-yyyy)
      * 
      */
     @Operation(summary = "Register user.")
@@ -49,7 +50,7 @@ public class UserFacade {
             @RequestParam(value = "CC") int CC,
             @RequestParam(value = "address") String address,
             @RequestParam(value = "pn") String phoneNumber,
-            @RequestParam(value = "bday") LocalDate birthday,
+            @RequestParam(value = "bday") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate birthday,
             @RequestParam(value = "role") String role,
             @RequestParam(value = "userRequestID") int userRequestID) {
         try {
