@@ -32,7 +32,7 @@ public class AuthFacade {
     }
 
     // DB Credentials:
-    // email: test@auth.com
+    // email: os que estão na base de dados
     // passw: Test3aut!
     //
     @Operation(summary = "Login user.")
