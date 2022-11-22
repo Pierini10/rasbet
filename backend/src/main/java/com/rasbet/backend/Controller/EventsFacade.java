@@ -86,9 +86,10 @@ public class EventsFacade {
     public void addEvent(
             @RequestParam(name = "userID") int userID,
             @RequestParam(name = "sport") String sport,
+            @RequestParam(name = "competition") String competition,
             @RequestParam(name = "datetime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime datetime,
             @RequestParam(name = "description")  String description) {
-        Event event = new Event(null, sport, datetime, description, null, null, null);
+        Event event = new Event(null, sport, competition, datetime, description, null, null, null);
         try {
             UserDB.assert_is_Specialist(userID);
             EventsDB.add_Event(event);
