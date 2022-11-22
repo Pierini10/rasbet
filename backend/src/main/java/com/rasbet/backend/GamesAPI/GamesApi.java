@@ -37,7 +37,8 @@ public class GamesApi {
 	private static final List<String> sports = Stream.of(
 			"soccer_epl",
 			"soccer_fifa_world_cup",
-			"basketball_nba").collect(Collectors.toList());
+			"basketball_nba",
+			"soccer_fifa_world_cup_winner").collect(Collectors.toList());
 
 	// Read all api output
 	private static String readAll(Reader rd) throws IOException {
@@ -69,11 +70,10 @@ public class GamesApi {
 		}
 	}
 
-	private static String build_odds_sports_api_URL(String sport, String region, String mkt) {
+	private static String build_odds_sports_api_URL(String sport, String region) {
 		return SPORTS_API_URL + "/v4/sports/" + sport +
 				"/odds/?apiKey=" + SPORTS_API_KEY +
-				"&regions=" + region +
-				"&markets=" + mkt;
+				"&regions=" + region;
 	}
 
 	private static String build_scores_sports_api_URL(String sport, String region, String days) {
@@ -87,11 +87,11 @@ public class GamesApi {
 		Map<String, Pair<String, String>> sports_name = getSports();
 		List<Event> events = new ArrayList<Event>();
 
-		// events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"),
-		// true));
+		events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"),
+		true));
 
 		for (String sport : sports) {
-			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu", "h2h"), sports_name.get(sport), false));
+			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"), sports_name.get(sport), false));
 			events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu", "3")));
 		}
 
@@ -203,21 +203,29 @@ public class GamesApi {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject jsonEvent = jsonArray.getJSONObject(i);
 				boolean completed = jsonEvent.getBoolean("completed");
+				String result = null;
 				if (completed) {
 					String homeTeam = jsonEvent.getString("home_team");
-					JSONArray scores_array = jsonEvent.getJSONArray("scores");
-					String homeScore = null, awayScore = null;
-					for (int j = 0; j < scores_array.length(); j++) {
-						JSONObject scores_obj = scores_array.getJSONObject(j);
-						if (scores_obj.getString("name").equals(homeTeam)) {
-							homeScore = scores_obj.getString("score");
+					String awayTeam = jsonEvent.getString("away_team");
+					if (homeTeam.equals("null") && awayTeam.equals("null")) result = jsonEvent.getString("scores");
+					else {
+						JSONArray scores_array = jsonEvent.getJSONArray("scores");
+						String homeScore = null, awayScore = null;
+						for (int j = 0; j < scores_array.length(); j++) {
+							JSONObject scores_obj = scores_array.getJSONObject(j);
+							if (scores_obj.getString("name").equals(homeTeam)) {
+								homeScore = scores_obj.getString("score");
+							}
+							else {
+								awayScore = scores_obj.getString("score");
+							}
 						}
-						else {
-							awayScore = scores_obj.getString("score");
-						}
+						result = homeScore + "x" + awayScore;
 					}
-					events.add(new Event(jsonEvent.getString("id"),
-							homeScore + "x" + awayScore));
+					events.add(new Event(
+						jsonEvent.getString("id"),
+						homeTeam + " v " + awayTeam,
+						result));
 				}
 			}
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Notification;
@@ -171,15 +172,20 @@ public class EventsDB {
     }
 
     public static String calculateWinner(String description, String result) {
-        String[] r = result.split("x", 2);
-        int winner = (Integer.parseInt(r[0])) - (Integer.parseInt(r[1]));
-        String[] d = description.split(" v ", 2);
-        if (winner == 0)
-            return "Draw";
-        else if (winner > 0)
-            return d[0];
-        else
-            return d[1];
+        if (Pattern.compile("^(\\d+)x(\\d+)$").matcher(description).matches()){
+            String[] r = result.split("x", 2);
+            int winner = (Integer.parseInt(r[0])) - (Integer.parseInt(r[1]));
+            String[] d = description.split(" v ", 2);
+            if (winner == 0)
+                return "Draw";
+            else if (winner > 0)
+                return d[0];
+            else
+                return d[1];
+        }
+        else {
+            return result;
+        }
     }
 
     public static void pay_bets(Map<Integer, Double> trans) throws NoAmountException, SQLException {
@@ -229,13 +235,15 @@ public class EventsDB {
                 rs_odds.close();
             }
 
+            List<String> execute_querys = new ArrayList<>();
+            List<String> update_querys = new ArrayList<>();
             // Update all simple bets
             String get_bets = "SELECT * FROM SimpleBet WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId())
                     + " AND BetState_ID=" + bet_state_pending_id + ";";
-            ResultSet bets = sqLiteJDBC2.executeQuery(get_bets);
             Map<Integer, Integer> simplebet_counter = new HashMap<>();
+            String winner = calculateWinner(e.getDescription(), e.getResult());
+            ResultSet bets = sqLiteJDBC2.executeQuery(get_bets);
             while (bets.next()) {
-                String winner = calculateWinner(e.getDescription(), e.getResult());
                 int state_id = winner.equals(bets.getString("Prediction")) ? bet_state_win_id
                         : bet_state_loss_id;
                 int bet_id = bets.getInt("Bet_ID");
@@ -243,22 +251,34 @@ public class EventsDB {
                 if (state_id == bet_state_loss_id) {
                     String update_bet = "UPDATE Bet SET "
                             + "BetState_ID = " + state_id
-                            + " WHERE  Bet_ID=" + bet_id + " RETURNING User_ID;";
-                    ResultSet rs = sqLiteJDBC2.executeQuery(update_bet);
-                    notifications.add(new Notification(rs.getInt("User_ID"), "You lost bet number " + bet_id));
+                            + " WHERE  Bet_ID=" + bet_id + " RETURNING *;";
+                    execute_querys.add(update_bet);        
                 }
 
                 String update_bet = "UPDATE SimpleBet SET "
                         + "BetState_ID = " + state_id
                         + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + " AND Bet_ID="
                         + bet_id + ";";
-                sqLiteJDBC2.executeUpdate(update_bet);
+                update_querys.add(update_bet);
                 if (simplebet_counter.containsKey(bet_id))
                     simplebet_counter.put(bet_id, simplebet_counter.get(bet_id) + 1);
                 else
                     simplebet_counter.put(bet_id, 1);
             }
             bets.close();
+
+            for(String s : execute_querys){
+                SQLiteJDBC sqLiteJDBC_sup = new SQLiteJDBC();
+                ResultSet rs = sqLiteJDBC_sup.executeQuery(s);
+                notifications.add(new Notification(rs.getInt("User_ID"), "You lost bet number " + rs.getInt("Bet_ID")));
+                sqLiteJDBC_sup.closeRS(rs);
+            }
+
+            for(String s : update_querys){
+                SQLiteJDBC sqLiteJDBC_sup = new SQLiteJDBC();
+                sqLiteJDBC_sup.executeUpdate(s);
+                sqLiteJDBC_sup.close();
+            }
 
             // Update Bets and Wallets
             for (Map.Entry<Integer, Integer> entry : simplebet_counter.entrySet()) {

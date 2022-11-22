@@ -36,12 +36,12 @@ public class Event {
         this.odds = odds;
     }
 
-    public Event(String id, String result) {
+    public Event(String id, String description, String result) {
         this.id = id;
         this.sport = null;
         this.competition = null;
         this.datetime = null;
-        this.description = null;
+        setDescription(description);
         this.result = result;
         this.state = null;
         this.odds = null;

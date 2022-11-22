@@ -57,6 +57,7 @@ public class BetFacade {
             @RequestBody List<Prediction> simpleBets) {
 
         try {
+            UserDB.assert_is_Normal(idUser);
             List<String> idEvents = simpleBets.stream().map(sb -> sb.getIdEvent()).collect(Collectors.toList());
             Boolean r = EventsDB.checkEventsAreOpen(idEvents);
 
@@ -66,7 +67,6 @@ public class BetFacade {
                 BetDB.add_Bet(bet);
                 if (TransactionDB.needsDeposit(paymentMethod))
                     TransactionDB.addTransaction(idUser, "Deposit", amount.doubleValue(), null);
-                UserDB.assert_is_Normal(idUser);
                 TransactionDB.addTransaction(idUser, "Bet", -amount.doubleValue(), null);
             } else {
                 throw new ResponseStatusException(HttpStatus.valueOf(400), "The events are not open");
