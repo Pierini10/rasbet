@@ -212,19 +212,22 @@ public class EventsDB {
             sqLiteJDBC2.executeUpdate(update_event);
 
             // Update Odds
-            String get_odds = "SELECT * FROM Odd WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
-            ResultSet rs_odds = sqLiteJDBC2.executeQuery(get_odds);
-            while (rs_odds.next()) {
-                String entity = rs_odds.getString("Entity");
-                Odd odd = e.getOdd(entity);
-                if (rs_odds.getInt("OddSup") == 0 && rs_odds.getDouble("odd") != odd.getOdd()) {
-                    String update_odd = "UPDATE Odd SET "
-                            + "Odd = " + odd.getOdd()
-                            + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
-                    sqLiteJDBC2.executeUpdate(update_odd);
+            if (e.getOdds() != null) {
+                
+                String get_odds = "SELECT * FROM Odd WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
+                ResultSet rs_odds = sqLiteJDBC2.executeQuery(get_odds);
+                while (rs_odds.next()) {
+                    String entity = rs_odds.getString("Entity");
+                    Odd odd = e.getOdd(entity);
+                    if (rs_odds.getInt("OddSup") == 0 && rs_odds.getDouble("odd") != odd.getOdd()) {
+                        String update_odd = "UPDATE Odd SET "
+                        + "Odd = " + odd.getOdd()
+                        + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
+                        sqLiteJDBC2.executeUpdate(update_odd);
+                    }
                 }
+                rs_odds.close();
             }
-            rs_odds.close();
 
             // Update all simple bets
             String get_bets = "SELECT * FROM SimpleBet WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId())

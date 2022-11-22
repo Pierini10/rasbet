@@ -36,6 +36,17 @@ public class Event {
         this.odds = odds;
     }
 
+    public Event(String id, String result) {
+        this.id = id;
+        this.sport = null;
+        this.competition = null;
+        this.datetime = null;
+        this.description = null;
+        this.result = result;
+        this.state = null;
+        this.odds = null;
+    }
+
     private static String generateId(String des, String date) {
         String id = "";
         char[] de = des.toCharArray();

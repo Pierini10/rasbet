@@ -35,10 +35,9 @@ public class GamesApi {
 	private static final String SPORTS_API_KEY = "e54ee6aaa6143d3ed4d01dda39f95630";
 
 	private static final List<String> sports = Stream.of(
-		"soccer_epl",
-		"soccer_fifa_world_cup",
-		"basketball_nba"
-		).collect(Collectors.toList());
+			"soccer_epl",
+			"soccer_fifa_world_cup",
+			"basketball_nba").collect(Collectors.toList());
 
 	// Read all api output
 	private static String readAll(Reader rd) throws IOException {
@@ -54,12 +53,11 @@ public class GamesApi {
 	public static JSONArray readJsonFromUrl(String api_url) throws IOException, JSONException {
 		URL url = new URL(api_url);
 		HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-    	HttpURLConnection.setFollowRedirects(false);
-    	huc.setConnectTimeout(30 * 1000);
-    	huc.setRequestMethod("GET");
-    	huc.connect();
+		HttpURLConnection.setFollowRedirects(false);
+		huc.setConnectTimeout(30 * 1000);
+		huc.setRequestMethod("GET");
+		huc.connect();
 		InputStream is = huc.getInputStream();
-
 
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -71,27 +69,36 @@ public class GamesApi {
 		}
 	}
 
-	private static String build_sports_api_URL(String sport, String region, String mkt) {
-		return SPORTS_API_URL + "/v4/sports/" + sport + 
-		"/odds/?apiKey=" + SPORTS_API_KEY + 
-		"&regions=" + region +
-		"&markets=" + mkt;
+	private static String build_odds_sports_api_URL(String sport, String region, String mkt) {
+		return SPORTS_API_URL + "/v4/sports/" + sport +
+				"/odds/?apiKey=" + SPORTS_API_KEY +
+				"&regions=" + region +
+				"&markets=" + mkt;
+	}
+
+	private static String build_scores_sports_api_URL(String sport, String region, String days) {
+		return SPORTS_API_URL + "/v4/sports/" + sport +
+				"/scores/?apiKey=" + SPORTS_API_KEY +
+				"&regions=" + region +
+				"&daysFrom=" + days;
 	}
 
 	public static List<Event> getallEvents() throws Exception {
 		Map<String, Pair<String, String>> sports_name = getSports();
 		List<Event> events = new ArrayList<Event>();
 
-		events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"), true));
+		// events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"),
+		// true));
 
 		for (String sport : sports) {
-			events.addAll(getEvents(build_sports_api_URL(sport, "eu", "h2h"), sports_name.get(sport), false));
+			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu", "h2h"), sports_name.get(sport), false));
+			events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu", "3")));
 		}
 
 		return events;
 	}
 
-	private static Map<String, Pair<String, String>> getSports() throws IOException, JSONException, SQLException{
+	private static Map<String, Pair<String, String>> getSports() throws IOException, JSONException, SQLException {
 		Map<String, Pair<String, String>> sports_map = new HashMap<String, Pair<String, String>>();
 		sports_map.put("soccer_primeira_liga", Pair.of("Soccer", "Primeira Liga"));
 		Map<String, List<String>> db_sports = new HashMap<String, List<String>>();
@@ -106,10 +113,9 @@ public class GamesApi {
 				String sport_group = jsonSport.getString("group");
 				String sport_title = jsonSport.getString("title");
 				sports_map.put(sport_key, Pair.of(sport_group, sport_title));
-				if (db_sports.keySet().contains(sport_group)){
+				if (db_sports.keySet().contains(sport_group)) {
 					db_sports.get(sport_group).add(sport_title);
-				}
-				else {
+				} else {
 					List<String> sport_list = new ArrayList<String>();
 					sport_list.add(sport_title);
 					db_sports.put(sport_group, sport_list);
@@ -117,15 +123,15 @@ public class GamesApi {
 			}
 		}
 
-		SportsDB.addSports(db_sports);		
+		SportsDB.addSports(db_sports);
 		return sports_map;
 
 	}
 
-	private static ArrayList<Event> getEvents(String url , Pair<String, String> pair, boolean custom_api) throws Exception {
+	private static ArrayList<Event> getEvents(String url, Pair<String, String> pair, boolean custom_api)
+			throws Exception {
 		try {
 			ArrayList<Event> events = new ArrayList<>();
-			
 
 			// Get info from API
 			JSONArray jsonArray = readJsonFromUrl(url);
@@ -169,17 +175,54 @@ public class GamesApi {
 				String result = custom_api && jsonEvent.getString("completed") == "true"
 						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
 				String description = jsonEvent.get(homeString) + " v " + jsonEvent.get(awayString);
-				events.add(new Event(jsonEvent.getString("id"), 
-				pair.getFirst(), 
-				pair.getSecond(), 
-				LocalDateTime.parse(jsonEvent.getString(comanceString), formatter), 
-				description,
-				result, 
-				null, 
-				odds));
+				events.add(new Event(jsonEvent.getString("id"),
+						pair.getFirst(),
+						pair.getSecond(),
+						LocalDateTime.parse(jsonEvent.getString(comanceString), formatter),
+						description,
+						result,
+						null,
+						odds));
 			}
 			return events;
 		} catch (JSONException | readJsonException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			return null;
+		}
+
+	}
+
+		private static ArrayList<Event> getEventsScores(String url) throws Exception {
+		try {
+			ArrayList<Event> events = new ArrayList<>();
+
+			// Get info from API
+			JSONArray jsonArray = readJsonFromUrl(url);
+
+			// Go through all events
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonEvent = jsonArray.getJSONObject(i);
+				boolean completed = jsonEvent.getBoolean("completed");
+				if (completed) {
+					String homeTeam = jsonEvent.getString("home_team");
+					JSONArray scores_array = jsonEvent.getJSONArray("scores");
+					String homeScore = null, awayScore = null;
+					for (int j = 0; j < scores_array.length(); j++) {
+						JSONObject scores_obj = scores_array.getJSONObject(j);
+						if (scores_obj.getString("name").equals(homeTeam)) {
+							homeScore = scores_obj.getString("score");
+						}
+						else {
+							awayScore = scores_obj.getString("score");
+						}
+					}
+					events.add(new Event(jsonEvent.getString("id"),
+							homeScore + "x" + awayScore));
+				}
+			}
+
+			return events;
+		} catch (JSONException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			return null;
 		}
