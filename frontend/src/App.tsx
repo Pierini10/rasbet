@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AuthenticationProvider from "./contexts/authenticationContext";
 import Bets from "./view/bets/Bets";
 import HistoricoApostas from "./view/historico/HistoricoApostas";
 import HistoricoTransicoes from "./view/historicoTransicoes/historicoTransicoes";
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (<AuthenticationProvider> <RouterProvider router={router} /></AuthenticationProvider>);
 }
 
 export default App;

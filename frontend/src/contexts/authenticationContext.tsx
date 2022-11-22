@@ -1,12 +1,15 @@
 import { createContext, useContext, useState } from "react";
 import { AuthenticationContextype } from "../models/authenticationContext.model";
-
-export const AuthenticationContext = createContext<AuthenticationContextype | null>(null);
+const initialValues = {
+    token: "",
+    setToken: () => { },
+}
+export const AuthenticationContext = createContext<AuthenticationContextype>(initialValues);
 
 
 export default function AuthenticationProvider({ children }: { children: React.ReactNode }) {
 
-    const [token, setToken] = useState("");
+    const [token, setToken] = useState(initialValues.token);
 
     return (
         <AuthenticationContext.Provider
