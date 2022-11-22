@@ -40,10 +40,10 @@ public class User {
     private String role;
 
     // Basic all variables Constructer
-    public User(String email, String password, String firstName, String lastName, int NIF, int CC, String address,
+    public User(String email, String password, String encodedPw, String firstName, String lastName, int NIF, int CC, String address,
             String phoneNumber, LocalDate birthday, String role) throws BadPasswordException {
         setEmail(email);
-        setPassword(password);
+        setPassword(password, encodedPw);
         this.firstName = firstName;
         this.lastName = lastName;
         setNIF(NIF);
@@ -121,7 +121,7 @@ public class User {
         this.id = id;
     }
 
-    public void setPassword(String password) throws BadPasswordException {
+    public void setPassword(String password, String encodedPw) throws BadPasswordException {
         // password must be between 8 and 16 chars long
         LengthRule lengthRule = new LengthRule(8, 16);
         // don't allow whitespace
@@ -156,7 +156,7 @@ public class User {
         RuleResult result = validator.validate(passwordData);
 
         if (result.isValid()) {
-            this.password = password;
+            this.password = encodedPw;
         } else {
             throw new BadPasswordException(validator.getMessages(result).get(0));
         }
@@ -236,12 +236,12 @@ public class User {
         this.role = role;
     }
 
-    public void update_info(String email, String password, String firstName, String lastName, String address,
+    public void update_info(String email, String password, String encodedPw, String firstName, String lastName, String address,
             String phoneNumber) throws BadPasswordException {
         if (email != null && !email.equals(""))
             setEmail(email);
         if (password != null && !password.equals(""))
-            setPassword(password);
+            setPassword(password, encodedPw);
         if (firstName != null && !firstName.equals(""))
             this.firstName = firstName;
         if (lastName != null && !lastName.equals(""))
