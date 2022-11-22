@@ -3,6 +3,6 @@ export const paramsMaker = (object: { [key: string]: any }) => {
   for (const item in object) {
     params += item + "=" + object[item] + "&";
   }
-  params.slice(0, params.length - 2);
+  params = params.slice(0, params.length - 1);
   return params;
 };

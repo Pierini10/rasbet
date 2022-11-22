@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,6 +71,7 @@ public class NotificationFacade {
             @ApiResponse(responseCode = "401", description = "User does not have Authorization"),
             @ApiResponse(responseCode = "500", description = "SQL Exception")
     })
+    @CrossOrigin(origins = "*")
     @GetMapping("/getNotifications")
     public List<String> getNotifications(@RequestParam() int idUser, @RequestParam() int requestUser) {
         try {

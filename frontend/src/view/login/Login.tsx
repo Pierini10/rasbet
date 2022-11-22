@@ -4,7 +4,7 @@ import { login } from "../../api/client";
 import { UseAuthentication } from "../../contexts/authenticationContext";
 
 function Login() {
-    const { token, setToken } = UseAuthentication();
+    const { setToken, setRole } = UseAuthentication();
 
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
@@ -19,14 +19,13 @@ function Login() {
     const makeLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const response = await login("test@auth.com", "Test3aut!");
+        const response = await login("validate@gmail.com", "Test3aut!");
 
-        setToken(response);
-
-
-
+        setToken(response.token);
+        setRole(response.role);
 
     }
+
     return (
         <div className="grid h-screen bg-green-900 place-items-center ">
             <div className="max-w-5xl h-[80%] rounded-xl  bg-white container relative">
