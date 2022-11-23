@@ -4,4 +4,5 @@ export interface jwt {
   iss: string;
   role: string;
   sub: string;
+  id: number;
 }

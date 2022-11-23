@@ -1,5 +1,8 @@
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 import AuthenticationProvider from "./contexts/authenticationContext";
+
 import Bets from "./view/bets/Bets";
 import HistoricoApostas from "./view/historico/HistoricoApostas";
 import HistoricoTransicoes from "./view/historicoTransicoes/historicoTransicoes";
@@ -7,7 +10,8 @@ import Login from "./view/login/Login";
 import Profile from "./view/perfil/Perfil";
 import Registo from "./view/registo/Registo";
 
-const router = createBrowserRouter([
+
+export const router = createBrowserRouter([
   {
     path: "/",
     element: <div>Home</div>,
@@ -39,6 +43,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+
   return (<AuthenticationProvider> <RouterProvider router={router} /></AuthenticationProvider>);
 }
 

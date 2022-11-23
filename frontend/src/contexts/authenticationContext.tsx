@@ -1,14 +1,18 @@
+import jwtDecode from "jwt-decode";
 import { createContext, useContext, useState } from "react";
 import { AuthenticationContextype } from "../models/authenticationContext.model";
+import { jwt } from "../models/jwtdecoded.model";
 import { paramsMaker } from "../utils/params";
 const initialValues = {
     token: "",
     setToken: () => { },
     role: "",
+    id: -1,
+    setId: () => { },
     setRole: () => { },
-    fetchdataParams: () => { return new Promise((resolve) => { resolve({}) }) },
-    fetchdataBody: () => { return new Promise((resolve) => { resolve({}) }) },
-    fetchdataBoth: () => { return new Promise((resolve) => { resolve({}) }) },
+    fetchdataAuth: () => { return new Promise((resolve) => { resolve({}) }) },
+    saveToken: () => { },
+    getToken: () => { return "" },
 }
 export const AuthenticationContext = createContext<AuthenticationContextype>(initialValues);
 
@@ -17,51 +21,14 @@ export default function AuthenticationProvider({ children }: { children: React.R
 
     const [token, setToken] = useState(initialValues.token);
     const [role, setRole] = useState(initialValues.role);
+    const [id, setId] = useState(initialValues.id);
 
-    const fetchdataParams = async (
-        url: string,
-        method: "GET" | "POST" | "PUT" | "DELETE",
-        params: { [key: string]: any },
-
-    ) => {
-        if (token) {
-            const response = await fetch(url + paramsMaker(params), {
-                method: method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-            });
-            const data = await response.json();
-            return data;
-        }
-    };
-
-    const fetchdataBody = async (
-        url: string,
-        method: "GET" | "POST" | "PUT" | "DELETE",
-        body?: BodyInit,
-        token?: string
-    ) => {
-        if (token) {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body,
-            });
-            return response.json();
-        }
-    };
-
-    const fetchdataBoth = async (
+    const fetchdataAuth = async (
         url: string,
         method: "GET" | "POST" | "PUT" | "DELETE",
         body?: BodyInit,
         params?: { [key: string]: any },
-        token?: string
+
     ) => {
         if (token && params) {
             const response = await fetch(url + paramsMaker(params), {
@@ -75,17 +42,37 @@ export default function AuthenticationProvider({ children }: { children: React.R
             return response.json();
         }
     };
+    const saveToken = (newToken: string) => {
+        const jwtdecoded: jwt = jwtDecode(newToken);
+        localStorage.setItem("token", newToken);
+        setToken(token);
+        setRole(jwtdecoded.role);
+        setId(jwtdecoded.id);
+    }
+
+    const getToken = () => {
+        const localtoken = localStorage.getItem("token");
+        if (token === "" && localtoken !== null) {
+
+            saveToken(localtoken);
+
+        }
+        return token;
+    }
 
     return (
         <AuthenticationContext.Provider
             value={{
                 token,
                 role,
+                id,
+                setId,
                 setToken,
                 setRole,
-                fetchdataParams,
-                fetchdataBody,
-                fetchdataBoth
+                fetchdataAuth,
+                saveToken,
+                getToken,
+
             }}
         >
             {children}

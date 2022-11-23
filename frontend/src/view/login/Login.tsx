@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { login } from "../../api/client";
+
 import { UseAuthentication } from "../../contexts/authenticationContext";
 
 function Login() {
-    const { setToken, setRole } = UseAuthentication();
+    const navigate = useNavigate();
+    const { saveToken } = UseAuthentication();
 
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
@@ -21,8 +24,9 @@ function Login() {
 
         const response = await login("validate@gmail.com", "Test3aut!");
 
-        setToken(response.token);
-        setRole(response.role);
+        saveToken(response);
+
+        navigate("/")
 
     }
 
@@ -42,7 +46,7 @@ function Login() {
                             <button className="p-2 bg-orange-500 border rounded-xl" type="submit" >Aceder</button>
                             <div>
                                 <div className="flex justify-center w-full">Não tem conta?</div>
-                                <a href="/registo" className="flex justify-center w-full text-green-900 underline">Registe-se já!</a>
+                                <a href="/register" className="flex justify-center w-full text-green-900 underline">Registe-se já!</a>
                             </div>
                         </form>
 
