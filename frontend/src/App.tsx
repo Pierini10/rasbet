@@ -6,6 +6,7 @@ import AuthenticationProvider from "./contexts/authenticationContext";
 import Bets from "./view/bets/Bets";
 import HistoricoApostas from "./view/historico/HistoricoApostas";
 import HistoricoTransicoes from "./view/historicoTransicoes/historicoTransicoes";
+import Home from "./view/home/Home";
 import Login from "./view/login/Login";
 import Profile from "./view/perfil/Perfil";
 import Registo from "./view/registo/Registo";
@@ -14,7 +15,7 @@ import Registo from "./view/registo/Registo";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Home</div>,
+    element: <ProtectedRoute><Home /></ProtectedRoute>,
   },
   {
     path: "/register",
@@ -26,19 +27,19 @@ export const router = createBrowserRouter([
   },
   {
     path: "/bets",
-    element: <Bets />,
+    element: <ProtectedRoute><Bets /></ProtectedRoute>,
   },
   {
     path: "/profile",
-    element: <Profile />,
+    element: <ProtectedRoute><Profile /></ProtectedRoute>,
   },
   {
     path: "/historicoApostas",
-    element: <HistoricoApostas />,
+    element: <ProtectedRoute><HistoricoApostas /></ProtectedRoute>,
   },
   {
     path: "/historicoTransicoes",
-    element: <HistoricoTransicoes />,
+    element: <ProtectedRoute><HistoricoTransicoes /></ProtectedRoute>,
   },
 ]);
 

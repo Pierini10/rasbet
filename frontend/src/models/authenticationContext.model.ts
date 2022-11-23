@@ -12,5 +12,5 @@ export type AuthenticationContextype = {
     params: { [key: string]: any }
   ) => Promise<any>;
   saveToken: (token: string) => void;
-  getToken: () => string;
+  logout: () => void;
 };

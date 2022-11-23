@@ -1,5 +1,6 @@
 import jwtDecode from "jwt-decode";
 import { createContext, useContext, useState } from "react";
+
 import { AuthenticationContextype } from "../models/authenticationContext.model";
 import { jwt } from "../models/jwtdecoded.model";
 import { paramsMaker } from "../utils/params";
@@ -12,7 +13,8 @@ const initialValues = {
     setRole: () => { },
     fetchdataAuth: () => { return new Promise((resolve) => { resolve({}) }) },
     saveToken: () => { },
-    getToken: () => { return "" },
+    logout: () => { },
+
 }
 export const AuthenticationContext = createContext<AuthenticationContextype>(initialValues);
 
@@ -45,21 +47,21 @@ export default function AuthenticationProvider({ children }: { children: React.R
     const saveToken = (newToken: string) => {
         const jwtdecoded: jwt = jwtDecode(newToken);
         localStorage.setItem("token", newToken);
-        setToken(token);
+        setToken(newToken);
         setRole(jwtdecoded.role);
         setId(jwtdecoded.id);
+
     }
 
-    const getToken = () => {
-        const localtoken = localStorage.getItem("token");
-        if (token === "" && localtoken !== null) {
 
-            saveToken(localtoken);
+    const logout = () => {
 
-        }
-        return token;
+        localStorage.removeItem("token");
+        setToken("");
+        setRole("");
+        setId(-1);
+
     }
-
     return (
         <AuthenticationContext.Provider
             value={{
@@ -71,7 +73,8 @@ export default function AuthenticationProvider({ children }: { children: React.R
                 setRole,
                 fetchdataAuth,
                 saveToken,
-                getToken,
+                logout
+
 
             }}
         >
@@ -83,6 +86,7 @@ export default function AuthenticationProvider({ children }: { children: React.R
 }
 
 export function UseAuthentication() {
+
     return useContext(AuthenticationContext);
 }
 
