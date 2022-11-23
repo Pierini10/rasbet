@@ -230,4 +230,24 @@ public class UserDB {
         }
         return role;
     }
+
+    public static int getIdByEmail(String email)
+    {
+        int id = -1;
+        try
+        {
+            SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+            String query = "SELECT * FROM User WHERE Email=" + SQLiteJDBC.prepare_string(email) + ";";;
+            ResultSet rs = sqLiteJDBC2.executeQuery(query);
+            if (rs.next()) {
+                id = rs.getInt("User_ID");
+            }
+            sqLiteJDBC2.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return id;
+    }
 }
