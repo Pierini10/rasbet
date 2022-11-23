@@ -1,5 +1,6 @@
 package com.rasbet.backend.Security.Service;
 
+import com.rasbet.backend.Database.UserDB;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -22,6 +23,8 @@ public class TokenService
 
     public String generateToken(Authentication authentication)
     {
+        String email = authentication.getName();
+        int id = UserDB.getIdByEmail(email);
         Instant now = Instant.now();
         String scope = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -30,8 +33,9 @@ public class TokenService
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
-                .subject(authentication.getName())
+                .subject(email)
                 .claim("role", scope)
+                .claim("id", id)
                 .build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
