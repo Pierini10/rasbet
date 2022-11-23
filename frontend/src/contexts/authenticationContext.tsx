@@ -32,16 +32,21 @@ export default function AuthenticationProvider({ children }: { children: React.R
         params?: { [key: string]: any },
 
     ) => {
-        if (token && params) {
-            const response = await fetch(url + paramsMaker(params), {
-                method: method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body,
-            });
-            return response.json();
+        try {
+            if (token && params) {
+                const response = await fetch(url + paramsMaker(params), {
+                    method: method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token,
+                    },
+                    body,
+                });
+                const data = await response.json();
+                return data
+            }
+        } catch (error) {
+            console.log(error)
         }
     };
     const saveToken = (newToken: string) => {

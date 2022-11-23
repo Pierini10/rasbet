@@ -1,10 +1,25 @@
 import { RegisterData } from "../models/RegisterData.model";
-import { paramsMaker } from "../utils/params";
 
 export const register = async (data: RegisterData) => {
-  console.log(JSON.stringify(data));
+  try {
+    const response = await fetch("http://localhost:8080/register", {
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
 
-  await fetch("http://localhost:8080/register" + paramsMaker(data), {
-    method: "POST",
-  });
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 200) {
+      alert("Register successful");
+      return true;
+    } else {
+      const json = await response.json();
+      alert(json.message);
+    }
+  } catch (error) {
+    alert(error);
+  }
 };

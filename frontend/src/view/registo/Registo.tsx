@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { register } from "../../api/user";
 
 function Registo() {
+    const navigate = useNavigate();
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
     const [name, setname] = useState("");
@@ -11,12 +13,15 @@ function Registo() {
     const [cc, setcc] = useState("");
     const [address, setaddress] = useState("");
     const [phone, setphone] = useState("");
-    const [bday, setbday] = useState("")
+    const [birthday, setbirthday] = useState("")
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        console.log(email, password, name, surname, nif, cc, address, phone, bday);
-        register({ email, pw: password, fn: name, ln: surname, NIF: parseInt(nif), CC: parseInt(cc), address, pn: phone, bday, role: "Normal", userRequestID: -1 });
+        const sucess = await register({ email, password: password, firstname: name, lastname: surname, NIF: parseInt(nif), CC: parseInt(cc), address, phoneNumber: phone, birthday, role: "Normal" });
+
+        if (sucess) {
+            navigate("/login")
+        }
     }
 
 
@@ -45,7 +50,7 @@ function Registo() {
         setphone(e.target.value);
     }
     const updateBday = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setbday(e.target.value);
+        setbirthday(e.target.value);
     }
 
 
