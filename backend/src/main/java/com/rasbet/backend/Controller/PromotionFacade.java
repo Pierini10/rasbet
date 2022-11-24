@@ -2,11 +2,11 @@ package com.rasbet.backend.Controller;
 
 import java.sql.SQLException;
 
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.PromotionDB;
@@ -20,6 +20,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @CrossOrigin(origins = "*")
 public class PromotionFacade {
 
+    @Autowired
+    JwtDecoder jwtDecoder;
+
     @Operation(summary = "Create a promotion")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Promotion created"),
@@ -29,7 +32,7 @@ public class PromotionFacade {
 
     @PostMapping("/createPromotion")
     public void createPromotion(
-            @RequestParam() int requesterId,
+            @RequestHeader(value = "token") String token,
             @RequestParam() String code,
             @RequestParam() String description,
             @RequestParam() double discount,
@@ -37,7 +40,7 @@ public class PromotionFacade {
             @RequestParam() int type) {
 
         try {
-            PromotionDB.createPromotion(requesterId, code, description, discount, minValue, type);
+            PromotionDB.createPromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount, minValue, type);
         } catch (NoAuthorizationException e) {
 
             e.printStackTrace();
@@ -57,10 +60,10 @@ public class PromotionFacade {
     })
     @PostMapping("/deletePromotion")
     public void deletePromotion(
-            @RequestParam() int requesterId,
+            @RequestHeader(value = "token") String token,
             @RequestParam() String code) {
         try {
-            PromotionDB.deletePromotion(requesterId, code);
+            PromotionDB.deletePromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code);
         } catch (NoAuthorizationException e) {
 
             e.printStackTrace();
@@ -80,14 +83,14 @@ public class PromotionFacade {
             @ApiResponse(responseCode = "500", description = "SQL error")
     })
     public void modifyPromotion(
-            @RequestParam() int requesterId,
+            @RequestHeader(value = "token") String token,
             @RequestParam() String code,
             @RequestParam() String description,
             @RequestParam() double discount,
             @RequestParam() double minValue,
             @RequestParam() int type) {
         try {
-            PromotionDB.updatePromotion(requesterId, code, description, discount, minValue, type);
+            PromotionDB.updatePromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount, minValue, type);
         } catch (NoAuthorizationException e) {
 
             e.printStackTrace();

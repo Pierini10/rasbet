@@ -3,7 +3,10 @@ package com.rasbet.backend.Controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,10 +24,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @CrossOrigin(origins = "*")
 public class WalletFacade {
 
+    @Autowired
+    JwtDecoder jwtDecoder;
+
      /**
      * Withdraw and deposit money.
      * 
-     * @param userID
      * @param amount (negative for withdraw, positive for deposit)
      * 
      * @return Balance after transaction or -1 if transaction failed.
@@ -36,16 +41,17 @@ public class WalletFacade {
             @ApiResponse(responseCode = "500", description = "SQLException.") })
     @PostMapping("/withdrawDeposit")
     public double withdrawDeposit(
-            @RequestParam() int userID,
             @RequestParam() double amount,
             @RequestParam(required = false) String promotionCode,
-            @RequestParam(required = false) String method) {
+            @RequestParam(required = false) String method,
+            @RequestHeader(value = "token") String token)
+        {
         String transactionType = "levantamento";
         if (amount > 0) {
             transactionType = "deposito";
         }
         try {
-            return TransactionDB.addTransaction(userID, transactionType, amount, promotionCode);
+            return TransactionDB.addTransaction(new RasbetTokenDecoder(token, jwtDecoder).getId(), transactionType, amount, promotionCode);
         } catch (NoAmountException | NoPromotionCodeException | NoMinimumValueException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, e.getMessage());
@@ -57,9 +63,7 @@ public class WalletFacade {
 
     /**
      * Get user's transactions history.
-     * 
-     * @param userID
-     * 
+     *
      * 
      * @return List containing:
      *         0: Date (yyyy-MM-dd)
@@ -74,11 +78,10 @@ public class WalletFacade {
             @ApiResponse(responseCode = "500", description = "SQLException.")
     })
     @GetMapping("/getTransactionsHistory")
-    public ArrayList<Transaction> getTransactionsHistory(
-            @RequestParam() int userID) {
+    public ArrayList<Transaction> getTransactionsHistory(@RequestHeader(value = "token") String token) {
         try {
 
-            return TransactionDB.getTransactions(userID);
+            return TransactionDB.getTransactions(new RasbetTokenDecoder(token, jwtDecoder).getId());
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(

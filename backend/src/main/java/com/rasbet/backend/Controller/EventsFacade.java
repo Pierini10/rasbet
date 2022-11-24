@@ -4,8 +4,11 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,6 +29,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RestController
 @CrossOrigin(origins = "*")
 public class EventsFacade {
+
+    @Autowired
+    JwtDecoder jwtDecoder;
 
     /**
      * Get current events information.
@@ -69,7 +75,6 @@ public class EventsFacade {
     /**
      * Adds a new Event.
      * 
-     * @param userID
      * @param sport
      * @param datetime
      * @param description (yyyy-MM-ddThh:mm:ss)
@@ -81,14 +86,14 @@ public class EventsFacade {
             @ApiResponse(responseCode = "400", description = "Addidicion failed.") })
     @PostMapping("/addEvent")
     public void addEvent(
-            @RequestParam(name = "userID") int userID,
+            @RequestHeader(value = "token") String token,
             @RequestParam(name = "sport") String sport,
             @RequestParam(name = "competition") String competition,
             @RequestParam(name = "datetime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime datetime,
             @RequestParam(name = "description")  String description) {
         Event event = new Event(null, sport, competition, datetime, description, null, null, null);
         try {
-            UserDB.assert_is_Specialist(userID);
+            UserDB.assert_is_Specialist(new RasbetTokenDecoder(token, jwtDecoder).getId());
             EventsDB.add_Event(event);
         } catch (SportDoesNotExistExeption | NoAuthorizationException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -100,7 +105,6 @@ public class EventsFacade {
      * Change event state.
      * 
      * @param idEvent
-     * @param userID  User that is trying to change the state
      * @param state
      * @return True if the change was successful, false otherwise.
      */
@@ -112,11 +116,11 @@ public class EventsFacade {
     @PostMapping("/changeEventState")
     public void changeEventState(
             @RequestParam(value = "idEvent") String idEvent,
-            @RequestParam(value = "idUser") int idUser,
+            @RequestHeader(value = "token") String token,
             @RequestParam(value = "state") String state) {
 
         try {
-            EventsDB.update_Event_State(idEvent, idUser, state);
+            EventsDB.update_Event_State(idEvent, new RasbetTokenDecoder(token, jwtDecoder).getId(), state);
 
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -150,9 +154,7 @@ public class EventsFacade {
 
     /**
      * Insert new ODD.
-     * 
-     * @param UserID
-     * @param List   containing:
+     * list   containing:
      *               0: Event ID
      *               PossibleBets
      *               [

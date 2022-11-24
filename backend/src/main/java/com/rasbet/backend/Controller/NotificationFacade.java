@@ -3,13 +3,11 @@ package com.rasbet.backend.Controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.NotificationDB;
@@ -24,6 +22,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @CrossOrigin(origins = "*")
 public class NotificationFacade {
 
+    @Autowired
+    JwtDecoder jwtDecoder;
+
     @Operation(summary = "Create a notification for a given user")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Notification created"),
@@ -32,11 +33,11 @@ public class NotificationFacade {
     })
     @PostMapping("/createNotification")
     public void createNotification(
-            @RequestParam() int requestUser,
-            @RequestParam() int idUser,
+            @RequestHeader(value = "token") String token,
+            @RequestParam() int idUser,                     // TODO: change to email
             @RequestParam() String description) {
         try {
-            NotificationDB.createNotification(idUser, description, requestUser);
+            NotificationDB.createNotification(idUser, description, new RasbetTokenDecoder(token, jwtDecoder).getId());
         } catch (NoAuthorizationException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
@@ -74,7 +75,10 @@ public class NotificationFacade {
     })
     @CrossOrigin(origins = "*")
     @GetMapping("/getNotifications")
-    public List<String> getNotifications(@RequestParam() int idUser, @RequestParam() int requestUser) {
+    public List<String> getNotifications(
+            @RequestParam() int idUser,     // TODO: wtf is goin on?
+            @RequestParam() int requestUser
+    ) {
         try {
             return NotificationDB.getNotifications(idUser, requestUser);
         } catch (NoAuthorizationException e) {

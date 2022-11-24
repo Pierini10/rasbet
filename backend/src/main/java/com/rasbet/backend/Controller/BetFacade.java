@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,13 +31,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @CrossOrigin(origins = "*")
 public class BetFacade {
 
+    @Autowired
+    JwtDecoder jwtDecoder;
+
     /**
      * Make a bet.
      * 
-     * @param userID
      * @param amount
      * @param paymentMethod
-     * @param SimpleBets
+     * @param simpleBets
      *                      [
      *                      (eventID, prediction, odd),
      *                      ]
@@ -48,15 +53,16 @@ public class BetFacade {
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/makeBet")
     public void makeBet(
-            @RequestParam(value = "userID") int idUser,
+            @RequestHeader(value = "token") String token,
             @RequestParam(value = "amount") Float amount,
             @RequestParam(value = "paymentMethod") String paymentMethod,
             @RequestBody List<Prediction> simpleBets) {
 
         try {
+            int idUser = new RasbetTokenDecoder(token, jwtDecoder).getId();
             UserDB.assert_is_Normal(idUser);
-            List<String> idEvents = simpleBets.stream().map(sb -> sb.getIdEvent()).collect(Collectors.toList());
-            Boolean r = EventsDB.checkEventsAreOpen(idEvents);
+            List<String> idEvents = simpleBets.stream().map(Prediction::getIdEvent).collect(Collectors.toList());
+            boolean r = EventsDB.checkEventsAreOpen(idEvents);
 
             if (r) {
                 Bet bet = new Bet(null, idUser, null, amount, null, null, simpleBets.size(), simpleBets);
@@ -78,8 +84,7 @@ public class BetFacade {
     /**
      * Get user's bets history.
      * 
-     * @param userID
-     * 
+     *
      * @return List containing:
      *         0: Bet ID
      *         SimpleBet
@@ -97,12 +102,11 @@ public class BetFacade {
             @ApiResponse(responseCode = "500", description = "SQLException.")
     })
     @GetMapping("/getBetsHistory")
-    public HistoryBets getBetsHistory(
-            @RequestParam(value = "userID") int userID) {
+    public HistoryBets getBetsHistory(@RequestHeader(value = "token") String token) {
         HistoryBets r;
 
         try {
-            r = BetDB.get_Bets(userID);
+            r = BetDB.get_Bets(new RasbetTokenDecoder(token, jwtDecoder).getId());
         } catch (SQLException e) {
             r = null;
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
