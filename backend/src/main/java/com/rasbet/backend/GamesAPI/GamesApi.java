@@ -84,7 +84,7 @@ public class GamesApi {
 	}
 
 	public static List<Event> getallEvents() throws Exception {
-		
+
 		List<Event> events = new ArrayList<Event>();
 
 		// TODO REMOVER PARA TER UPDATES
@@ -130,7 +130,6 @@ public class GamesApi {
 
 		SportsDB.addSports(db_sports);
 		return sports_map;
-
 	}
 
 	private static ArrayList<Event> getEvents(String url, Pair<String, String> pair, boolean custom_api)
@@ -179,7 +178,9 @@ public class GamesApi {
 				String comanceString = custom_api ? "commenceTime" : "commence_time";
 				String result = custom_api && jsonEvent.getString("completed") == "true"
 						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
-				String description = jsonEvent.get(homeString) + " v " + jsonEvent.get(awayString);
+				String description = !jsonEvent.get(homeString).equals(null)
+						? jsonEvent.get(homeString) + " v " + jsonEvent.get(awayString)
+						: jsonEvent.getString("sport_title");
 				events.add(new Event(jsonEvent.getString("id"),
 						pair.getFirst(),
 						pair.getSecond(),
@@ -197,7 +198,7 @@ public class GamesApi {
 
 	}
 
-		private static ArrayList<Event> getEventsScores(String url) throws Exception {
+	private static ArrayList<Event> getEventsScores(String url) throws Exception {
 		try {
 			ArrayList<Event> events = new ArrayList<>();
 
@@ -208,29 +209,31 @@ public class GamesApi {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject jsonEvent = jsonArray.getJSONObject(i);
 				boolean completed = jsonEvent.getBoolean("completed");
-				String result = null;
+				String result = null, description = null;
 				if (completed) {
 					String homeTeam = jsonEvent.getString("home_team");
 					String awayTeam = jsonEvent.getString("away_team");
-					if (homeTeam.equals("null") && awayTeam.equals("null")) result = jsonEvent.getString("scores");
-					else {
+					if (homeTeam.equals("null") && awayTeam.equals("null")) {
+						result = jsonEvent.getString("scores");
+						description = jsonEvent.getString("sport_title");
+					} else {
 						JSONArray scores_array = jsonEvent.getJSONArray("scores");
 						String homeScore = null, awayScore = null;
 						for (int j = 0; j < scores_array.length(); j++) {
 							JSONObject scores_obj = scores_array.getJSONObject(j);
 							if (scores_obj.getString("name").equals(homeTeam)) {
 								homeScore = scores_obj.getString("score");
-							}
-							else {
+							} else {
 								awayScore = scores_obj.getString("score");
 							}
 						}
 						result = homeScore + "x" + awayScore;
+						description = homeTeam + " v " + awayTeam;
 					}
 					events.add(new Event(
-						jsonEvent.getString("id"),
-						homeTeam + " v " + awayTeam,
-						result));
+							jsonEvent.getString("id"),
+							description,
+							result));
 				}
 			}
 

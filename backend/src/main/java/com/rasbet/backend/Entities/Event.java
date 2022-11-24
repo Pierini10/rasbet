@@ -3,7 +3,6 @@ package com.rasbet.backend.Entities;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class Event {
     private String id;
@@ -23,7 +22,7 @@ public class Event {
         this.sport = sport;
         this.competition = competition;
         this.datetime = datetime;
-        setDescription(description);
+        this.description = description;
         this.result = result;
         this.state = state;
         if (odds == null) {
@@ -41,7 +40,7 @@ public class Event {
         this.sport = null;
         this.competition = null;
         this.datetime = null;
-        setDescription(description);
+        this.description = description;
         this.result = result;
         this.state = null;
         this.odds = null;
@@ -102,13 +101,6 @@ public class Event {
 
     public String getDescription() {
         return this.description;
-    }
-
-    public void setDescription(String description) {
-        if (Pattern.compile("^.+[ ]v[ ].+$").matcher(description).matches())
-            this.description = description;
-        else
-            throw new IllegalArgumentException("Event Description is not valid");
     }
 
     public String getResult() {
