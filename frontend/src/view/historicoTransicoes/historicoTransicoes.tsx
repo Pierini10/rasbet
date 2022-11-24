@@ -13,7 +13,7 @@ function HistoricoTransicoes() {
         fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET", undefined, { userID: id }).then(
             (data) => {
                 setTransicoes(data);
-
+                console.log(data)
             }
 
         )
@@ -42,10 +42,10 @@ function HistoricoTransicoes() {
                 </div>
 
                 <div className=" mt-5 overflow-auto text-xl h-[500px] flex flex-col justify-center ">
-                    {transicoes.map((transicao) => {
+                    {transicoes && transicoes.map((transicao, key) => {
                         return (
 
-                            <div className="flex py-5 text-base">
+                            <div className="flex py-5 text-base" key={key}>
                                 <div className="flex justify-center w-[23%]">{transicao.date}</div>
                                 <div className="flex justify-center w-[19%]">{transicao.description}</div>
                                 <div className="flex justify-center w-[27%]">{transicao.value}€</div>

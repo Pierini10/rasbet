@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import Aposta from "../../components/Aposta";
+import { UseAuthentication } from "../../contexts/authenticationContext";
+import { Bet } from "../../models/bets.model";
 import "./HistoricoApostas.css";
 const dummy_Date = {
   nome: "João",
@@ -66,6 +69,37 @@ const dummy_Date = {
 };
 
 function HistoricoApostas() {
+  const { fetchdataAuth, id } = UseAuthentication()
+  const [bets, setBets] = useState<Bet>()
+  const [filteredBets, setFilteredBets] = useState<Bet>()
+
+  useEffect(() => {
+    fetchdataAuth("http://localhost:8080/getBetsHistory", "GET", undefined, { userID: 6 }).then(
+      (data: Bet) => {
+        console.log(data)
+        setBets(data);
+        setFilteredBets(data)
+      }
+    )
+
+  }, [fetchdataAuth, id]);
+
+  const filterBet = (filter: "simple" | "multiple" | "all") => {
+    if (bets) {
+      const temp = { ...bets }
+      if (filter === "simple") {
+        temp.bets = temp.bets.filter((bet) => bet.predictions.length === 1)
+        setFilteredBets(temp)
+      } else if (filter === "multiple") {
+        temp.bets = temp.bets.filter((bet) => bet.predictions.length > 1)
+        setFilteredBets(temp)
+      }
+      else {
+        setFilteredBets(bets)
+      }
+    }
+  }
+
   return (
     <div className="grid h-screen bg-gray-400 place-items-center ">
       <div className=" max-w-5xl bg-white border-dotted h-[80%] container rounded-3xl border-black border">
@@ -78,12 +112,16 @@ function HistoricoApostas() {
         <div className="flex justify-center mt-5">
           <hr className="bg-gray-500 w-[90%]" />
         </div>
-        <div className="flex mt-2 justify-evenly ">
-          <button className="px-10 py-1 text-orange-500 border border-orange-500 rounded-md">
+        <div className="flex justify-center mt-2 space-x-2">
+          <button className="py-1 text-orange-500 duration-150 ease-in border border-orange-500 rounded-md w-36 hover:bg-orange-500 hover:text-white" onClick={() => filterBet("simple")}>
             {" "}
             Simples
           </button>
-          <button className="px-10 py-1 text-white bg-orange-500 border-orange-500 rounded-md">
+          <button className="py-1 text-white duration-150 ease-in bg-blue-500 rounded-md w-36 hover:bg-blue-800 " onClick={() => filterBet("all")}>
+            {" "}
+            Todas
+          </button>
+          <button className="py-1 text-white ease-in bg-orange-500 rounded-md w-36 hover:bg-orange-800" onClick={() => filterBet("multiple")}>
             {" "}
             Múltiplas
           </button>
@@ -94,8 +132,8 @@ function HistoricoApostas() {
             {">"}{" "}
           </button>
         </div>
-        <div className="flex flex-col overflow-auto h-72 noScrollBar">
-          {dummy_Date.apostas.map((a, index) => (
+        <div className="flex flex-col overflow-auto h-96 ">
+          {filteredBets?.bets.map((a, index) => (
             <Aposta key={index} {...a} />
           ))}
         </div>
