@@ -1,22 +1,25 @@
 package com.rasbet.backend.Controller;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
 
-import com.rasbet.backend.Requests.SignUpRequest;
-import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.Exceptions.BadPasswordException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
+import com.rasbet.backend.Requests.SignUpRequest;
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
