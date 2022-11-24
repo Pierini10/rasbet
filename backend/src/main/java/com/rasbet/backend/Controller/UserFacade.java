@@ -100,15 +100,16 @@ public class UserFacade {
             @ApiResponse(responseCode = "400", description = "Could not change user info") })
     @PostMapping("/changeInfo")
     public void changeInfo(
-            @RequestParam(name = "userID") int userID,
             @RequestParam(name = "email", required = false) String email,
             @RequestParam(name = "password", required = false) String password,
             @RequestParam(name = "firstName", required = false) String firstName,
             @RequestParam(name = "lastName", required = false) String lastName,
             @RequestParam(name = "address", required = false) String address,
-            @RequestParam(name = "phoneNumber", required = false) String phoneNumber) {
+            @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
+            @RequestHeader(value = "token", required = false) String token) {
         try {
-            User user = UserDB.get_User(userID);
+            RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
+            User user = UserDB.get_User(rasbetTokenDecoder.getId());
             assert user != null;
             user.update_info(email, password,  this.encoder.encode(password), firstName, lastName, address, phoneNumber);
             UserDB.update_User(user);
