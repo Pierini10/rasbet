@@ -1,3 +1,5 @@
+import { useState } from "react";
+import LevantamentoDepositoModal from "../../components/LevantamentoDepositoModal";
 
 const dummy_Date = {
     nome: "João",
@@ -7,6 +9,8 @@ const dummy_Date = {
 }
 
 function Profile() {
+    const [levantamentoModalIsOpen, setLevantamentoModalIsOpen] = useState(false);
+    const [depositoModalIsOpen, setDepositoModalIsOpen] = useState(false);
     return (
         <div className="grid h-screen bg-gray-400 place-items-center">
             <div className=" max-w-5xl bg-white border-dotted h-[80%] container rounded-3xl border-black border">
@@ -14,11 +18,11 @@ function Profile() {
                 <div className="flex justify-center mt-5">Saldo: {dummy_Date.saldo}€</div>
                 <div className="flex justify-center mt-5"><hr className="bg-gray-500 w-[90%]" /></div>
                 <div className="flex mt-2 justify-evenly ">
-                    <button className="px-10 py-1 text-orange-500 border border-orange-500 rounded-md"> Levantar</button>
-                    <button className="px-10 py-1 text-white bg-orange-500 border-orange-500 rounded-md"> Depositar</button>
+                    <button className="px-10 py-1 text-orange-500 duration-150 ease-in border border-orange-500 rounded-md hover:text-white hover:bg-orange-700" onClick={() => setLevantamentoModalIsOpen(true)}> Levantar</button>
+                    <button className="px-10 py-1 text-white duration-150 ease-in bg-orange-500 border-orange-500 rounded-md hover:text-white hover:bg-orange-700" onClick={() => setDepositoModalIsOpen(true)}> Depositar</button>
                 </div>
                 <div className="flex justify-center mt-5 text-xl sm:ml-20 sm:block">Consultar Histórico de apostas
-                    <button className="w-8 ml-2 transition border border-black rounded-full hover:bg-orange-500 "> {'>'} </button>
+                    <a className="px-1 ml-2 transition border border-black rounded-full hover:bg-orange-500" href="/historicoApostas"> {'>'} </a>
                 </div>
                 <div className="flex flex-col">
                     <div className="flex mt-5 ml-20 text-center">
@@ -35,7 +39,9 @@ function Profile() {
                     </div>
                 </div>
             </div>
-        </div>
+            <LevantamentoDepositoModal isOpen={levantamentoModalIsOpen} onClose={setLevantamentoModalIsOpen} type="levantamento" />
+            <LevantamentoDepositoModal isOpen={depositoModalIsOpen} onClose={setDepositoModalIsOpen} type="deposito" />
+        </div >
     )
 }
 
