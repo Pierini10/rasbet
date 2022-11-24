@@ -8,8 +8,8 @@ export type AuthenticationContextype = {
   fetchdataAuth: (
     url: string,
     method: "GET" | "POST" | "PUT" | "DELETE",
-    body: BodyInit,
-    params: { [key: string]: any }
+    body?: BodyInit,
+    params?: { [key: string]: any }
   ) => Promise<any>;
   saveToken: (token: string) => void;
   logout: () => void;
