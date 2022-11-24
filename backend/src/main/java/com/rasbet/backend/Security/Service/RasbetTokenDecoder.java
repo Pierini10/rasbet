@@ -13,6 +13,7 @@ public class RasbetTokenDecoder
     private final Instant expiracyDate;
     private final String user;
     private final String role;
+    private final int id;
 
     public RasbetTokenDecoder(String token, JwtDecoder jwtDecoder)
     {
@@ -20,6 +21,7 @@ public class RasbetTokenDecoder
 
         Jwt jwt = jwtDecoder.decode(this.token);
 
+        id = Integer.getInteger(jwt.getClaimAsString("id"));
         role = jwt.getClaimAsString("role");
         issuer = jwt.getIssuer().toString();
         creationTime = jwt.getIssuedAt();
@@ -50,5 +52,9 @@ public class RasbetTokenDecoder
 
     public String getUser() {
         return user;
+    }
+
+    public int getId() {
+        return id;
     }
 }
