@@ -46,7 +46,7 @@ public class UserFacade {
     @PostMapping("/register")
     public void register(
             @RequestBody SignUpRequest signUpRequest,
-            @RequestHeader(value = "token", required = false) String token
+            @RequestHeader(value = "Authorization", required = false) String token
     )
     {
         try {
@@ -68,6 +68,7 @@ public class UserFacade {
             String userRequestRole = UserDB.NORMAL_ROLE;
             if(token != null)
             {
+                token = RasbetTokenDecoder.parseToken(token);
                 RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
                 userRequestRole = rasbetTokenDecoder.getRole();
             }
@@ -85,7 +86,6 @@ public class UserFacade {
      * Change user information.
      * Receiving only the parameters that are to be changed.
      * 
-     * @param userID
      * @param email
      * @param password
      * @param firstName
@@ -106,8 +106,10 @@ public class UserFacade {
             @RequestParam(name = "lastName", required = false) String lastName,
             @RequestParam(name = "address", required = false) String address,
             @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
-            @RequestHeader(value = "token", required = false) String token) {
+            @RequestHeader(value = "Authorization") String token)
+    {
         try {
+            token = RasbetTokenDecoder.parseToken(token);
             RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
             User user = UserDB.get_User(rasbetTokenDecoder.getId());
             assert user != null;

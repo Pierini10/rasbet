@@ -53,10 +53,12 @@ public class BetFacade {
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/makeBet")
     public void makeBet(
-            @RequestHeader(value = "token") String token,
+            @RequestHeader("Authorization") String token,
             @RequestParam(value = "amount") Float amount,
             @RequestParam(value = "paymentMethod") String paymentMethod,
-            @RequestBody List<Prediction> simpleBets) {
+            @RequestBody List<Prediction> simpleBets)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
 
         try {
             int idUser = new RasbetTokenDecoder(token, jwtDecoder).getId();
@@ -102,7 +104,10 @@ public class BetFacade {
             @ApiResponse(responseCode = "500", description = "SQLException.")
     })
     @GetMapping("/getBetsHistory")
-    public HistoryBets getBetsHistory(@RequestHeader(value = "token") String token) {
+    public HistoryBets getBetsHistory(@RequestHeader("Authorization") String token)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+
         HistoryBets r;
 
         try {

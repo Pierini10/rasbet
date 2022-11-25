@@ -44,9 +44,11 @@ public class WalletFacade {
             @RequestParam() double amount,
             @RequestParam(required = false) String promotionCode,
             @RequestParam(required = false) String method,
-            @RequestHeader(value = "token") String token)
+            @RequestHeader("Authorization") String token)
         {
-        String transactionType = "levantamento";
+            token = RasbetTokenDecoder.parseToken(token);
+
+            String transactionType = "levantamento";
         if (amount > 0) {
             transactionType = "deposito";
         }
@@ -78,7 +80,10 @@ public class WalletFacade {
             @ApiResponse(responseCode = "500", description = "SQLException.")
     })
     @GetMapping("/getTransactionsHistory")
-    public ArrayList<Transaction> getTransactionsHistory(@RequestHeader(value = "token") String token) {
+    public ArrayList<Transaction> getTransactionsHistory(@RequestHeader("Authorization") String token)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+
         try {
 
             return TransactionDB.getTransactions(new RasbetTokenDecoder(token, jwtDecoder).getId());

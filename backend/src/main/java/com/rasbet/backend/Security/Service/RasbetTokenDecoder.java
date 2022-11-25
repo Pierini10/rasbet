@@ -8,7 +8,6 @@ import java.time.Instant;
 public class RasbetTokenDecoder
 {
     private final String token;
-    private final String issuer;
     private final Instant creationTime;
     private final Instant expiracyDate;
     private final String user;
@@ -21,9 +20,8 @@ public class RasbetTokenDecoder
 
         Jwt jwt = jwtDecoder.decode(this.token);
 
-        id = Integer.getInteger(jwt.getClaimAsString("id"));
+        id = Integer.parseInt(jwt.getClaimAsString("iss"));
         role = jwt.getClaimAsString("role");
-        issuer = jwt.getIssuer().toString();
         creationTime = jwt.getIssuedAt();
         expiracyDate = jwt.getExpiresAt();
         user = jwt.getSubject();
@@ -36,10 +34,6 @@ public class RasbetTokenDecoder
 
     public String getToken() {
         return token;
-    }
-
-    public String getIssuer() {
-        return issuer;
     }
 
     public Instant getCreationTime() {
@@ -56,5 +50,10 @@ public class RasbetTokenDecoder
 
     public int getId() {
         return id;
+    }
+
+    public static String parseToken(String receivedToken)
+    {
+        return receivedToken.split("Bearer ")[1];
     }
 }

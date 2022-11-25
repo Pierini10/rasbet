@@ -2,13 +2,13 @@ package com.rasbet.backend.Security;
 
 import java.security.Principal;
 
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.web.bind.annotation.*;
 
 import com.rasbet.backend.Security.Service.TokenService;
 
@@ -19,6 +19,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RestController
 @CrossOrigin(origins = "*")
 public class AuthFacade {
+
+    @Autowired
+    JwtDecoder jwtDecoder;
     private static final Logger LOG = LoggerFactory.getLogger(AuthFacade.class);
 
     private final TokenService tokenService;
@@ -28,8 +31,13 @@ public class AuthFacade {
     }
 
     @GetMapping
-    public String home(Principal principal) {
-        return "Hello, " + (principal != null ? principal.getName() : "user") + "!";
+    public String home(@RequestHeader("Authorization") String token)
+    {
+        // TODO: REMOVE (TEST ONLY)
+        token = RasbetTokenDecoder.parseToken(token);
+        System.out.println(token);
+        int id = new RasbetTokenDecoder(token, jwtDecoder).getId();
+        return "id=" + id;
     }
 
     // DB Credentials:

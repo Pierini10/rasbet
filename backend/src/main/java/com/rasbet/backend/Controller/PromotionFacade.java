@@ -32,12 +32,15 @@ public class PromotionFacade {
 
     @PostMapping("/createPromotion")
     public void createPromotion(
-            @RequestHeader(value = "token") String token,
+            @RequestHeader("Authorization") String token,
             @RequestParam() String code,
             @RequestParam() String description,
             @RequestParam() double discount,
             @RequestParam() double minValue,
-            @RequestParam() int type) {
+            @RequestParam() int type)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+
 
         try {
             PromotionDB.createPromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount, minValue, type);
@@ -60,8 +63,11 @@ public class PromotionFacade {
     })
     @PostMapping("/deletePromotion")
     public void deletePromotion(
-            @RequestHeader(value = "token") String token,
-            @RequestParam() String code) {
+            @RequestHeader("Authorization") String token,
+            @RequestParam() String code)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+
         try {
             PromotionDB.deletePromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code);
         } catch (NoAuthorizationException e) {
@@ -83,12 +89,15 @@ public class PromotionFacade {
             @ApiResponse(responseCode = "500", description = "SQL error")
     })
     public void modifyPromotion(
-            @RequestHeader(value = "token") String token,
+            @RequestHeader("Authorization") String token,
             @RequestParam() String code,
             @RequestParam() String description,
             @RequestParam() double discount,
             @RequestParam() double minValue,
-            @RequestParam() int type) {
+            @RequestParam() int type)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+
         try {
             PromotionDB.updatePromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount, minValue, type);
         } catch (NoAuthorizationException e) {

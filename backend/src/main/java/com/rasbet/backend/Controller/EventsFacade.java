@@ -86,11 +86,14 @@ public class EventsFacade {
             @ApiResponse(responseCode = "400", description = "Addidicion failed.") })
     @PostMapping("/addEvent")
     public void addEvent(
-            @RequestHeader(value = "token") String token,
+            @RequestHeader("Authorization") String token,
             @RequestParam(name = "sport") String sport,
             @RequestParam(name = "competition") String competition,
             @RequestParam(name = "datetime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime datetime,
-            @RequestParam(name = "description")  String description) {
+            @RequestParam(name = "description")  String description)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+
         Event event = new Event(null, sport, competition, datetime, description, null, null, null);
         try {
             UserDB.assert_is_Specialist(new RasbetTokenDecoder(token, jwtDecoder).getId());
@@ -116,8 +119,10 @@ public class EventsFacade {
     @PostMapping("/changeEventState")
     public void changeEventState(
             @RequestParam(value = "idEvent") String idEvent,
-            @RequestHeader(value = "token") String token,
-            @RequestParam(value = "state") String state) {
+            @RequestHeader("Authorization") String token,
+            @RequestParam(value = "state") String state)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
 
         try {
             EventsDB.update_Event_State(idEvent, new RasbetTokenDecoder(token, jwtDecoder).getId(), state);
@@ -141,7 +146,8 @@ public class EventsFacade {
             @ApiResponse(responseCode = "200", description = "All sports."),
             @ApiResponse(responseCode = "500", description = "SQLException.") })
     @GetMapping("/getAllSports")
-    public List<String> getAllSports() {
+    public List<String> getAllSports()
+    {
 
         try {
             return SportsDB.getSports();

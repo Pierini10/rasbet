@@ -33,9 +33,12 @@ public class NotificationFacade {
     })
     @PostMapping("/createNotification")
     public void createNotification(
-            @RequestHeader(value = "token") String token,
+            @RequestHeader("Authorization") String token,
             @RequestParam() int idUser,                     // TODO: change to email
-            @RequestParam() String description) {
+            @RequestParam() String description)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+
         try {
             NotificationDB.createNotification(idUser, description, new RasbetTokenDecoder(token, jwtDecoder).getId());
         } catch (NoAuthorizationException e) {
