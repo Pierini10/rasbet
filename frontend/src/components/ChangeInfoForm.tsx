@@ -16,8 +16,8 @@ function ChangeInfoForm() {
         setInfo({})
     }
     return (
-        <div>
-            <div className="flex flex-col">
+        <div className="">
+            <div className="flex flex-col overflow-auto">
                 <div className="flex mt-5 ml-20 text-center">
                     <div>Email:&#160;</div>
                     <div className="container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96">{dummy_Date.nome}</div>

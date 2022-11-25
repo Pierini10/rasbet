@@ -33,12 +33,13 @@ export default function AuthenticationProvider({ children }: { children: React.R
 
     ) => {
         try {
-            if (token && params) {
-                const response = await fetch(url + paramsMaker(params), {
+            if (token) {
+                const response = await fetch(url + (params ? paramsMaker(params) : ''), {
                     method: method,
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: "Bearer " + token,
+
                     },
                     body,
                 });

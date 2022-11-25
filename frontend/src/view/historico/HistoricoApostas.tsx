@@ -74,11 +74,13 @@ function HistoricoApostas() {
   const [filteredBets, setFilteredBets] = useState<Bet>()
 
   useEffect(() => {
-    fetchdataAuth("http://localhost:8080/getBetsHistory", "GET", undefined, { userID: 6 }).then(
+    fetchdataAuth("http://localhost:8080/getBetsHistory", "GET").then(
       (data: Bet) => {
-        console.log(data)
-        setBets(data);
-        setFilteredBets(data)
+        if (data !== undefined) {
+          setBets(data);
+          setFilteredBets(data)
+        }
+
       }
     )
 

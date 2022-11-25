@@ -10,10 +10,11 @@ function HistoricoTransicoes() {
     const { fetchdataAuth, id } = UseAuthentication()
     useEffect(() => {
 
-        fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET", undefined, { userID: id }).then(
+        fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET").then(
             (data) => {
-                setTransicoes(data);
-                console.log(data)
+                if (data !== undefined) {
+                    setTransicoes(data);
+                }
             }
 
         )
@@ -59,6 +60,13 @@ function HistoricoTransicoes() {
                 </div>
 
             </div>
+            <button onClick={() => {
+                fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET").then(
+                    (data) => {
+                        setTransicoes(data);
+                        console.log(data)
+                    })
+            }}>teste</button>
         </div>
     );
 
