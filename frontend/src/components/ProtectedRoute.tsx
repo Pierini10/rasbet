@@ -26,7 +26,7 @@ const ProtectedRoute = ({ children }: any) => {
 
     if (token === "" && !ls) {
         return <Navigate to="/login" />
-    } else if (ADMIN_PATHS.includes(location.pathname) && role !== "admin") {
+    } else if (ADMIN_PATHS.includes(location.pathname) && role && role !== "ROLE_Administrator") {
         return <Navigate to="/" />
     }
 
