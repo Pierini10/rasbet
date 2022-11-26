@@ -6,15 +6,18 @@ import { jwt } from "../models/jwtdecoded.model";
 import { paramsMaker } from "../utils/params";
 const initialValues = {
     token: "",
-    setToken: () => { },
     role: "",
     id: -1,
+    balance: 0,
+    setToken: () => { },
     setId: () => { },
     setRole: () => { },
+    setBalance: () => { },
     fetchdataAuth: () => { return new Promise((resolve) => { resolve({}) }) },
     testToken: () => { return new Promise((resolve) => { resolve({}) }) },
     saveToken: () => { },
     logout: () => { },
+
 
 }
 export const AuthenticationContext = createContext<AuthenticationContextype>(initialValues);
@@ -25,7 +28,7 @@ export default function AuthenticationProvider({ children }: { children: React.R
     const [token, setToken] = useState(initialValues.token);
     const [role, setRole] = useState(initialValues.role);
     const [id, setId] = useState(initialValues.id);
-
+    const [balance, setBalance] = useState(initialValues.balance);
     const fetchdataAuth = async (
         url: string,
         method: "GET" | "POST" | "PUT" | "DELETE",
@@ -104,9 +107,11 @@ export default function AuthenticationProvider({ children }: { children: React.R
                 token,
                 role,
                 id,
+                balance,
                 setId,
                 setToken,
                 setRole,
+                setBalance,
                 fetchdataAuth,
                 testToken,
                 saveToken,

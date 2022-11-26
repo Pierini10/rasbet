@@ -6,7 +6,7 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
     const [step, setStep] = useState<"choices" | "MBway" | "Card" | "Bank">("choices");
     const [value, setValue] = useState(0);
     const [promotionCode, setPromotionCode] = useState<string | undefined>();
-    const { fetchdataAuth } = UseAuthentication()
+    const { fetchdataAuth, setBalance } = UseAuthentication()
 
     const withdrawMoney = async () => {
         const val = props.type === "deposito" ? value : -value;
@@ -14,9 +14,12 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
         if (promotionCode) { transaction.promotionCode = promotionCode }
         const data = await fetchdataAuth("http://localhost:8080/withdrawDeposit", "POST", undefined, transaction);
         if (data) {
+            setBalance(data)
             props.type === "levantamento" ? alert("Levantamento realizado com sucesso!") : alert("Deposito realizado com sucesso!")
             props.onClose(false)
+            setStep("choices")
         }
+
     }
 
     const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +48,7 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
                     <div className="flex flex-col py-1 pl-2 space-y-4">
                         <input placeholder="valor" className="py-1 pl-2" onChange={updateValue} type="number" />
                         <input placeholder="NIB" className="py-1 pl-2" type="number" />
-                        <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />
+                        {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
                         <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
                     </div>
                 </div>}
@@ -55,7 +58,7 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
                         <div className="flex flex-col py-1 pl-2 space-y-4">
                             <input placeholder="value" className="py-1 pl-2" onChange={updateValue} />
                             <input placeholder="numero de telemovel" className="py-1 pl-2" />
-                            <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />
+                            {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
                             <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
                         </div>
                     </div>}
@@ -65,11 +68,12 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
                         <div className="flex flex-col py-1 pl-2 space-y-4">
                             <input placeholder="value" className="py-1 pl-2" onChange={updateValue} />
                             <input placeholder="numero de cartão" className="py-1 pl-2" />
-                            <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />
+                            {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
                             <div className="space-x-2">
                                 <input placeholder="numero de segurança" className="py-1 pl-2" type="Number" />
                                 <input placeholder="data de validade" className="py-1 pl-2" type="month" />
                             </div>
+                            {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
                             <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
                         </div>
                     </div>}

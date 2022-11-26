@@ -6,7 +6,7 @@ import AdminRegister from "./view/AdminRegister/AdminRegister";
 
 import Bets from "./view/bets/Bets";
 import HistoricoApostas from "./view/historico/HistoricoApostas";
-import HistoricoTransicoes from "./view/historicoTransicoes/historicoTransicoes";
+import HistoricoTransicoes from "./view/historicoTransicoes/HistoricoTransicoes";
 import Home from "./view/home/Home";
 import Login from "./view/login/Login";
 import Profile from "./view/perfil/Perfil";
@@ -45,6 +45,10 @@ export const router = createBrowserRouter([
   {
     path: "/AdminRegister",
     element: <ProtectedRoute><AdminRegister /></ProtectedRoute>,
+  },
+  {
+    path: "*",
+    element: <div>This page does not exist</div>,
   }
 ]);
 

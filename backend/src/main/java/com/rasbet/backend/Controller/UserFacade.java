@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -126,22 +127,17 @@ public class UserFacade {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get user successful"),
             @ApiResponse(responseCode = "400", description = "Could not get info") })
-    @PostMapping("/getUser")
+    @GetMapping("/getUser")
     public User getUser(
-            @RequestHeader(value = "Authorization") String token
-    )
-    {
+            @RequestHeader(value = "Authorization") String token) {
         try {
-            if(token != null)
-            {
+            if (token != null) {
                 token = RasbetTokenDecoder.parseToken(token);
                 RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
                 return UserDB.get_User(rasbetTokenDecoder.getId());
-            }
-            else return null;
-        }
-        catch (SQLException e)
-        {
+            } else
+                return null;
+        } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

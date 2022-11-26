@@ -7,9 +7,12 @@ import { Transaction } from "../../models/transaction.model";
 
 function HistoricoTransicoes() {
     const [transicoes, setTransicoes] = useState<Transaction[]>([]);
-    const { fetchdataAuth, id } = UseAuthentication()
-    useEffect(() => {
+    const { fetchdataAuth, id, balance, setBalance } = UseAuthentication()
 
+    useEffect(() => {
+        fetchdataAuth(`http://localhost:8080/getBalance`, "GET").then((data) => {
+            setBalance(data)
+        })
         fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET").then(
             (data: Transaction[]) => {
                 if (data !== undefined) {
@@ -21,7 +24,7 @@ function HistoricoTransicoes() {
         )
 
 
-    }, [fetchdataAuth, id]);
+    }, [fetchdataAuth, id, setBalance]);
 
     return (
 
@@ -31,7 +34,7 @@ function HistoricoTransicoes() {
                 <div className="flex justify-center mt-5 text-4xl">
                     Histórico De Transações
                 </div>
-                <div className="flex justify-center mt-5">Saldo: 100,00 €</div>
+                <div className="flex justify-center mt-5">Saldo: {balance} €</div>
                 <div className="flex flex-col justify-center mt-5 space-y-4">
                     {transicoes.length > 0 &&
                         <div>
@@ -47,7 +50,7 @@ function HistoricoTransicoes() {
                         </div>}
                 </div>
 
-                <div className=" mt-5 overflow-auto text-xl h-[500px] flex flex-col justify-center ">
+                <div className=" mt-5 overflow-auto text-xl h-[500px] flex flex-col">
                     {transicoes.length > 0 && transicoes.map((transicao, key) => {
                         return (
 

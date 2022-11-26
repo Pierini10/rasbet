@@ -12,7 +12,7 @@ function Profile() {
     const [info, setInfo] = useState<ProfileInfo>();
     const { fetchdataAuth } = UseAuthentication()
     useEffect(() => {
-        fetchdataAuth("http://localhost:8080/getUser", "POST").then(
+        fetchdataAuth("http://localhost:8080/getUser", "GET").then(
             (data: ProfileInfo) => {
                 if (data) {
                     setInfo(data)

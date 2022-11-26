@@ -83,7 +83,7 @@ function AdminRegister() {
                                 <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Morada" onChange={updateAddress} />
                                 <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Telemovel" onChange={updatePhone} />
                                 <input required onFocus={e => e.target.type = 'date'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Data de Nascimento" onChange={updateBday} />
-                                <select onChange={(e) => updateRole(e)}>
+                                <select onChange={(e) => updateRole(e)} className="p-2 text-center bg-white border border-green-900 rounded-lg placeholder:text-gray-400">
                                     <option value="Specialist"> Especialista </option>
                                     <option value="Administrator"> Administrador </option>
                                 </select>

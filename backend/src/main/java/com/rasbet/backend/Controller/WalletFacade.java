@@ -34,7 +34,7 @@ public class WalletFacade {
     @Autowired
     JwtDecoder jwtDecoder;
 
-     /**
+    /**
      * Withdraw and deposit money.
      * 
      * @param amount (negative for withdraw, positive for deposit)
@@ -51,16 +51,16 @@ public class WalletFacade {
             @RequestParam() double amount,
             @RequestParam(required = false) String promotionCode,
             @RequestParam(required = false) String method,
-            @RequestHeader("Authorization") String token)
-        {
-            token = RasbetTokenDecoder.parseToken(token);
+            @RequestHeader("Authorization") String token) {
+        token = RasbetTokenDecoder.parseToken(token);
 
-            String transactionType = "levantamento";
+        String transactionType = "levantamento";
         if (amount > 0) {
             transactionType = "deposito";
         }
         try {
-            return TransactionDB.addTransaction(new RasbetTokenDecoder(token, jwtDecoder).getId(), transactionType, amount, promotionCode);
+            return TransactionDB.addTransaction(new RasbetTokenDecoder(token, jwtDecoder).getId(), transactionType,
+                    amount, promotionCode);
         } catch (NoAmountException | NoPromotionCodeException | NoMinimumValueException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, e.getMessage());
@@ -87,8 +87,7 @@ public class WalletFacade {
             @ApiResponse(responseCode = "500", description = "SQLException.")
     })
     @GetMapping("/getTransactionsHistory")
-    public ArrayList<Transaction> getTransactionsHistory(@RequestHeader("Authorization") String token)
-    {
+    public ArrayList<Transaction> getTransactionsHistory(@RequestHeader("Authorization") String token) {
         token = RasbetTokenDecoder.parseToken(token);
 
         try {
@@ -110,11 +109,10 @@ public class WalletFacade {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get balance was successful."),
             @ApiResponse(responseCode = "500", description = "SQLException.") })
-    @PostMapping("/getBalance")
+    @GetMapping("/getBalance")
     public double getBalance(
-            @RequestHeader("Authorization") String token)
-        {
-            token = RasbetTokenDecoder.parseToken(token);
+            @RequestHeader("Authorization") String token) {
+        token = RasbetTokenDecoder.parseToken(token);
         try {
             User user = UserDB.get_User(new RasbetTokenDecoder(token, jwtDecoder).getId());
             return user.getBalance();
@@ -123,5 +121,5 @@ public class WalletFacade {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
         }
     }
-    
+
 }

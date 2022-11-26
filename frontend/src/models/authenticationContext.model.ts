@@ -5,6 +5,8 @@ export type AuthenticationContextype = {
   setRole: (role: string) => void;
   id: number;
   setId: (id: number) => void;
+  balance: number;
+  setBalance: (balance: number) => void;
   fetchdataAuth: (
     url: string,
     method: "GET" | "POST" | "PUT" | "DELETE",
