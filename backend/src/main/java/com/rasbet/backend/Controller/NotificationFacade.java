@@ -59,20 +59,16 @@ public class NotificationFacade {
     @Operation(summary = "Get all notifications for a user or for the admin")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Notifications found"),
-            @ApiResponse(responseCode = "401", description = "User does not have Authorization"),
             @ApiResponse(responseCode = "500", description = "SQL Exception")
     })
-    @CrossOrigin(origins = "*")
     @GetMapping("/getNotifications")
     public List<String> getNotifications(
         @RequestHeader("Authorization") String token,
         @RequestParam() int lastNNotifications 
     ) {
+        token = RasbetTokenDecoder.parseToken(token);
         try {
             return NotificationDB.getNotifications(new RasbetTokenDecoder(token, jwtDecoder).getId(), lastNNotifications);
-        } catch (NoAuthorizationException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
