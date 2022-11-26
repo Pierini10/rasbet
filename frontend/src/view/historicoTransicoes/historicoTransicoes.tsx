@@ -11,9 +11,10 @@ function HistoricoTransicoes() {
     useEffect(() => {
 
         fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET").then(
-            (data) => {
+            (data: Transaction[]) => {
                 if (data !== undefined) {
-                    setTransicoes(data);
+                    setTransicoes(data.reverse());
+
                 }
             }
 

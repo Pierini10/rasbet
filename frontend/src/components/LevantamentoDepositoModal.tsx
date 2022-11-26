@@ -5,16 +5,15 @@ import { UseAuthentication } from "../contexts/authenticationContext";
 function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>, type: "deposito" | "levantamento" }) {
     const [step, setStep] = useState<"choices" | "MBway" | "Card" | "Bank">("choices");
     const [value, setValue] = useState(0);
-
-    const { fetchdataAuth, id } = UseAuthentication()
+    const [promotionCode, setPromotionCode] = useState<string | undefined>();
+    const { fetchdataAuth } = UseAuthentication()
 
     const withdrawMoney = async () => {
         const val = props.type === "deposito" ? value : -value;
-        const data = await fetchdataAuth("http://localhost:8080/withdrawDeposit", "POST", undefined, { userID: id, amount: val, method: step });
-        if (typeof data === "string") {
-            alert(data)
-        }
-        else {
+        let transaction: { amount: number, method: string, promotionCode?: string } = { amount: val, method: step }
+        if (promotionCode) { transaction.promotionCode = promotionCode }
+        const data = await fetchdataAuth("http://localhost:8080/withdrawDeposit", "POST", undefined, transaction);
+        if (data) {
             props.type === "levantamento" ? alert("Levantamento realizado com sucesso!") : alert("Deposito realizado com sucesso!")
             props.onClose(false)
         }
@@ -24,6 +23,9 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
         setValue(Number(e.target.value))
     }
 
+    const updatePromotionCode = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPromotionCode(e.target.value)
+    }
     return (
         <Modal ariaHideApp={false} isOpen={props.isOpen} className="relative grid h-screen bg-transparent place-items-center">
             <div className="relative px-10 pb-10 rounded-lg bg-slate-200">
@@ -41,8 +43,9 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
                 {step === "Bank" && <div>
                     <div className="flex justify-center mb-5 text-2xl text-black">Transferência Bancária</div>
                     <div className="flex flex-col py-1 pl-2 space-y-4">
-                        <input placeholder="value" className="py-1 pl-2" onChange={updateValue} />
-                        <input placeholder="NIB" className="py-1 pl-2" />
+                        <input placeholder="valor" className="py-1 pl-2" onChange={updateValue} type="number" />
+                        <input placeholder="NIB" className="py-1 pl-2" type="number" />
+                        <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />
                         <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
                     </div>
                 </div>}
@@ -52,6 +55,7 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
                         <div className="flex flex-col py-1 pl-2 space-y-4">
                             <input placeholder="value" className="py-1 pl-2" onChange={updateValue} />
                             <input placeholder="numero de telemovel" className="py-1 pl-2" />
+                            <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />
                             <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
                         </div>
                     </div>}
@@ -61,6 +65,7 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
                         <div className="flex flex-col py-1 pl-2 space-y-4">
                             <input placeholder="value" className="py-1 pl-2" onChange={updateValue} />
                             <input placeholder="numero de cartão" className="py-1 pl-2" />
+                            <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />
                             <div className="space-x-2">
                                 <input placeholder="numero de segurança" className="py-1 pl-2" type="Number" />
                                 <input placeholder="data de validade" className="py-1 pl-2" type="month" />
