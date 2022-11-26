@@ -2,6 +2,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthenticationProvider from "./contexts/authenticationContext";
+import AdminRegister from "./view/AdminRegister/AdminRegister";
 
 import Bets from "./view/bets/Bets";
 import HistoricoApostas from "./view/historico/HistoricoApostas";
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
     path: "/historicoTransicoes",
     element: <ProtectedRoute><HistoricoTransicoes /></ProtectedRoute>,
   },
+  {
+    path: "/AdminRegister",
+    element: <ProtectedRoute><AdminRegister /></ProtectedRoute>,
+  }
 ]);
 
 function App() {

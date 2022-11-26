@@ -32,14 +32,13 @@ public class AuthFacade {
         this.tokenService = tokenService;
     }
 
-    @GetMapping
-    public String home(@RequestHeader("Authorization") String token)
-    {
+    @GetMapping("/validToken")
+    public boolean home(@RequestHeader("Authorization") String token) {
         // TODO: REMOVE (TEST ONLY)
         token = RasbetTokenDecoder.parseToken(token);
         System.out.println(token);
-        int id = new RasbetTokenDecoder(token, jwtDecoder).getId();
-        return "id=" + id;
+        return true;
+
     }
 
     // DB Credentials:

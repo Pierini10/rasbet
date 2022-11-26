@@ -12,6 +12,7 @@ const initialValues = {
     setId: () => { },
     setRole: () => { },
     fetchdataAuth: () => { return new Promise((resolve) => { resolve({}) }) },
+    testToken: () => { return new Promise((resolve) => { resolve({}) }) },
     saveToken: () => { },
     logout: () => { },
 
@@ -47,7 +48,6 @@ export default function AuthenticationProvider({ children }: { children: React.R
                 if (response.status === 200) {
                     return data
                 } else {
-
                     alert(data.message)
                 }
             }
@@ -55,6 +55,22 @@ export default function AuthenticationProvider({ children }: { children: React.R
             console.log(error)
         }
     };
+
+    const testToken = async (tk: string) => {
+        const response = await fetch("http://localhost:8080/validToken", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + tk,
+
+            },
+        })
+        if (response.status === 200) {
+            return true
+        } else {
+            return false
+        }
+    }
     const saveToken = (newToken: string) => {
         const jwtdecoded: jwt = jwtDecode(newToken);
         localStorage.setItem("token", newToken);
@@ -83,6 +99,7 @@ export default function AuthenticationProvider({ children }: { children: React.R
                 setToken,
                 setRole,
                 fetchdataAuth,
+                testToken,
                 saveToken,
                 logout
 

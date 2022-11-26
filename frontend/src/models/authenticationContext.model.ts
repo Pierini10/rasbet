@@ -11,6 +11,7 @@ export type AuthenticationContextype = {
     body?: BodyInit,
     params?: { [key: string]: any }
   ) => Promise<any>;
+  testToken: (tk: string) => Promise<any>;
   saveToken: (token: string) => void;
   logout: () => void;
 };

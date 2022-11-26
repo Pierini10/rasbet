@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { register } from "../../api/user";
+import { UseAuthentication } from "../../contexts/authenticationContext";
 
-function Registo() {
-    const navigate = useNavigate();
+function AdminRegister() {
+    const { token } = UseAuthentication()
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
     const [name, setname] = useState("");
@@ -14,13 +14,19 @@ function Registo() {
     const [address, setaddress] = useState("");
     const [phone, setphone] = useState("");
     const [birthday, setbirthday] = useState("")
+    const [role, setrole] = useState<"Specialist" | "Administrator">("Specialist");
+
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const sucess = await register({ email, password: password, firstName: name, lastName: surname, NIF: parseInt(nif), CC: parseInt(cc), address, phoneNumber: phone, birthday, role: "Normal" });
+
+        const sucess = await register({ email, password: password, firstName: name, lastName: surname, NIF: parseInt(nif), CC: parseInt(cc), address, phoneNumber: phone, birthday, role }, token);
 
         if (sucess) {
-            navigate("/login")
+            alert("User created with success")
+        }
+        else {
+            alert("Error creating user")
         }
     }
 
@@ -52,6 +58,9 @@ function Registo() {
     const updateBday = (e: React.ChangeEvent<HTMLInputElement>) => {
         setbirthday(e.target.value);
     }
+    const updateRole = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setrole(e.target.value as "Specialist" | "Administrator");
+    }
 
 
     return (
@@ -74,6 +83,10 @@ function Registo() {
                                 <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Morada" onChange={updateAddress} />
                                 <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Telemovel" onChange={updatePhone} />
                                 <input required onFocus={e => e.target.type = 'date'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Data de Nascimento" onChange={updateBday} />
+                                <select onChange={(e) => updateRole(e)}>
+                                    <option value="Specialist"> Especialista </option>
+                                    <option value="Administrator"> Administrador </option>
+                                </select>
                             </div>
                             <div className="flex justify-center w-full">
                                 <button className="px-4 py-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:scale-110 hover:bg-orange-700">Concluir</button>
@@ -89,4 +102,4 @@ function Registo() {
     )
 }
 
-export default Registo;
+export default AdminRegister;

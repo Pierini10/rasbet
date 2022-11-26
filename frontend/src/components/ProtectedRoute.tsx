@@ -1,24 +1,35 @@
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { UseAuthentication } from "../contexts/authenticationContext";
 
 
 const ProtectedRoute = ({ children }: any) => {
 
-
-    const { token, saveToken } = UseAuthentication();
-    const ls = localStorage.getItem("token")
-
+    const location = useLocation();
+    const { token, saveToken, testToken, setToken, role } = UseAuthentication();
+    let ls = localStorage.getItem("token")
+    const ADMIN_PATHS = ["/AdminRegister"]
     useEffect(() => {
 
         if (ls) {
             saveToken(ls)
+            testToken(ls).then(
+                (data) => {
+                    if (typeof data === "string") {
+                        localStorage.removeItem("token");
+                        setToken("");
+                    }
+                }
+            );
         }
-    }, [saveToken, ls]);
+    }, [saveToken, ls, testToken, setToken]);
 
-    if (ls === null && token === "") {
+    if (token === "" && !ls) {
         return <Navigate to="/login" />
+    } else if (ADMIN_PATHS.includes(location.pathname) && role !== "admin") {
+        return <Navigate to="/" />
     }
+
 
 
 
