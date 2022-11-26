@@ -44,9 +44,13 @@ export default function AuthenticationProvider({ children }: { children: React.R
                     },
                     body,
                 });
-                const data = await response.json();
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await response.json() : undefined;
                 if (response.status === 200) {
-                    return data
+                    if (data) {
+                        return data
+                    }
+                    else return true;
                 } else {
                     alert(data.message)
                 }
