@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }: any) => {
     const ADMIN_PATHS = ["/AdminRegister"]
     useEffect(() => {
 
-        if (ls) {
+        if (ls && token === "") {
             saveToken(ls)
             testToken(ls).then(
                 (data: boolean) => {
@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }: any) => {
                 }
             );
         }
-    }, [saveToken, ls, testToken, setToken]);
+    }, [saveToken, ls, testToken, setToken, token]);
 
     if (token === "" && !ls) {
         return <Navigate to="/login" />
