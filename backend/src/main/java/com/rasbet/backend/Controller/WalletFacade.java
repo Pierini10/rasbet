@@ -108,14 +108,10 @@ public class WalletFacade {
      */
     @Operation(summary = "Get balance.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Transaction was successful."),
-            @ApiResponse(responseCode = "400", description = "Transaction failed."),
+            @ApiResponse(responseCode = "200", description = "Get balance was successful."),
             @ApiResponse(responseCode = "500", description = "SQLException.") })
     @PostMapping("/getBalance")
     public double getBalance(
-            @RequestParam() double amount,
-            @RequestParam(required = false) String promotionCode,
-            @RequestParam(required = false) String method,
             @RequestHeader("Authorization") String token)
         {
             token = RasbetTokenDecoder.parseToken(token);

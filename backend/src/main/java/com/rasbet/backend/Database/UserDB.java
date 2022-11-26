@@ -151,10 +151,56 @@ public class UserDB {
         String query = "SELECT * FROM User WHERE User_ID=" + id + ";";
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
         User user;
+        int wallet_id, role_id;
 
         if (rs.next()) {
             user = new User(rs.getString("Email"), rs.getString("Password"));
             user.setId(id);
+            user.setFirstName(rs.getString("Name"));
+            user.setLastName(rs.getString("Surname"));
+            user.setAddress(rs.getString("Address"));
+            user.setPhoneNumber(rs.getString("Phone"));
+            // Get role
+            String role = get_Role(rs.getInt("Role"));
+            if (role.equals(""))
+                return null;
+            user.setRole(role);
+            wallet_id = rs.getInt("Wallet_ID");
+            role_id = rs.getInt("Role");
+        } else {
+            user = null;
+            wallet_id = -1;
+            role_id = -1;
+        }
+
+        sqLiteJDBC2.closeRS(rs);
+
+        // Get Balance
+        if (wallet_id != -1 && user!=null) {
+            double balance = WalletDB.get_Balance(wallet_id);
+            user.setBalance(balance);
+        }
+        
+        // Get role
+        if (role_id != -1 && user!=null) {
+            String role = get_Role(role_id);
+            user.setRole(role);
+        }
+        
+        return user;
+    }
+
+    public static User get_User(String email) throws SQLException {
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+
+        // Get a user by email
+        String query = "SELECT * FROM User WHERE Email=" + SQLiteJDBC.prepare_string(email) + ";";
+        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        User user;
+
+        if (rs.next()) {
+            user = new User(rs.getString("Email"), rs.getString("Password"));
+            user.setId(rs.getInt("User_ID"));
             user.setFirstName(rs.getString("Name"));
             user.setLastName(rs.getString("Surname"));
             user.setAddress(rs.getString("Address"));

@@ -17,7 +17,7 @@ public class PromotionDB {
 
         UserDB.assert_is_Administrator(id);
 
-        NotificationDB.createNotification(-1, description, id);
+        NotificationDB.createNotification(NotificationDB.globalId, description, id);
 
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
         String query = "INSERT INTO Promotion (Code, Value, MinValue, Type) VALUES ('" + code + "'"

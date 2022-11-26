@@ -13,7 +13,7 @@ import com.rasbet.backend.Exceptions.NoAuthorizationException;
  */
 public class NotificationDB {
 
-    public final static int globalId = -1;
+    public final static int globalId = 2;
 
     public static void createNotification(int idUser, String description, int requestUser)
             throws SQLException, NoAuthorizationException {
@@ -78,20 +78,19 @@ public class NotificationDB {
             }
         }
     }
-
-    public static List<String> getNotifications(int idUser, int requestUser)
+    
+    public static List<String> getNotifications(int idUser, int n)
             throws SQLException, NoAuthorizationException {
         List<String> notifications = new ArrayList<>();
 
-        if (requestUser == idUser || idUser == -1) {
-            SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
-            String query = "SELECT Description FROM Notification WHERE IdUser = " + idUser + ";";
-            ResultSet rs = sqLiteJDBC.executeQuery(query);
-            while (rs.next()) {
-                notifications.add(rs.getString("Description"));
-            }
-            sqLiteJDBC.close();
+        SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
+        String query = "SELECT Description FROM Notification WHERE IdUser = " + idUser + " ORDER BY Id DESC LIMIT "+ n + ";";
+        ResultSet rs = sqLiteJDBC.executeQuery(query);
+        while (rs.next()) {
+            notifications.add(rs.getString("Description"));
         }
+        sqLiteJDBC.close();
+
         return notifications;
     }
 }
