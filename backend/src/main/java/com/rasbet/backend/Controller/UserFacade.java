@@ -118,4 +118,33 @@ public class UserFacade {
         }
     }
 
+    /**
+     * Get user.
+     *
+     */
+    @Operation(summary = "Get user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get user successful"),
+            @ApiResponse(responseCode = "400", description = "Could not get info") })
+    @PostMapping("/getUser")
+    public User getUser(
+            @RequestHeader(value = "Authorization") String token
+    )
+    {
+        try {
+            if(token != null)
+            {
+                token = RasbetTokenDecoder.parseToken(token);
+                RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
+                return UserDB.get_User(rasbetTokenDecoder.getId());
+            }
+            else return null;
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
 }

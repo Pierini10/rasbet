@@ -1,0 +1,31 @@
+De forma a ajudar as equipas de alunos a elaborar o relatório relativo à solução arquitetural (parte da 2.ª entrega), sugerimos que usem o seguinte "template".
+Este "template" é apenas um referencial e cabe a cada equipa avaliar que partes fazem sentido incuir e quais as que devem ser eliminadas. Podem também introduzir novas partes.
+Devem também entregar uma nova versão do doc. requisitos (evidenciando o que foi modificado em relação à 1.ª entrega) e uma nova versão do código.
+1. Introduction and Goals
+Short description of the requirements, driving forces, extract (or abstract) of requirements (present a summary of the requirements document).
+Top three (max five) quality goals (non functional requirements) for the architecture which have highest priority.
+ 
+2. Constraints
+Anything that constrains teams in design and implementation decisions or decision about related processes.
+Content: describe the requirements that are mandatory to be included in the solution ( inclusion of the RASBet API)
+ 
+3. Context and Scope
+Delimits your system from its (external) communication partners (neighboring systems and users).
+Specifies the external interfaces. 
+Shown from a business/domain perspective (always) or a technical perspective (optional)
+Content: have a context diagram and with the indication of interfaces of the system with the main actors and/or the external components.
+4. Solution Strategy
+Summary of the fundamental decisions and solution strategies that shape the architecture. Can include technology, top-level decomposition, approaches to achieve top quality goals and relevant organizational decisions.
+Content: identify and describe the architectural patterns included adopted by the solution. (e.g., MVC and client server patterns) 
+ 
+5. Building Block View
+Static decomposition of the system, abstractions of source-code, shown as hierarchy of white boxes (containing black boxes), up to the appropriate level of detail.
+Content: Components and class diagrams for the solution.
+ 
+6. Runtime View
+Behaviour of building blocks as scenarios, covering important use cases or features, interactions at critical external interfaces, operation and administration plus error and exception behaviour.
+Content: Sequence diagrams (solutions space) for the main use cases of the system.
+ 
+7. Deployment View
+Technical infrastructure with environments, computers, processors, topologies. Mapping of (software) building blocks to infrastructure elements.
+Content: Deployment diagrams that describe where the system will be deployed. 
