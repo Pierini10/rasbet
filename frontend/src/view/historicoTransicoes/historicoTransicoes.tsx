@@ -32,18 +32,22 @@ function HistoricoTransicoes() {
                 </div>
                 <div className="flex justify-center mt-5">Saldo: 100,00 €</div>
                 <div className="flex flex-col justify-center mt-5 space-y-4">
-                    <div className="flex justify-center"> <hr className="border-black w-[90%]" /></div>
-                    <div className="flex justify-around">
-                        <div>Data</div>
-                        <div>Descrição</div>
-                        <div>Operação</div>
-                        <div>Saldo após movimento</div>
-                    </div>
-                    <div className="flex justify-center"> <hr className="border-black w-[90%]" /></div>
+                    {transicoes.length > 0 &&
+                        <div>
+                            <div className="flex justify-center"> <hr className="border-black w-[90%]" /></div>
+                            <div className="flex justify-around">
+                                <div>Data</div>
+                                <div>Descrição</div>
+                                <div>Operação</div>
+                                <div>Saldo após movimento</div>
+                            </div>
+                            <div className="flex justify-center"> <hr className="border-black w-[90%]" />
+                            </div>
+                        </div>}
                 </div>
 
                 <div className=" mt-5 overflow-auto text-xl h-[500px] flex flex-col justify-center ">
-                    {transicoes && transicoes.map((transicao, key) => {
+                    {transicoes.length > 0 && transicoes.map((transicao, key) => {
                         return (
 
                             <div className="flex py-5 text-base" key={key}>
@@ -56,17 +60,19 @@ function HistoricoTransicoes() {
                             </div>
                         )
                     })}
+                    {transicoes.length === 0 &&
+
+                        <div className="flex justify-center py-5 text-3xl" >
+                            Não existe transações para esta conta.
+
+                        </div>
+
+                    }
 
                 </div>
 
             </div>
-            <button onClick={() => {
-                fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET").then(
-                    (data) => {
-                        setTransicoes(data);
-                        console.log(data)
-                    })
-            }}>teste</button>
+
         </div>
     );
 

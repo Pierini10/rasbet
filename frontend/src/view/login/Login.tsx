@@ -43,7 +43,7 @@ function Login() {
                                 <input type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Palavra-passe" onChange={updatePassword} />
                                 <a href="/" className="flex justify-end mt-1 text-xs text-green-900 underline">Esqueci-me da palavra-passe</a>
                             </div>
-                            <button className="p-2 bg-orange-500 border rounded-xl" type="submit" >Aceder</button>
+                            <button className="p-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:bg-orange-700" type="submit" >Aceder</button>
                             <div>
                                 <div className="flex justify-center w-full">Não tem conta?</div>
                                 <a href="/register" className="flex justify-center w-full text-green-900 underline">Registe-se já!</a>

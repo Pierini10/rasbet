@@ -46,9 +46,7 @@ public class UserFacade {
     @PostMapping("/register")
     public void register(
             @RequestBody SignUpRequest signUpRequest,
-            @RequestHeader(value = "Authorization", required = false) String token
-    )
-    {
+            @RequestHeader(value = "Authorization", required = false) String token) {
         try {
             User new_user = new User(
                     signUpRequest.getEmail(),
@@ -61,22 +59,18 @@ public class UserFacade {
                     signUpRequest.getAddress(),
                     signUpRequest.getPhoneNumber(),
                     signUpRequest.getBirthday(),
-                    signUpRequest.getRole()
-            );
+                    signUpRequest.getRole());
 
             // Get user role from bearer token (if there is a token available).
             String userRequestRole = UserDB.NORMAL_ROLE;
-            if(token != null)
-            {
+            if (token != null) {
                 token = RasbetTokenDecoder.parseToken(token);
                 RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
                 userRequestRole = rasbetTokenDecoder.getRole();
             }
 
             UserDB.create_User(new_user, userRequestRole);
-        }
-        catch (SQLException | BadPasswordException | NoAuthorizationException e)
-        {
+        } catch (SQLException | BadPasswordException | NoAuthorizationException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -106,14 +100,17 @@ public class UserFacade {
             @RequestParam(name = "lastName", required = false) String lastName,
             @RequestParam(name = "address", required = false) String address,
             @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
-            @RequestHeader(value = "Authorization") String token)
-    {
+            @RequestHeader(value = "Authorization") String token) {
         try {
             token = RasbetTokenDecoder.parseToken(token);
             RasbetTokenDecoder rasbetTokenDecoder = new RasbetTokenDecoder(token, jwtDecoder);
             User user = UserDB.get_User(rasbetTokenDecoder.getId());
             assert user != null;
-            user.update_info(email, password,  this.encoder.encode(password), firstName, lastName, address, phoneNumber);
+            String encodedPassword = password;
+            if (password != null) {
+                encodedPassword = this.encoder.encode(password);
+            }
+            user.update_info(email, password, encodedPassword, firstName, lastName, address, phoneNumber);
             UserDB.update_User(user);
         } catch (BadPasswordException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

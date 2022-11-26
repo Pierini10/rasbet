@@ -138,6 +138,14 @@ function HistoricoApostas() {
           {filteredBets?.bets.map((a, index) => (
             <Aposta key={index} {...a} />
           ))}
+          {!filteredBets &&
+
+            <div className="flex items-center justify-center h-full py-5 text-3xl" >
+              Não existe histórico de Apostas para esta conta.
+
+            </div>
+
+          }
         </div>
       </div>
     </div>

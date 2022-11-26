@@ -47,8 +47,8 @@ export default function AuthenticationProvider({ children }: { children: React.R
                 if (response.status === 200) {
                     return data
                 } else {
-                    console.log(response)
-                    return data.message
+
+                    alert(data.message)
                 }
             }
         } catch (error) {
