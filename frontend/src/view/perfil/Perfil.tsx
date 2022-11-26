@@ -14,7 +14,9 @@ function Profile() {
     useEffect(() => {
         fetchdataAuth("http://localhost:8080/getUser", "POST").then(
             (data: ProfileInfo) => {
-                setInfo(data)
+                if (data) {
+                    setInfo(data)
+                }
             }
         )
     }, [fetchdataAuth])
@@ -32,7 +34,7 @@ function Profile() {
                 <div className="flex justify-center mt-5 text-xl sm:ml-20 sm:block">Consultar Histórico de apostas
                     <a className="px-1 ml-2 transition border border-black rounded-full hover:bg-orange-500" href="/historicoApostas"> {'>'} </a>
                 </div>
-                <ChangeInfoForm info={info} />
+                <ChangeInfoForm info={info} updateInfo={setInfo} />
 
             </div>
             <LevantamentoDepositoModal isOpen={levantamentoModalIsOpen} onClose={setLevantamentoModalIsOpen} type="levantamento" />

@@ -14,8 +14,8 @@ const ProtectedRoute = ({ children }: any) => {
         if (ls) {
             saveToken(ls)
             testToken(ls).then(
-                (data) => {
-                    if (typeof data === "string") {
+                (data: boolean) => {
+                    if (!data) {
                         localStorage.removeItem("token");
                         setToken("");
                     }

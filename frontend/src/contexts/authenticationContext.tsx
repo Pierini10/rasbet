@@ -61,17 +61,22 @@ export default function AuthenticationProvider({ children }: { children: React.R
     };
 
     const testToken = async (tk: string) => {
-        const response = await fetch("http://localhost:8080/validToken", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + tk,
+        try {
+            const response = await fetch("http://localhost:8080/validToken", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + tk,
 
-            },
-        })
-        if (response.status === 200) {
-            return true
-        } else {
+                },
+            })
+            if (response.status === 200) {
+                return true
+            } else {
+                return false
+            }
+        }
+        catch (error) {
             return false
         }
     }

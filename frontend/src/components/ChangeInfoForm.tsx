@@ -1,10 +1,10 @@
-import { useState } from "react"
+import { Dispatch, useState } from "react"
 import { UseAuthentication } from "../contexts/authenticationContext"
 import { ChangeableInfo } from "../models/info.model"
 import { ProfileInfo } from "../models/profile.model"
 
 
-function ChangeInfoForm(props: { info: ProfileInfo | undefined }) {
+function ChangeInfoForm(props: { info: ProfileInfo | undefined, updateInfo: Dispatch<ProfileInfo> }) {
     const { fetchdataAuth } = UseAuthentication()
 
 
@@ -30,6 +30,13 @@ function ChangeInfoForm(props: { info: ProfileInfo | undefined }) {
             (data: boolean) => {
                 if (data) {
                     alert("Informação alterada com sucesso")
+                    fetchdataAuth("http://localhost:8080/getUser", "POST").then(
+                        (data: ProfileInfo) => {
+                            if (data) {
+                                props.updateInfo(data)
+                            }
+                        }
+                    )
                 } else {
                     alert("Erro ao alterar informação")
                 }
