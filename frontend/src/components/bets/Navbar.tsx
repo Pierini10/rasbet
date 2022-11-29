@@ -8,23 +8,23 @@ const listaDesportos: string[] = ["Futebol", "Basquetebol", "Ténis", "MotoGP"];
 
 const Navbar = () => {
   return (
-    <div className="sticky top-0 bg-green-900 grid grid-cols-3 h-24 items-center p-6 text-white">
-      <nav className="col-span-2 flex justify-between h-full items-center">
-        <img src="logo.png" alt="logo" className="" />
-        <div className="pl-4 pr-4 uppercase text-base font-medium">
-          <ul className="flex space-x-20">
-            <li id="Todos">
-              <SportButton sport="Todos" />
+    <div className='sticky top-0 bg-green-900 grid grid-cols-3 h-24 items-center p-6 text-white'>
+      <nav className='col-span-2 flex justify-between h-full items-center'>
+        <img src='logo.png' alt='logo' className='' />
+        <div className='pl-4 pr-4 uppercase text-base font-medium'>
+          <ul className='flex space-x-20'>
+            <li id='Todos'>
+              <SportButton sport='Todos' />
             </li>
             {listaDesportos.map((e) => (
-              <li id={e}>
+              <li key={e}>
                 <SportButton sport={e} />
               </li>
             ))}
           </ul>
         </div>
       </nav>
-      <div className="flex place-content-end">Bem vindo, manel</div>
+      <div className='flex place-content-end'>Bem vindo, manel</div>
     </div>
   );
 };

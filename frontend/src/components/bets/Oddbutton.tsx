@@ -2,7 +2,7 @@ interface Data {
   id: string;
   betType: string;
   ent: string;
-  odd: string;
+  odd: number;
   changeCallback: (id: string, bet: string) => void;
   checkCallback: (id: string, bet: string) => boolean;
 }

@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthenticationProvider from "./contexts/authenticationContext";
@@ -12,11 +11,56 @@ import Login from "./view/login/Login";
 import Profile from "./view/perfil/Perfil";
 import Registo from "./view/registo/Registo";
 
-
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <ProtectedRoute><Home /></ProtectedRoute>,
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: "/bets",
+        element: (
+          <ProtectedRoute>
+            <Bets />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/historicoApostas",
+        element: (
+          <ProtectedRoute>
+            <HistoricoApostas />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/historicoTransicoes",
+        element: (
+          <ProtectedRoute>
+            <HistoricoTransicoes />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/AdminRegister",
+        element: (
+          <ProtectedRoute>
+            <AdminRegister />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/register",
@@ -27,34 +71,18 @@ export const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/bets",
-    element: <ProtectedRoute><Bets /></ProtectedRoute>,
-  },
-  {
-    path: "/profile",
-    element: <ProtectedRoute><Profile /></ProtectedRoute>,
-  },
-  {
-    path: "/historicoApostas",
-    element: <ProtectedRoute><HistoricoApostas /></ProtectedRoute>,
-  },
-  {
-    path: "/historicoTransicoes",
-    element: <ProtectedRoute><HistoricoTransicoes /></ProtectedRoute>,
-  },
-  {
-    path: "/AdminRegister",
-    element: <ProtectedRoute><AdminRegister /></ProtectedRoute>,
-  },
-  {
     path: "*",
     element: <div>This page does not exist</div>,
-  }
+  },
 ]);
 
 function App() {
-
-  return (<AuthenticationProvider> <RouterProvider router={router} /></AuthenticationProvider>);
+  return (
+    <AuthenticationProvider>
+      {" "}
+      <RouterProvider router={router} />
+    </AuthenticationProvider>
+  );
 }
 
 export default App;
