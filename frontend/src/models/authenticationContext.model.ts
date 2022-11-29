@@ -16,4 +16,7 @@ export type AuthenticationContextype = {
   testToken: (tk: string) => Promise<any>;
   saveToken: (token: string) => void;
   logout: () => void;
+  isAdministrator: () => boolean;
+  isSpecialist: () => boolean;
+  isNormal: () => boolean;
 };

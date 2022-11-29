@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Boletim from "../../components/bets/Boletim";
 import EventBlock from "../../components/bets/EventBlock";
 import Pagamento from "../../components/bets/Pagamento";
+import Progress from "../../components/bets/Progress";
 import SelectInput from "../../components/bets/SelectInput";
 import { UseAuthentication } from "../../contexts/authenticationContext";
 import { Event, jsonToEvents } from "../../models/event.model";
@@ -14,128 +15,15 @@ interface Bet {
   odd: number;
 }
 
-// const events: Jogo[] = [
-//   {
-//     id: "1",
-//     casa: "Benfica",
-//     fora: "Porto",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "2",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "3",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "4",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "5",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "6",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "7",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "8",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "9",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "10",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "11",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "12",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-//   {
-//     id: "13",
-//     casa: "casa1",
-//     fora: "asda",
-//     data: "454564646",
-//     oddc: 21,
-//     odde: 32,
-//     oddf: 14,
-//   },
-// ];
+interface SportInfo {
+  total: number;
+  red: number;
+  yellow: number;
+  green: number;
+}
 
 const Bets = () => {
-  const { fetchdataAuth, id, role } = UseAuthentication();
+  const { fetchdataAuth, id, isNormal, isSpecialist } = UseAuthentication();
   const [events, setEvents] = useState<Event[]>([]);
   const [sports, setSports] = useState<string[]>([]);
   const [competitions, setCompetitions] = useState<string[]>([]);
@@ -147,9 +35,6 @@ const Bets = () => {
   const [totalGain, setTotalGain] = useState(0);
   const [cota, setCota] = useState(0);
   const [showPayment, setShowPayment] = useState(false);
-  const r_normal = "ROLE_Normal";
-  const r_specialist = "ROLE_Normal";
-  const r_admin = "ROLE_Normal";
 
   useEffect(() => {
     fetchdataAuth("http://localhost:8080/getAllSports", "GET").then(
@@ -309,7 +194,6 @@ const Bets = () => {
   ) => {
     setCompetition(event.target.value);
   };
-  console.log(role);
   return (
     <div>
       {showPayment ? (
@@ -319,24 +203,30 @@ const Bets = () => {
       ) : (
         ""
       )}
-      <div className='grid grid-cols-3'>
-        <div className='col-span-2'>
-          <div className='fixed w-[66%] bg-white flex justify-center space-x-10 h-16 items-center'>
-            <SelectInput
-              handleChange={handleChangeSport}
-              label='Desporto: '
-              listValues={sports}
-              value={sport}
-            />
-            <SelectInput
-              handleChange={handleChangeCompetition}
-              label='Competição: '
-              listValues={competitions}
-              value={competition}
-            />
+      <div
+        className={"grid ".concat(!isNormal() ? "grid-cols-3" : "grid-cols-4")}
+      >
+        <div className={isNormal() ? "col-span-2" : "col-span-3"}>
+          <div className='fixed w-full bg-white'>
+            <div className='w-[66%] flex justify-center space-x-10 h-16 items-center'>
+              <SelectInput
+                handleChange={handleChangeSport}
+                label='Desporto: '
+                listValues={sports}
+                value={sport}
+              />
+              <SelectInput
+                handleChange={handleChangeCompetition}
+                label='Competição: '
+                listValues={competitions}
+                value={competition}
+              />
+            </div>
           </div>
         </div>
-        <div className='col-span-2 pt-16'>
+        <div
+          className={"pt-16 ".concat(!isNormal() ? "col-span-2" : "col-span-3")}
+        >
           <ul className='space-y-6'>
             {events.map((e) => {
               return competition === "Todas" ||
@@ -354,19 +244,21 @@ const Bets = () => {
             })}
           </ul>
         </div>
-        {role === r_specialist ? (
-          <div className='bg-white fixed bottom-0 left-0 w-[66%] h-24 flex justify-center items-center'>
-            <button
-              className='bg-orange-500 uppercase h-10 font-medium pl-8 pr-8 items-center rounded-xl'
-              onClick={() => {}}
-            >
-              Guardar Alterações
-            </button>
+        {isSpecialist() ? (
+          <div className='bg-white fixed bottom-0 left-0 w-full h-24'>
+            <div className='h-full w-[66%] flex justify-center items-center'>
+              <button
+                className='bg-orange-500 uppercase h-10 font-medium pl-8 pr-8 items-center rounded-xl'
+                onClick={() => {}}
+              >
+                Guardar Alterações
+              </button>
+            </div>
           </div>
         ) : (
           ""
         )}
-        {role === r_normal ? (
+        {!isNormal() ? (
           <Boletim
             betType={betType}
             btCallback={changeBetType}
@@ -379,7 +271,7 @@ const Bets = () => {
             spCallback={changeShowPayment}
           />
         ) : (
-          ""
+          <Progress />
         )}
       </div>
     </div>

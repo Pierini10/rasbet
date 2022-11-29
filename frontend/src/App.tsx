@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/AdminRegister",
+        path: "/adminRegister",
         element: (
           <ProtectedRoute>
             <AdminRegister />
