@@ -18,7 +18,7 @@ import com.rasbet.backend.Database.OddDB;
 import com.rasbet.backend.Database.SportsDB;
 import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Event;
-import com.rasbet.backend.Entities.UpdateOddRequest;
+import com.rasbet.backend.Requests.UpdateOddRequest;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 

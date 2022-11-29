@@ -1,4 +1,6 @@
-package com.rasbet.backend.Entities;
+package com.rasbet.backend.Requests;
+
+import com.rasbet.backend.Entities.EventOdds;
 
 import java.util.List;
 

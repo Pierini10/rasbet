@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.OddSimple;
-import com.rasbet.backend.Entities.UpdateOddRequest;
+import com.rasbet.backend.Requests.UpdateOddRequest;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
 /**
