@@ -25,31 +25,31 @@ const Navbar = () => {
         <div className='pl-4 pr-4 uppercase text-base font-medium'>
           <ul className='flex space-x-16'>
             <li key='e'>
-              <Link to={"/bets"}>Eventos</Link>
+              <Link to={"/bets"}>Events</Link>
             </li>
             {isNormal() ? (
               <li key='ha'>
-                <Link to={"/historicoApostas"}>Histórico de Apostas</Link>
+                <Link to={"/historicoApostas"}>Bet history</Link>
               </li>
             ) : (
               ""
             )}
             {isNormal() ? (
               <li key='ht'>
-                <Link to={"/historicoTransicoes"}>Histórico de Transações</Link>
+                <Link to={"/historicoTransicoes"}>Transaction history</Link>
               </li>
             ) : (
               ""
             )}
             {isAdministrator() ? (
               <li key='ar'>
-                <Link to={"/adminRegister"}>Registo de utilizadores</Link>
+                <Link to={"/adminRegister"}>Register users</Link>
               </li>
             ) : (
               ""
             )}
             <li key='p'>
-              <Link to={"/profile"}>Perfil</Link>
+              <Link to={"/profile"}>Profile</Link>
             </li>
           </ul>
         </div>

@@ -33,7 +33,7 @@ const PaymentBank = (props: Data) => {
         />
 
         <input
-          placeholder='Código Promocional'
+          placeholder='Promotional Code'
           className='pl-2 text-gray-800 focus:outline-none text-lg h-12 w-48 border-gray-400 border-2'
           onChange={props.handlePromoCallback}
           value={props.promotionalCode}
@@ -45,13 +45,13 @@ const PaymentBank = (props: Data) => {
           className='bg-orange-500 w-40 h-10 rounded-xl flex items-center justify-center uppercase font-semibold text-xl'
           onClick={() => props.payCallback()}
         >
-          Pagar
+          Pay
         </button>
         <button
           className='bg-gray-400   w-40 h-10 rounded-xl flex items-center justify-center uppercase font-semibold text-xl'
           onClick={() => props.cancelCallback(false)}
         >
-          Cancelar
+          Cancel
         </button>
       </div>
     </div>

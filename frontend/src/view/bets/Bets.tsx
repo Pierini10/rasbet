@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Boletim from "../../components/bets/Boletim";
+import Bill from "../../components/bets/Bill";
 import EventBlock from "../../components/bets/EventBlock";
 import Payment from "../../components/bets/Payment";
 import Progress from "../../components/bets/Progress";
@@ -253,13 +253,13 @@ const Bets = () => {
             <div className='w-[66%] flex justify-center space-x-10 h-16 items-center'>
               <SelectInput
                 handleChange={handleChangeSport}
-                label='Desporto: '
+                label='Sport: '
                 listValues={sports}
                 value={sport}
               />
               <SelectInput
                 handleChange={handleChangeCompetition}
-                label='Competição: '
+                label='Competition: '
                 listValues={competitions}
                 value={competition}
               />
@@ -307,7 +307,7 @@ const Bets = () => {
                   className='bg-orange-500 uppercase h-10 font-medium pl-8 pr-8 items-center rounded-xl'
                   onClick={() => {}}
                 >
-                  Guardar Alterações
+                  Save Changes
                 </button>
               </div>
             </div>
@@ -316,8 +316,8 @@ const Bets = () => {
           )}
         </div>
 
-        {isNormal() ? (
-          <Boletim
+        {!isNormal() ? (
+          <Bill
             betType={betType}
             btCallback={changeBetType}
             bets={bets}

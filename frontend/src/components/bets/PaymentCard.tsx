@@ -27,24 +27,24 @@ const PaymentCard = (props: Data) => {
       <div className='flex flex-col py-1 pl-2 space-y-1'>
         <div className='flex space-x-1'>
           <input
-            placeholder='Nº Cartão'
+            placeholder='Card Number'
             className=' pl-2 text-gray-800 focus:outline-none h-12 w-44 border-gray-400 border-2'
             onChange={handleCardNumber}
             value={cardNumber}
           />
           <input
-            placeholder='Nº Segurança'
+            placeholder='Security Number'
             className=' pl-2 text-gray-800 focus:outline-none h-12 w-44 border-gray-400 border-2'
           />
         </div>
         <div className='flex space-x-1'>
           <input
-            placeholder='Data de validade'
+            placeholder='Validation Date'
             className=' pl-2 text-gray-800 focus:outline-none h-12 w-44 border-gray-400 border-2'
             type='month'
           />
           <input
-            placeholder='Código Promocional'
+            placeholder='Promotional Code'
             className='pl-2 text-gray-800 focus:outline-none  h-12 w-44 border-gray-400 border-2'
             onChange={props.handlePromoCallback}
             value={props.promotionalCode}
@@ -56,13 +56,13 @@ const PaymentCard = (props: Data) => {
           className='bg-orange-500 w-36 h-10 rounded-xl flex items-center justify-center uppercase font-semibold text-lg'
           onClick={() => props.payCallback()}
         >
-          Pagar
+          Pay
         </button>
         <button
           className='bg-gray-400   w-36 h-10 rounded-xl flex items-center justify-center uppercase font-semibold text-lg'
           onClick={() => props.cancelCallback(false)}
         >
-          Cancelar
+          Cancel
         </button>
       </div>
     </div>

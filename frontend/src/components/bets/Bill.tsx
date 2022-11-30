@@ -19,12 +19,10 @@ interface Bet {
   odd: number;
 }
 
-const Boletim = (props: Data) => {
+const Bill = (props: Data) => {
   return (
     <div className='fixed top-[72px] bottom-[30px] w-[33%] right-6 bg-gray-50 border-[1px] border-gray-500 rounded-3xl text-gray-800'>
-      <p className='mt-16 text-center uppercase text-3xl font-medium'>
-        Boletim
-      </p>
+      <p className='mt-16 text-center uppercase text-3xl font-medium'>Bill</p>
       <div className='pt-11 pl-20 pr-20 pb-8'>
         <button
           className={(props.betType
@@ -33,7 +31,7 @@ const Boletim = (props: Data) => {
           ).concat(" w-[50%] h-12")}
           onClick={() => props.btCallback(true)}
         >
-          Simples
+          Simple
         </button>
         <button
           className={(!props.betType
@@ -42,7 +40,7 @@ const Boletim = (props: Data) => {
           ).concat(" w-[50%] h-12")}
           onClick={() => props.btCallback(false)}
         >
-          Múltiplas
+          Multiple
         </button>
       </div>
       <div className='h-[56%] overflow-y-auto pl-7 pr-7 mb-4'>
@@ -88,7 +86,7 @@ const Boletim = (props: Data) => {
         </p>
         <div className='flex'>
           <div className='flex items-center border-[1px] border-gray-400 pl-4 pr-4'>
-            Montante
+            Amount
           </div>
           <div className='flex items-center border-[1px] border-l-0 border-gray-400 pl-4 pr-4 '>
             <input
@@ -103,23 +101,23 @@ const Boletim = (props: Data) => {
       </div>
       <div className='flex justify-between ml-6 mr-6 mt-6'>
         <div className='text-center'>
-          <div className='text-sm'>Total de ganhos</div>
+          <div className=''>Total gain</div>
           <div className='text-orange-500'>{props.totalGain.toFixed(2)} €</div>
         </div>
         <button
           className='flex items-center bg-orange-500 uppercase text-lg rounded-full pl-10 pr-10 font-medium'
           onClick={() => props.spCallback(true)}
         >
-          Apostar
+          Bet
         </button>
       </div>
       {props.showError && (
         <div className='text-red-700 text-center pt-2'>
-          Coloque uma quantia ou selecione um evento.
+          Enter an amount and select at least an event.
         </div>
       )}
     </div>
   );
 };
 
-export default Boletim;
+export default Bill;

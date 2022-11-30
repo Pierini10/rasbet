@@ -44,7 +44,7 @@ const Progress = (props: Data) => {
   return (
     <div className='fixed top-[72px] bottom-[30px] w-[22%] right-6 bg-gray-50 border-[1px] border-gray-500 rounded-3xl text-gray-800'>
       <p className='mt-10 text-center uppercase text-2xl font-medium'>
-        Progresso
+        Progress
       </p>
       <div>
         <ul className='mt-10 space-y-14 pr-5 pl-5'>

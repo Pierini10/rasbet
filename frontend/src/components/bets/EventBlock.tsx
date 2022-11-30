@@ -42,7 +42,7 @@ const EventBlock = (props: Data) => {
           </div>
           <div className='text-gray-500'>{date}</div>
           <div className='flex'>
-            <div className='text-gray-600'>Estado do evento:</div>
+            <div className='text-gray-600'>Event state:</div>
             <button
               className='text-gray-800 pl-2 uppercase font-semibold'
               onClick={() =>
@@ -67,7 +67,7 @@ const EventBlock = (props: Data) => {
           <Oddbutton
             id={event.id}
             betType={"Draw"}
-            ent='Empate'
+            ent='Draw'
             odd={event.odds.get("Draw")!.odd}
             changeCallback={props.changeCallback}
             checkCallback={props.checkCallback}

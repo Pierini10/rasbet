@@ -66,11 +66,11 @@ const Payment = (props: Data) => {
       )}
 
       <p className='text-2xl font-semibold w-full text-center'>
-        {step === 3 ? "PARABÉNS!" : "PAGAMENTO"}
+        {step === 3 ? "Congratulations!" : "Payment"}
       </p>
       {step === 1 ? (
         <div className='flex space-x-3 w-full justify-center items-center'>
-          <p className='font-medium text-xl'>Método de pagamento:</p>
+          <p className='font-medium text-xl'>Payment method:</p>
           <div className='flex space-x-3'>
             <button
               className='flex items-center justify-center w-44 h-24 duration-100 ease-in bg-white rounded hover:bg-slate-400'
@@ -138,7 +138,7 @@ const Payment = (props: Data) => {
         )
       ) : (
         <div className='grow w-full flex justify-center items-center text-2xl'>
-          Pagamento efetuado com sucesso.
+          Payment was successful.
         </div>
       )}
       <div className='w-full flex justify-end items-center pr-10'>
