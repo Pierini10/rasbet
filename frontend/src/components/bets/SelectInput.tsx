@@ -9,7 +9,11 @@ const SelectInput = (props: Data) => {
   return (
     <label className='text-gray-800 text-xl'>
       {props.label}
-      <select value={props.value} onChange={props.handleChange}>
+      <select
+        value={props.value}
+        onChange={props.handleChange}
+        className='w-52'
+      >
         {props.listValues.map((elem) => (
           <option key={elem} value={elem}>
             {elem}

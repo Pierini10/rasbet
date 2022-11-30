@@ -16,7 +16,7 @@ public class TransactionDB {
 
     public final static String MBWAY = "MBWay";
     public final static String MB = "MB";
-    public final static String CREDIT = "Cedit";
+    public final static String CREDIT = "Credit";
     public final static String WALLET = "Wallet";
 
     public static boolean needsDeposit(String paymentMethod) throws IllegalArgumentException {

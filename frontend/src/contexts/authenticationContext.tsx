@@ -115,11 +115,11 @@ export default function AuthenticationProvider({
   };
 
   const isSpecialist = () => {
-    return role === "ROLE_Normal";
+    return role === "ROLE_Specialist";
   };
 
   const isAdministrator = () => {
-    return role === "ROLE_Normal";
+    return role === "ROLE_Administrator";
   };
 
   return (

@@ -6,6 +6,7 @@ interface Data {
   ent: string;
   changeCallback: (id: string, bet: string) => void;
   checkCallback: (id: string, bet: string) => boolean;
+  changeOddCallback: (id: string, bet: string) => void;
   odd?: number;
 }
 
@@ -14,7 +15,7 @@ const Oddbutton = (props: Data) => {
 
   const callback = () => {
     if (isNormal()) props.changeCallback(props.id, props.betType);
-    if (isSpecialist()) props.changeCallback(props.id, props.betType);
+    else if (!isSpecialist()) props.changeOddCallback(props.id, props.ent);
   };
 
   return (

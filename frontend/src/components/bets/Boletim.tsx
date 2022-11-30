@@ -8,6 +8,7 @@ interface Data {
   totalGain: number;
   cota: number;
   spCallback: (show: boolean) => void;
+  showError: boolean;
 }
 
 interface Bet {
@@ -71,9 +72,9 @@ const Boletim = (props: Data) => {
                   </button>
                 </div>
                 <div className='bg-gray-200 pl-3 h-11 flex items-center '>
-                  {b.bet === "empate"
+                  {b.bet === "Draw"
                     ? "Resultado:  Empate"
-                    : `Vencedor do jogo: ${b.bet === "casa" ? b.home : b.away}`}
+                    : `Vencedor do jogo: ${b.bet === b.home ? b.home : b.away}`}
                 </div>
               </li>
             ))}
@@ -112,6 +113,11 @@ const Boletim = (props: Data) => {
           Apostar
         </button>
       </div>
+      {props.showError && (
+        <div className='text-red-700 text-center pt-2'>
+          Coloque uma quantia ou selecione um evento.
+        </div>
+      )}
     </div>
   );
 };
