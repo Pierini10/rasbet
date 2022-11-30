@@ -65,27 +65,27 @@ function AdminRegister() {
 
     return (
 
-        <div className="grid h-screen bg-green-900 place-items-center ">
+        <div className="grid h-[90vh] bg-green-900 place-items-center ">
             <div className="max-w-5xl h-[80%] rounded-xl  bg-white container relative">
                 <img src="logo.png" alt="logo" className="absolute rounded-lg left-5 top-5 " />
                 <div className="grid h-full rounded place-items-center">
                     <div className="flex flex-row justify-around w-full">
                         <form className="flex flex-col justify-center space-y-7 " onSubmit={handleSubmit} >
 
-                            <div className="text-4xl font-bold text-center text-green-900 mb-7">Registo</div>
+                            <div className="text-4xl font-bold text-center text-green-900 mb-7">Register</div>
                             <div className="grid gap-1 md:gap-10 sm:grid-cols-2">
-                                <input required type="email" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="E-mail" onChange={updateEmail} />
-                                <input required type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Palavra-passe" onChange={updatePassword} />
-                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Nome" onChange={updateName} />
-                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Apelido" onChange={updateSurname} />
+                                <input required type="email" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Email" onChange={updateEmail} />
+                                <input required type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Password" onChange={updatePassword} />
+                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Name" onChange={updateName} />
+                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Surname" onChange={updateSurname} />
                                 <input required type="number" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Nif" onChange={updateNif} />
                                 <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="CC" onChange={updateCc} />
-                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Morada" onChange={updateAddress} />
-                                <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Telemovel" onChange={updatePhone} />
-                                <input required onFocus={e => e.target.type = 'date'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Data de Nascimento" onChange={updateBday} />
+                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Address" onChange={updateAddress} />
+                                <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Phone Number" onChange={updatePhone} />
+                                <input required onFocus={e => e.target.type = 'date'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Birthday" onChange={updateBday} />
                                 <select onChange={(e) => updateRole(e)} className="p-2 text-center bg-white border border-green-900 rounded-lg placeholder:text-gray-400">
-                                    <option value="Specialist"> Especialista </option>
-                                    <option value="Administrator"> Administrador </option>
+                                    <option value="Specialist"> Specialist </option>
+                                    <option value="Administrator"> Administrator </option>
                                 </select>
                             </div>
                             <div className="flex justify-center w-full">

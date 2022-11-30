@@ -4,9 +4,9 @@ import { Prediction, SimpleBet } from "../models/bets.model";
 
 const bet = (bet: String) => {
     if (bet === 'draw') {
-        return "Resultado: Empate";
+        return "Result: Empate";
     }
-    return `Vencedor do Jogo: ${bet}`
+    return `Result: Winner - ${bet}`
 }
 
 
@@ -29,8 +29,8 @@ function Aposta(props: SimpleBet) {
                 </div>
 
                 <div className="flex flex-col justify-around">
-                    <div className="ml-2">Montante Apostado {props.amount.toString()}€</div>
-                    <div className="flex ml-2">Total de ganhos <div className="ml-5 text-orange-500"> {props.amount.toString()}€</div></div>
+                    <div className="ml-2">Amount Staken {props.amount.toString()}€</div>
+                    <div className="flex ml-2">Earnings: <div className="ml-5 text-orange-500"> {props.amount.toString()}€</div></div>
                 </div>
             </div>
 

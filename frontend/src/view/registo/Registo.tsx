@@ -63,20 +63,20 @@ function Registo() {
                     <div className="flex flex-row justify-around w-full">
                         <form className="flex flex-col justify-center space-y-7 " onSubmit={handleSubmit} >
 
-                            <div className="text-4xl font-bold text-center text-green-900 mb-7">Registo</div>
+                            <div className="text-4xl font-bold text-center text-green-900 mb-7">Register</div>
                             <div className="grid gap-1 md:gap-10 sm:grid-cols-2">
-                                <input required type="email" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="E-mail" onChange={updateEmail} />
-                                <input required type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Palavra-passe" onChange={updatePassword} />
-                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Nome" onChange={updateName} />
-                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Apelido" onChange={updateSurname} />
+                                <input required type="email" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Email" onChange={updateEmail} />
+                                <input required type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Password" onChange={updatePassword} />
+                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Name" onChange={updateName} />
+                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Surname" onChange={updateSurname} />
                                 <input required type="number" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Nif" onChange={updateNif} />
                                 <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="CC" onChange={updateCc} />
-                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Morada" onChange={updateAddress} />
-                                <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Telemovel" onChange={updatePhone} />
-                                <input required onFocus={e => e.target.type = 'date'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Data de Nascimento" onChange={updateBday} />
+                                <input required type="text" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Address" onChange={updateAddress} />
+                                <input required type="number" className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Phone Number" onChange={updatePhone} />
+                                <input required onFocus={e => e.target.type = 'date'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg appearance-none placeholder:text-center placeholder:text-gray-400" placeholder="Birthday" onChange={updateBday} />
                             </div>
                             <div className="flex justify-center w-full">
-                                <button className="px-4 py-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:scale-110 hover:bg-orange-700">Concluir</button>
+                                <button className="px-4 py-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:scale-110 hover:bg-orange-700">Conclude</button>
                             </div>
                         </form>
 

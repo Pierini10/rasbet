@@ -37,16 +37,16 @@ function Login() {
                 <div className="grid h-full rounded place-items-center">
                     <div className="flex flex-row justify-around w-full">
                         <form className="flex flex-col justify-center space-y-7" onSubmit={e => makeLogin(e)}>
-                            <div className="text-4xl font-bold text-center text-green-900 mb-7">Bem Vindo</div>
-                            <input type="email" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="E-mail" onChange={updateEmail} />
+                            <div className="text-4xl font-bold text-center text-green-900 mb-7">Welcome</div>
+                            <input type="email" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Email" onChange={updateEmail} />
                             <div className="flex flex-col">
-                                <input type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Palavra-passe" onChange={updatePassword} />
-                                <a href="/" className="flex justify-end mt-1 text-xs text-green-900 underline">Esqueci-me da palavra-passe</a>
+                                <input type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Password" onChange={updatePassword} />
+                                <a href="/" className="flex justify-end mt-1 text-xs text-green-900 underline">Forgot Password</a>
                             </div>
-                            <button className="p-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:bg-orange-700" type="submit" >Aceder</button>
+                            <button className="p-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:bg-orange-700" type="submit" >Access</button>
                             <div>
-                                <div className="flex justify-center w-full">Não tem conta?</div>
-                                <a href="/register" className="flex justify-center w-full text-green-900 underline">Registe-se já!</a>
+                                <div className="flex justify-center w-full">Don't have an account?</div>
+                                <a href="/register" className="flex justify-center w-full text-green-900 underline">Register now!</a>
                             </div>
                         </form>
 
