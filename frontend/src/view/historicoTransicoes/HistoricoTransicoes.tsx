@@ -28,22 +28,22 @@ function HistoricoTransicoes() {
 
     return (
 
-        <div className="grid h-screen bg-gray-400 place-items-center ">
+        <div className="grid h-[90vh] bg-gray-400 place-items-center ">
             <div className=" max-w-5xl bg-white border-dotted h-[80%] container rounded-3xl border-black border">
 
                 <div className="flex justify-center mt-5 text-4xl">
-                    Histórico De Transações
+                    Transaction History
                 </div>
-                <div className="flex justify-center mt-5">Saldo: {balance} €</div>
+                <div className="flex justify-center mt-5">Balance: {balance} €</div>
                 <div className="flex flex-col justify-center mt-5 space-y-4">
                     {transicoes.length > 0 &&
                         <div>
                             <div className="flex justify-center"> <hr className="border-black w-[90%]" /></div>
-                            <div className="flex justify-around">
-                                <div>Data</div>
-                                <div>Descrição</div>
-                                <div>Operação</div>
-                                <div>Saldo após movimento</div>
+                            <div className="flex justify-around ml-2">
+                                <div>Date</div>
+                                <div>Description</div>
+                                <div>Operation</div>
+                                <div>Balance after Transaction</div>
                             </div>
                             <div className="flex justify-center"> <hr className="border-black w-[90%]" />
                             </div>

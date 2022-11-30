@@ -53,27 +53,27 @@ function ChangeInfoForm(props: { info: ProfileInfo | undefined, updateInfo: Disp
                 <input className="container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96 pl-2 placeholder:text-black" onChange={(e) => setEmail(e.target.value)} placeholder={props.info?.email} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
-                <div>Nome:</div>
+                <div>Name:</div>
                 <input className="container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96 pl-2 placeholder:text-black" onChange={(e) => { setNome(e.target.value) }} placeholder={props.info?.firstName} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
-                <div>Apelido:</div>
-                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[23.2rem] pl-2 placeholder:text-black" onChange={(e) => setApelido(e.target.value)} placeholder={props.info?.lastName} />
+                <div>Surname:</div>
+                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[22.7rem] pl-2 placeholder:text-black" onChange={(e) => setApelido(e.target.value)} placeholder={props.info?.lastName} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
-                <div>Morada:</div>
+                <div>Address:</div>
                 <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[23.2rem] pl-2 placeholder:text-black" onChange={(e) => setMorada(e.target.value)} placeholder={props.info?.address} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
-                <div >Número de telemovel:</div>
-                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg lg:ml-[17rem] ml-[23.2rem] placeholder:text-black pl-2" type="number" onChange={(e) => setPhone(e.target.value)} placeholder={props.info?.phoneNumber} />
+                <div >Phone Number:</div>
+                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[20rem]  placeholder:text-black pl-2" type="number" onChange={(e) => setPhone(e.target.value)} placeholder={props.info?.phoneNumber} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
-                <div >Mudar Palavra-Passe:</div>
-                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg lg:ml-[17.5rem] ml-[23.2rem] pl-2 placeholder:text-black" type="password" onChange={(e) => setPass(e.target.value)} placeholder="password" />
+                <div >Change Password:</div>
+                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[18.9rem]  pl-2 placeholder:text-black" type="password" onChange={(e) => setPass(e.target.value)} placeholder="Password" />
 
             </div >
-            <div className="flex justify-center w-full mt-10 "><button onClick={handleSubmit} className="px-6 py-2 text-white duration-150 ease-in bg-orange-500 rounded hover:bg-orange-700">Submeter</button></div>
+            <div className="flex justify-center w-full mt-10 "><button onClick={handleSubmit} className="px-6 py-2 text-white duration-150 ease-in bg-orange-500 rounded hover:bg-orange-700">Submit</button></div>
         </div >
     )
 }

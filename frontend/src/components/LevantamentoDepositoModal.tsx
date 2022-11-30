@@ -44,37 +44,37 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
                     </div>
                 }
                 {step === "Bank" && <div>
-                    <div className="flex justify-center mb-5 text-2xl text-black">Transferência Bancária</div>
+                    <div className="flex justify-center mb-5 text-2xl text-black">Bank Transfer</div>
                     <div className="flex flex-col py-1 pl-2 space-y-4">
-                        <input placeholder="valor" className="py-1 pl-2" onChange={updateValue} type="number" />
+                        <input placeholder="Amount" className="py-1 pl-2" onChange={updateValue} type="number" />
                         <input placeholder="NIB" className="py-1 pl-2" type="number" />
-                        {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
-                        <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
+                        {props.type === "deposito" && <input placeholder="Promotion Code" className="py-1 pl-2" onChange={updatePromotionCode} />}
+                        <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirm</button>
                     </div>
                 </div>}
                 {step === "MBway" &&
                     <div>
                         <div className="flex justify-center mb-5 text-2xl text-black">MBWay</div>
                         <div className="flex flex-col py-1 pl-2 space-y-4">
-                            <input placeholder="value" className="py-1 pl-2" onChange={updateValue} />
-                            <input placeholder="numero de telemovel" className="py-1 pl-2" />
-                            {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
-                            <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
+                            <input placeholder="Amount" className="py-1 pl-2" onChange={updateValue} />
+                            <input placeholder="Phone Number" className="py-1 pl-2" />
+                            {props.type === "deposito" && <input placeholder="Promotion Code" className="py-1 pl-2" onChange={updatePromotionCode} />}
+                            <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirm</button>
                         </div>
                     </div>}
                 {step === "Card" &&
                     <div>
                         <div className="flex justify-center mb-5 text-2xl text-black">Bank Card</div>
                         <div className="flex flex-col py-1 pl-2 space-y-4">
-                            <input placeholder="value" className="py-1 pl-2" onChange={updateValue} />
-                            <input placeholder="numero de cartão" className="py-1 pl-2" />
-                            {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
+                            <input placeholder="Amount" className="py-1 pl-2" onChange={updateValue} />
+                            <input placeholder="Card Number" className="py-1 pl-2" />
+                            {props.type === "deposito" && <input placeholder="Promotion Code" className="py-1 pl-2" onChange={updatePromotionCode} />}
                             <div className="space-x-2">
-                                <input placeholder="numero de segurança" className="py-1 pl-2" type="Number" />
-                                <input placeholder="data de validade" className="py-1 pl-2" type="month" />
+                                <input placeholder="Safety Number" className="py-1 pl-2" type="Number" />
+                                <input placeholder="Expiration Date" className="py-1 pl-2" type="month" />
                             </div>
-                            {props.type === "deposito" && <input placeholder="Código Promocional" className="py-1 pl-2" onChange={updatePromotionCode} />}
-                            <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirmar</button>
+                            {props.type === "deposito" && <input placeholder="Promotion Code" className="py-1 pl-2" onChange={updatePromotionCode} />}
+                            <button className="px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600" onClick={withdrawMoney}>Confirm</button>
                         </div>
                     </div>}
             </div>
