@@ -62,7 +62,7 @@ function CreateEvent() {
                             </select>
 
                         </div>
-                        <input onFocus={e => e.target.type = 'datetime-local'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Date" required onChange={(e) => setDate(e.target.value)} />
+                        <input required onFocus={e => e.target.type = 'datetime-local'} onBlur={e => e.target.type = 'text'} className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Date" required onChange={(e) => setDate(e.target.value)} />
                         <div className="flex flex-col justify-start">
                             <input className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Description" required onChange={(e) => setDescription(e.target.value)} />
                             <div className="flex flex-row justify-around mt-1">
