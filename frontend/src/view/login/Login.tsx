@@ -22,11 +22,11 @@ function Login() {
     const makeLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const response = await login("manuel@gmail.com", "Test3aut!");
+        const response = await login(email, password);
 
         saveToken(response);
 
-        navigate("/")
+        navigate("/bets");
 
     }
 

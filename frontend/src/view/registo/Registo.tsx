@@ -20,6 +20,7 @@ function Registo() {
         const sucess = await register({ email, password: password, firstName: name, lastName: surname, NIF: parseInt(nif), CC: parseInt(cc), address, phoneNumber: phone, birthday, role: "Normal" });
 
         if (sucess) {
+            alert("Register successful");
             navigate("/login")
         }
     }
