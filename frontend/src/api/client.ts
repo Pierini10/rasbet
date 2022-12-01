@@ -12,5 +12,8 @@ export const login = async (username: string, password: string) => {
   });
 
   const token: string = await response.text();
+  if (response.status !== 200) {
+    alert("Login failed");
+  }
   return token;
 };

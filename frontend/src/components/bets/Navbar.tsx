@@ -8,7 +8,7 @@ interface Data {
 }
 
 const Navbar = (props: Data) => {
-  const { isAdministrator, isNormal, logout, fetchdataAuth } =
+  const { isAdministrator, isNormal, logout, fetchdataAuth, isSpecialist } =
     UseAuthentication();
   const [info, setInfo] = useState<ProfileInfo>();
 
@@ -33,14 +33,14 @@ const Navbar = (props: Data) => {
             </li>
             {isNormal() ? (
               <li key='ha'>
-                <Link to={"/historicoApostas"}>Bet history</Link>
+                <Link to={"/betHistory"}>Bet history</Link>
               </li>
             ) : (
               ""
             )}
             {isNormal() ? (
               <li key='ht'>
-                <Link to={"/historicoTransicoes"}>Transaction history</Link>
+                <Link to={"/transactionHistory"}>Transaction history</Link>
               </li>
             ) : (
               ""
@@ -64,6 +64,14 @@ const Navbar = (props: Data) => {
             {isAdministrator() ? (
               <li key='notification'>
                 <Link to={"/Notification"}>Notification</Link>
+              </li>
+
+            ) : (
+              ""
+            )}
+            {isSpecialist() ? (
+              <li key='createEvent'>
+                <Link to={"/createEvent"}>Create Event</Link>
               </li>
 
             ) : (

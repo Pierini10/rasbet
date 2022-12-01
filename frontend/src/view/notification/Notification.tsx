@@ -24,13 +24,15 @@ function Notification() {
                 <img src="logo.png" alt="logo" className="absolute rounded-lg left-5 top-5 " />
                 <div className="mt-20">
 
-                    <div className="flex flex-row justify-around w-full">
+                    <div className="flex flex-row justify-center w-full">
 
                         <form className="flex flex-col space-y-10" onSubmit={createNotification}>
                             <div className="text-4xl font-bold text-center text-green-900 mb-7">Create Notification</div>
                             <input className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="User Email" required onChange={(e) => setUserEmail(e.target.value)} />
+
                             <input className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Description" required onChange={(e) => setDescription(e.target.value)} />
                             <button className="px-4 py-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:scale-110 hover:bg-orange-700 mt-[13.4rem]">Create Notification</button>
+                            <div className="text-sm">For a global notification please insert <span className="text-green-700">rasbet@rasbet.com</span> in user Email field</div>
                         </form>
 
 
