@@ -22,7 +22,7 @@ function Login() {
     const makeLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const response = await login(email, password);
+        const response = await login("validate@gmail.com", "Test3aut!");
 
         saveToken(response);
 
