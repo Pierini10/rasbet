@@ -3,7 +3,11 @@ import { Link } from "react-router-dom";
 import { UseAuthentication } from "../../contexts/authenticationContext";
 import { ProfileInfo } from "../../models/profile.model";
 
-const Navbar = () => {
+interface Data {
+  showNotCallback: () => void;
+}
+
+const Navbar = (props: Data) => {
   const { isAdministrator, isNormal, logout, fetchdataAuth } =
     UseAuthentication();
   const [info, setInfo] = useState<ProfileInfo>();
@@ -55,7 +59,7 @@ const Navbar = () => {
         </div>
       </nav>
       <div className='flex items-center'>
-        <button onClick={() => {}}>
+        <button onClick={() => props.showNotCallback()}>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'

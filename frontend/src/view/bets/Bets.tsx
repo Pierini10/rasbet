@@ -49,7 +49,7 @@ const Bets = () => {
       if (dataSports !== undefined) {
         const mapEvents: Map<string, Event[]> = new Map();
 
-        dataSports.forEach(async (s) => {
+        for (const s of dataSports) {
           const dataEvents: any[] = await fetchdataAuth(
             "http://localhost:8080/getEvents",
             "GET",
@@ -62,19 +62,16 @@ const Bets = () => {
             const newEvents = jsonToEvents(dataEvents);
             mapEvents.set(s, newEvents);
           }
-        });
+        }
 
-        return { mapEvents, dataSports };
+        changeCompetitions(mapEvents.get(dataSports[0])!);
+        setEvents(mapEvents);
+        setSport(dataSports[0]);
+        setSports(dataSports);
       }
     };
 
-    loadEvents().then((res) => {
-      if (res !== undefined) {
-        setEvents(res.mapEvents);
-        setSport(res.dataSports[0]);
-        setSports(res.dataSports);
-      }
-    });
+    loadEvents();
   }, [fetchdataAuth]);
 
   const changeBetType = (bt: boolean) => {
@@ -316,7 +313,7 @@ const Bets = () => {
           )}
         </div>
 
-        {!isNormal() ? (
+        {isNormal() ? (
           <Bill
             betType={betType}
             btCallback={changeBetType}
