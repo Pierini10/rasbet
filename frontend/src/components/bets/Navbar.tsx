@@ -23,10 +23,10 @@ const Navbar = (props: Data) => {
   }, [fetchdataAuth]);
 
   return (
-    <div className='sticky top-0 bg-green-900 flex justify-between h-24 items-center p-6 text-white'>
+    <div className='sticky top-0 flex items-center justify-between h-24 p-6 text-white bg-green-900'>
       <img src='logo.png' alt='logo' className='' />
-      <nav className='col-span-2 flex justify-between h-full items-center'>
-        <div className='pl-4 pr-4 uppercase text-base font-medium'>
+      <nav className='flex items-center justify-between h-full col-span-2'>
+        <div className='pl-4 pr-4 text-base font-medium uppercase'>
           <ul className='flex space-x-16'>
             <li key='e'>
               <Link to={"/bets"}>Events</Link>
@@ -49,6 +49,23 @@ const Navbar = (props: Data) => {
               <li key='ar'>
                 <Link to={"/adminRegister"}>Register users</Link>
               </li>
+
+            ) : (
+              ""
+            )}
+            {isAdministrator() ? (
+              <li key='promotion'>
+                <Link to={"/promotion"}>Promotion</Link>
+              </li>
+
+            ) : (
+              ""
+            )}
+            {isAdministrator() ? (
+              <li key='notification'>
+                <Link to={"/Notification"}>Notification</Link>
+              </li>
+
             ) : (
               ""
             )}
@@ -75,7 +92,7 @@ const Navbar = (props: Data) => {
             />
           </svg>
         </button>
-        <div className='ml-5 mr-5 w-28 h-10 font-medium text-lg border-white border-2 flex justify-center items-center rounded-full'>
+        <div className='flex items-center justify-center h-10 ml-5 mr-5 text-lg font-medium border-2 border-white rounded-full w-28'>
           {info?.balance + " €"}
         </div>
 

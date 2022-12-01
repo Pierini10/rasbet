@@ -40,8 +40,7 @@ public class NotificationFacade {
     public void createNotification(
             @RequestHeader("Authorization") String token,
             @RequestParam() String userEmail,
-            @RequestParam() String description)
-    {
+            @RequestParam() String description) {
         token = RasbetTokenDecoder.parseToken(token);
 
         try {
@@ -50,9 +49,10 @@ public class NotificationFacade {
         } catch (NoAuthorizationException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Email does not exist notification has not been created");
         }
     }
 
@@ -63,12 +63,12 @@ public class NotificationFacade {
     })
     @GetMapping("/getNotifications")
     public List<String> getNotifications(
-        @RequestHeader("Authorization") String token,
-        @RequestParam() int lastNNotifications 
-    ) {
+            @RequestHeader("Authorization") String token,
+            @RequestParam() int lastNNotifications) {
         token = RasbetTokenDecoder.parseToken(token);
         try {
-            return NotificationDB.getNotifications(new RasbetTokenDecoder(token, jwtDecoder).getId(), lastNNotifications);
+            return NotificationDB.getNotifications(new RasbetTokenDecoder(token, jwtDecoder).getId(),
+                    lastNNotifications);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

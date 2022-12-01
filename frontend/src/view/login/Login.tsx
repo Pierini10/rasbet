@@ -22,7 +22,7 @@ function Login() {
     const makeLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const response = await login("validate@gmail.com", "Test3aut!");
+        const response = await login("manuel@gmail.com", "Test3aut!");
 
         saveToken(response);
 
@@ -41,7 +41,6 @@ function Login() {
                             <input type="email" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Email" onChange={updateEmail} />
                             <div className="flex flex-col">
                                 <input type="password" className="p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-gray-400" placeholder="Password" onChange={updatePassword} />
-                                <a href="/" className="flex justify-end mt-1 text-xs text-green-900 underline">Forgot Password</a>
                             </div>
                             <button className="p-2 text-white duration-150 ease-in bg-orange-500 border rounded-xl hover:bg-orange-700" type="submit" >Access</button>
                             <div>

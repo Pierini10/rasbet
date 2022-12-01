@@ -2,15 +2,19 @@ package com.rasbet.backend.Controller;
 
 import java.sql.SQLException;
 
-import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.Database.PromotionDB;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,20 +41,20 @@ public class PromotionFacade {
             @RequestParam() String description,
             @RequestParam() double discount,
             @RequestParam() double minValue,
-            @RequestParam() int type)
-    {
+            @RequestParam() int type) {
         token = RasbetTokenDecoder.parseToken(token);
 
-
         try {
-            PromotionDB.createPromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount, minValue, type);
+            PromotionDB.createPromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount,
+                    minValue, type);
         } catch (NoAuthorizationException e) {
 
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Promotion already exists, try with different code");
         }
 
     }
@@ -64,8 +68,7 @@ public class PromotionFacade {
     @PostMapping("/deletePromotion")
     public void deletePromotion(
             @RequestHeader("Authorization") String token,
-            @RequestParam() String code)
-    {
+            @RequestParam() String code) {
         token = RasbetTokenDecoder.parseToken(token);
 
         try {
@@ -94,12 +97,12 @@ public class PromotionFacade {
             @RequestParam() String description,
             @RequestParam() double discount,
             @RequestParam() double minValue,
-            @RequestParam() int type)
-    {
+            @RequestParam() int type) {
         token = RasbetTokenDecoder.parseToken(token);
 
         try {
-            PromotionDB.updatePromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount, minValue, type);
+            PromotionDB.updatePromotion(new RasbetTokenDecoder(token, jwtDecoder).getId(), code, description, discount,
+                    minValue, type);
         } catch (NoAuthorizationException e) {
 
             e.printStackTrace();

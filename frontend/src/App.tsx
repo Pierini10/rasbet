@@ -8,7 +8,9 @@ import HistoricoApostas from "./view/historico/HistoricoApostas";
 import HistoricoTransicoes from "./view/historicoTransicoes/HistoricoTransicoes";
 import Home from "./view/home/Home";
 import Login from "./view/login/Login";
+import Notification from "./view/notification/Notification";
 import Profile from "./view/perfil/Perfil";
+import Promotion from "./view/promotion/Promotion";
 import Registo from "./view/registo/Registo";
 
 export const router = createBrowserRouter([
@@ -57,6 +59,22 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AdminRegister />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/Promotion",
+        element: (
+          <ProtectedRoute>
+            <Promotion />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/Notification",
+        element: (
+          <ProtectedRoute>
+            <Notification />
           </ProtectedRoute>
         ),
       },
