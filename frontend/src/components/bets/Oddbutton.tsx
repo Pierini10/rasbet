@@ -4,24 +4,28 @@ interface Data {
   id: string;
   betType: string;
   ent: string;
+  description: string;
   changeCallback: (id: string, bet: string) => void;
   checkCallback: (id: string, bet: string) => boolean;
-  changeOddCallback: (id: string, bet: string) => void;
+  changeOddCallback: (id: string, entity: string, description: string) => void;
+  isChanged: boolean;
   odd?: number;
 }
 
 const Oddbutton = (props: Data) => {
-  const { isNormal, isSpecialist } = UseAuthentication();
+  const { isNormal } = UseAuthentication();
 
   const callback = () => {
     if (isNormal()) props.changeCallback(props.id, props.betType);
-    else if (!isSpecialist()) props.changeOddCallback(props.id, props.ent);
+    else props.changeOddCallback(props.id, props.ent, props.description);
   };
 
   return (
     <button
       className={"text-gray-800 h-full w-full border-[1px] rounded-xl items-center space-y-1 font-bold".concat(
-        props.checkCallback(props.id, props.betType)
+        props.isChanged
+          ? " bg-yellow-200"
+          : props.checkCallback(props.id, props.betType)
           ? " bg-orange-500"
           : " border-green-900"
       )}

@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "../../components/bets/Navbar";
+import Navbar from "../../components/Navbar";
 import { UseAuthentication } from "../../contexts/authenticationContext";
 
 function Home() {
-  const { fetchdataAuth } = UseAuthentication();
+  const { fetchdataAuth, setBalance } = UseAuthentication();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchdataAuth(`http://localhost:8080/getBalance`, "GET").then((data) => {
+      setBalance(data);
+    });
+  }, [fetchdataAuth, setBalance]);
 
   const changeShow = async () => {
     const newShow = !showNotifications;
