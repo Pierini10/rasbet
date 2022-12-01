@@ -376,11 +376,16 @@ public class EventsDB {
     }
 
     // Gets all DB events
-    public static ArrayList<Event> get_Events(String sport) throws SQLException, SportDoesNotExistExeption {
+    public static ArrayList<Event> get_Events(String sport, String event_state) throws SQLException, SportDoesNotExistExeption {
         // Create a connection
         int sport_id = get_SportID(sport);
         ArrayList<Event> events = new ArrayList<>();
-        int state = get_EventStatusID(PENDING_STATUS);
+        if (event_state != null){
+            if (!event_state.equals(PENDING_STATUS) && !event_state.equals(FINISHED_STATUS) && !event_state.equals(CLOSED_STATUS))
+                throw new IllegalArgumentException("Event state does not exist");
+        }
+        else event_state = PENDING_STATUS;
+        int state = get_EventStatusID(event_state);
         String query = "SELECT * FROM Event WHERE EventState_ID=" + state + " AND Sport_ID=" + sport_id + ";";
 
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
