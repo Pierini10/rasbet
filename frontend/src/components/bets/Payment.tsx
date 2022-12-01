@@ -48,8 +48,8 @@ const Payment = (props: Data) => {
   };
 
   return (
-    <div className='fixed w-full h-full bg-black bg-opacity-60 grid grid-cols-3 items-center'>
-      <div className='col-span-2 h-96 bg-white ml-20 mr-28 rounded-3xl flex flex-col justify-between pt-5 pb-5  text-gray-800'>
+    <div className='fixed w-screen h-screen bg-black bg-opacity-60 top-0 flex justify-center items-center'>
+      <div className='h-96 w-[900px] bg-white ml-20 mr-28 rounded-3xl flex flex-col justify-between pt-5 pb-5  text-gray-800'>
         {step === 3 && (
           <button
             className='absolute pl-3'

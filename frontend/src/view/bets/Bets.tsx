@@ -72,6 +72,7 @@ const Bets = () => {
             undefined,
             {
               sport: s,
+              eventState: false,
             }
           );
           if (dataEvents !== undefined) {
@@ -305,7 +306,17 @@ const Bets = () => {
     setEventsOddsC([]);
   };
 
-  const makeOddsChanges = () => {};
+  const makeOddsChanges = async () => {
+    const data: string[] = await fetchdataAuth(
+      "http://localhost:8080/insertOdd",
+      "POST",
+      JSON.stringify(eventsOddsC)
+    );
+    if (data) {
+      updateEvents();
+      setEventsOddsC([]);
+    }
+  };
 
   const handleChangeSport = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSport(event.target.value);
@@ -324,7 +335,7 @@ const Bets = () => {
   return (
     <div>
       <div
-        className={"grid ".concat(!isNormal() ? "grid-cols-3" : "grid-cols-4")}
+        className={"grid ".concat(isNormal() ? "grid-cols-3" : "grid-cols-4")}
       >
         <div className='col-span-2'>
           <div className='fixed w-full bg-white'>
@@ -344,19 +355,9 @@ const Bets = () => {
             </div>
           </div>
         </div>
-        {showPayment ? (
-          <div className='fixed w-full h-full bg-black bg-opacity-60 grid grid-cols-3 items-center'>
-            <Payment
-              cancelCallback={changeShowPayment}
-              bets={betsDB}
-              amount={Number(total)}
-            />
-          </div>
-        ) : (
-          ""
-        )}
+
         <div
-          className={"pt-16 ".concat(!isNormal() ? "col-span-2" : "col-span-3")}
+          className={"pt-16 ".concat(isNormal() ? "col-span-2" : "col-span-3")}
         >
           {events.get(sport) !== undefined && (
             <ul className='space-y-6'>
@@ -379,7 +380,7 @@ const Bets = () => {
               })}
             </ul>
           )}
-          {!isSpecialist() ? (
+          {!isNormal() ? (
             <div className='bg-white fixed bottom-0 left-0 w-full h-24'>
               <div className='h-full w-[66%] flex justify-center items-center space-x-5'>
                 <button
@@ -392,7 +393,7 @@ const Bets = () => {
                   className={"uppercase h-10 w-48 font-medium pl-8 pr-8 items-center rounded-xl bg-orange-500".concat(
                     eventsOddsC.length === 0 ? " opacity-50" : ""
                   )}
-                  onClick={() => {}}
+                  onClick={() => makeOddsChanges()}
                 >
                   Save Changes
                 </button>
@@ -420,6 +421,15 @@ const Bets = () => {
           <Progress events={events} />
         )}
       </div>
+      {showPayment ? (
+        <Payment
+          cancelCallback={changeShowPayment}
+          bets={betsDB}
+          amount={Number(total)}
+        />
+      ) : (
+        ""
+      )}
       {showChangeState && (
         <EventStatePopUp
           closeCallback={changeShowChangeState}

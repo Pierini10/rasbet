@@ -12,7 +12,7 @@ interface Data {
 }
 
 const EventBlock = (props: Data) => {
-  const { isSpecialist } = UseAuthentication();
+  const { isNormal } = UseAuthentication();
   const event = props.event;
   const [home, away] = event.description.split(" v ");
 
@@ -48,21 +48,23 @@ const EventBlock = (props: Data) => {
             {home} - {away}
           </div>
           <div className='text-gray-500'>{date}</div>
-          <div className='flex'>
-            <div className='text-gray-600'>Event state:</div>
-            <button
-              className='text-gray-800 pl-2 uppercase font-semibold'
-              onClick={() =>
-                props.eventStateCallback(
-                  event.id,
-                  event.description,
-                  event.state
-                )
-              }
-            >
-              {event.state}
-            </button>
-          </div>
+          {!isNormal() && (
+            <div className='flex'>
+              <div className='text-gray-600'>Event state:</div>
+              <button
+                className='text-gray-800 pl-2 uppercase font-semibold'
+                onClick={() =>
+                  props.eventStateCallback(
+                    event.id,
+                    event.description,
+                    event.state
+                  )
+                }
+              >
+                {event.state}
+              </button>
+            </div>
+          )}
         </div>
 
         <Oddbutton
@@ -105,7 +107,7 @@ const EventBlock = (props: Data) => {
           description={event.description}
         />
       </div>
-      {!isSpecialist() && (
+      {!isNormal() && (
         <div className='h-28 flex'>
           <div
             className={"w-28 mt-5 mb-5 rounded-xl flex justify-center items-center font-medium text-xl ".concat(

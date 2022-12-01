@@ -57,7 +57,7 @@ public class EventsFacade {
     @GetMapping("/getEvents")
     public List<Event> getEvents(
             @RequestParam(name = "sport") String sport,
-            @RequestParam(name = "Event state", required = false) String event_state) {
+            @RequestParam(name = "eventState", required = false) String event_state) {
         try {
             BackendApplication.t.signal(false);
             return EventsDB.get_Events(sport, event_state);

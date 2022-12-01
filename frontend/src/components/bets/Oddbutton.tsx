@@ -13,12 +13,11 @@ interface Data {
 }
 
 const Oddbutton = (props: Data) => {
-  const { isNormal, isSpecialist } = UseAuthentication();
+  const { isNormal } = UseAuthentication();
 
   const callback = () => {
     if (isNormal()) props.changeCallback(props.id, props.betType);
-    else if (!isSpecialist())
-      props.changeOddCallback(props.id, props.ent, props.description);
+    else props.changeOddCallback(props.id, props.ent, props.description);
   };
 
   return (

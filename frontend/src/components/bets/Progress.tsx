@@ -42,12 +42,12 @@ const Progress = (props: Data) => {
   }, [props]);
 
   return (
-    <div className='fixed top-[72px] bottom-[30px] w-[22%] right-6 bg-gray-50 border-[1px] border-gray-500 rounded-3xl text-gray-800'>
+    <div className='fixed top-[72px] h-[90vh] mb-[30px] w-[22%] right-6 bg-gray-50 border-[1px] border-gray-500 rounded-3xl text-gray-800'>
       <p className='mt-10 text-center uppercase text-2xl font-medium'>
         Progress
       </p>
       <div>
-        <ul className='mt-10 space-y-14 pr-5 pl-5'>
+        <ul className='mt-10 space-y-14 pr-5 pl-5 h-[75vh] overflow-y-auto'>
           {sportsInfo.map((si) => (
             <li key={si.sport}>
               <div className='bg-white w-full h-60 flex justify-between items-center pr-5 pl-5'>
