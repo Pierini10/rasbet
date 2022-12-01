@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "../../components/bets/Navbar";
+import Navbar from "../../components/Navbar";
 import { UseAuthentication } from "../../contexts/authenticationContext";
 
 function Home() {

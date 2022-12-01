@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import Bill from "../../components/bets/Bill";
 import EventBlock from "../../components/bets/EventBlock";
+import EventStatePopUp from "../../components/bets/EventStatePopUp";
+import OddPopUp from "../../components/bets/OddPopUp";
 import Payment from "../../components/bets/Payment";
 import Progress from "../../components/bets/Progress";
 import SelectInput from "../../components/bets/SelectInput";
 import { UseAuthentication } from "../../contexts/authenticationContext";
 import { Event, jsonToEvents } from "../../models/event.model";
+import { EventOdds } from "../../models/odds.model";
 
 interface Bet {
   id: string;
@@ -38,8 +41,21 @@ const Bets = () => {
   const [cota, setCota] = useState(0);
   const [showPayment, setShowPayment] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [showChangeState, setShowChangeState] = useState(false);
+  const [showChangeOdd, setShowChangeOdd] = useState(false);
+  const [idEventCS, setIdEventCS] = useState("");
+  const [stateCS, setStateCS] = useState("");
+  const [descriptionCS, setDescriptionCS] = useState("");
+  const [updateBets, setUpdateBets] = useState(true);
+  const [idEventCO, setIdEventCO] = useState("");
+  const [entityCO, setEntityCO] = useState("");
+  const [descriptionCO, setDescriptionCO] = useState("");
+  const [eventsOddsC, setEventsOddsC] = useState<EventOdds[]>([]);
 
   useEffect(() => {
+    if (updateBets) {
+    }
+
     const loadEvents = async () => {
       const dataSports: string[] = await fetchdataAuth(
         "http://localhost:8080/getAllSports",
@@ -72,7 +88,7 @@ const Bets = () => {
     };
 
     loadEvents();
-  }, [fetchdataAuth]);
+  }, [fetchdataAuth, updateBets]);
 
   const changeBetType = (bt: boolean) => {
     setBetType(bt);
@@ -218,13 +234,78 @@ const Bets = () => {
     setCompetition(newCompetitions[0]);
   };
 
-  const changeEventState = (sport: string, id: string, state: string) => {
-    console.log("muda estado de jogo");
+  const changeEventState = (id: string, description: string, state: string) => {
+    setIdEventCS(id);
+    setStateCS(state);
+    setDescriptionCS(description);
+
+    changeShowChangeState();
   };
 
-  const changeOdd = (id: string, bet: string) => {
-    console.log("muda a odd");
+  const changeOdd = (id: string, entity: string, description: string) => {
+    setIdEventCO(id);
+    setEntityCO(entity);
+    setDescriptionCO(description);
+
+    changeShowChangeOdd();
   };
+
+  const changeShowChangeOdd = () => {
+    const newShow = !showChangeOdd;
+    setShowChangeOdd(newShow);
+  };
+
+  const updateEvents = () => {
+    const newUpdate = !updateBets;
+    setUpdateBets(newUpdate);
+  };
+
+  const changeShowChangeState = () => {
+    const newShow = !showChangeState;
+    setShowChangeState(newShow);
+  };
+
+  const addOddChange = (id: string, entity: string, odd: number) => {
+    const newEventsOdds = [...eventsOddsC];
+
+    const index = newEventsOdds.findIndex((e) => e.eventID === id);
+
+    if (index !== -1) {
+      const indexEntity = newEventsOdds[index].odds.findIndex(
+        (o) => o.entity === entity
+      );
+
+      if (indexEntity !== -1) {
+        newEventsOdds[index].odds[indexEntity].odd = odd;
+      } else {
+        newEventsOdds[index].odds.push({ entity: entity, odd: odd });
+      }
+    } else {
+      newEventsOdds.push({ eventID: id, odds: [{ entity: entity, odd: odd }] });
+    }
+
+    setEventsOddsC(newEventsOdds);
+  };
+
+  const checkOddChanged = (id: string, entity: string) => {
+    const index = eventsOddsC.findIndex((e) => e.eventID === id);
+
+    if (index !== -1) {
+      const indexEntity = eventsOddsC[index].odds.findIndex(
+        (o) => o.entity === entity
+      );
+
+      if (indexEntity !== -1) return eventsOddsC[index].odds[indexEntity].odd;
+    }
+
+    return -1;
+  };
+
+  const cancelChanges = () => {
+    setEventsOddsC([]);
+  };
+
+  const makeOddsChanges = () => {};
 
   const handleChangeSport = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSport(event.target.value);
@@ -289,6 +370,7 @@ const Bets = () => {
                       checkCallback={checkBet}
                       eventStateCallback={changeEventState}
                       changeOddCallback={changeOdd}
+                      checkChangedCallback={checkOddChanged}
                     />
                   </li>
                 ) : (
@@ -299,9 +381,17 @@ const Bets = () => {
           )}
           {!isSpecialist() ? (
             <div className='bg-white fixed bottom-0 left-0 w-full h-24'>
-              <div className='h-full w-[66%] flex justify-center items-center'>
+              <div className='h-full w-[66%] flex justify-center items-center space-x-5'>
                 <button
-                  className='bg-orange-500 uppercase h-10 font-medium pl-8 pr-8 items-center rounded-xl'
+                  className='uppercase h-10 w-48 font-medium pl-8 pr-8 items-center rounded-xl bg-gray-400'
+                  onClick={() => cancelChanges()}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={"uppercase h-10 w-48 font-medium pl-8 pr-8 items-center rounded-xl bg-orange-500".concat(
+                    eventsOddsC.length === 0 ? " opacity-50" : ""
+                  )}
                   onClick={() => {}}
                 >
                   Save Changes
@@ -330,6 +420,24 @@ const Bets = () => {
           <Progress events={events} />
         )}
       </div>
+      {showChangeState && (
+        <EventStatePopUp
+          closeCallback={changeShowChangeState}
+          id={idEventCS}
+          description={descriptionCS}
+          state={stateCS}
+          updateEventsCallback={updateEvents}
+        />
+      )}
+      {showChangeOdd && (
+        <OddPopUp
+          closeCallback={changeShowChangeOdd}
+          id={idEventCO}
+          description={descriptionCO}
+          entity={entityCO}
+          confirmCallback={addOddChange}
+        />
+      )}
     </div>
   );
 };

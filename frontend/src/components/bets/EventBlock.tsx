@@ -6,8 +6,9 @@ interface Data {
   event: Event;
   changeCallback: (id: string, bet: string) => void;
   checkCallback: (id: string, bet: string) => boolean;
-  eventStateCallback: (sport: string, id: string, state: string) => void;
-  changeOddCallback: (id: string, bet: string) => void;
+  eventStateCallback: (id: string, description: string, state: string) => void;
+  changeOddCallback: (id: string, entity: string, description: string) => void;
+  checkChangedCallback: (id: string, entity: string) => number;
 }
 
 const EventBlock = (props: Data) => {
@@ -32,6 +33,12 @@ const EventBlock = (props: Data) => {
   })}`;
 
   const hasDraw = event.sport === "Soccer";
+  const homeIsChanged = props.checkChangedCallback(event.id, home);
+  const awayIsChanged = props.checkChangedCallback(event.id, away);
+  let drawIsChanged = 0;
+  if (hasDraw) {
+    drawIsChanged = props.checkChangedCallback(event.id, "Draw");
+  }
 
   return (
     <div className='flex align-middle'>
@@ -46,7 +53,11 @@ const EventBlock = (props: Data) => {
             <button
               className='text-gray-800 pl-2 uppercase font-semibold'
               onClick={() =>
-                props.eventStateCallback(event.sport, event.id, event.state)
+                props.eventStateCallback(
+                  event.id,
+                  event.description,
+                  event.state
+                )
               }
             >
               {event.state}
@@ -58,20 +69,26 @@ const EventBlock = (props: Data) => {
           id={event.id}
           betType={home}
           ent={home}
-          odd={event.odds.get(home)!.odd}
+          odd={homeIsChanged !== -1 ? homeIsChanged : event.odds.get(home)!.odd}
           changeCallback={props.changeCallback}
           checkCallback={props.checkCallback}
           changeOddCallback={props.changeOddCallback}
+          isChanged={homeIsChanged !== -1}
+          description={event.description}
         />
         {hasDraw ? (
           <Oddbutton
             id={event.id}
             betType={"Draw"}
             ent='Draw'
-            odd={event.odds.get("Draw")!.odd}
+            odd={
+              drawIsChanged !== -1 ? drawIsChanged : event.odds.get("Draw")!.odd
+            }
             changeCallback={props.changeCallback}
             checkCallback={props.checkCallback}
             changeOddCallback={props.changeOddCallback}
+            isChanged={drawIsChanged !== -1}
+            description={event.description}
           />
         ) : (
           false
@@ -80,10 +97,12 @@ const EventBlock = (props: Data) => {
           id={event.id}
           betType={away}
           ent={away}
-          odd={event.odds.get(away)!.odd}
+          odd={awayIsChanged !== -1 ? awayIsChanged : event.odds.get(away)!.odd}
           changeCallback={props.changeCallback}
           checkCallback={props.checkCallback}
           changeOddCallback={props.changeOddCallback}
+          isChanged={awayIsChanged !== -1}
+          description={event.description}
         />
       </div>
       {!isSpecialist() && (

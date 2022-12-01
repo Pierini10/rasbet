@@ -1,26 +1,12 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { UseAuthentication } from "../../contexts/authenticationContext";
-import { ProfileInfo } from "../../models/profile.model";
+import { UseAuthentication } from "../contexts/authenticationContext";
 
 interface Data {
   showNotCallback: () => void;
 }
 
 const Navbar = (props: Data) => {
-  const { isAdministrator, isNormal, logout, fetchdataAuth } =
-    UseAuthentication();
-  const [info, setInfo] = useState<ProfileInfo>();
-
-  useEffect(() => {
-    fetchdataAuth("http://localhost:8080/getUser", "GET").then(
-      (data: ProfileInfo) => {
-        if (data) {
-          setInfo(data);
-        }
-      }
-    );
-  }, [fetchdataAuth]);
+  const { isAdministrator, isNormal, logout, balance } = UseAuthentication();
 
   return (
     <div className='sticky top-0 flex items-center justify-between h-24 p-6 text-white bg-green-900'>
@@ -49,7 +35,6 @@ const Navbar = (props: Data) => {
               <li key='ar'>
                 <Link to={"/adminRegister"}>Register users</Link>
               </li>
-
             ) : (
               ""
             )}
@@ -57,7 +42,6 @@ const Navbar = (props: Data) => {
               <li key='promotion'>
                 <Link to={"/promotion"}>Promotion</Link>
               </li>
-
             ) : (
               ""
             )}
@@ -65,7 +49,6 @@ const Navbar = (props: Data) => {
               <li key='notification'>
                 <Link to={"/Notification"}>Notification</Link>
               </li>
-
             ) : (
               ""
             )}
@@ -93,7 +76,7 @@ const Navbar = (props: Data) => {
           </svg>
         </button>
         <div className='flex items-center justify-center h-10 ml-5 mr-5 text-lg font-medium border-2 border-white rounded-full w-28'>
-          {info?.balance + " €"}
+          {balance + " €"}
         </div>
 
         <button onClick={logout}>

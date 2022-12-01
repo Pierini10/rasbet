@@ -19,7 +19,7 @@ interface DBBet {
 }
 
 const Payment = (props: Data) => {
-  const { fetchdataAuth } = UseAuthentication();
+  const { fetchdataAuth, balance, setBalance } = UseAuthentication();
   const [step, setStep] = useState(1);
   const [method, setMethod] = useState("Wallet");
   const [promotionalCode, setPromotionalCode] = useState("");
@@ -38,6 +38,10 @@ const Payment = (props: Data) => {
     );
 
     if (!data) setSuccess(false);
+    else {
+      const newBalance = balance - props.amount;
+      setBalance(newBalance);
+    }
 
     setStep(3);
     setMethod("Wallet");
