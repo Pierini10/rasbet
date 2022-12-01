@@ -6,7 +6,9 @@ const ProtectedRoute = ({ children }: any) => {
   const location = useLocation();
   const { token, saveToken, testToken, setToken, role } = UseAuthentication();
   let ls = localStorage.getItem("token");
-  const ADMIN_PATHS = ["/adminRegister"];
+  const ADMIN_PATHS = ["/adminregister", "/promotion", "/notification"];
+  const SPECIALIST_PATHS = ["/createevent"];
+
   useEffect(() => {
     if (ls && token === "") {
       saveToken(ls);
@@ -22,11 +24,17 @@ const ProtectedRoute = ({ children }: any) => {
   if (token === "" && !ls) {
     return <Navigate to='/login' />;
   } else if (
-    ADMIN_PATHS.includes(location.pathname) &&
+    ADMIN_PATHS.includes(location.pathname.toLocaleLowerCase()) &&
     role &&
     role !== "ROLE_Administrator"
   ) {
-    return <Navigate to='/' />;
+    return <Navigate to='/bets' />;
+  } else if (
+    SPECIALIST_PATHS.includes(location.pathname.toLocaleLowerCase()) &&
+    role &&
+    role !== "ROLE_Specialist"
+  ) {
+    return <Navigate to='/bets' />;
   }
 
   return children;

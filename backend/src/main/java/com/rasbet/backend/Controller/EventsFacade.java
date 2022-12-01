@@ -4,12 +4,17 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rasbet.backend.BackendApplication;
@@ -18,9 +23,10 @@ import com.rasbet.backend.Database.OddDB;
 import com.rasbet.backend.Database.SportsDB;
 import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Event;
-import com.rasbet.backend.Requests.UpdateOddRequest;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
+import com.rasbet.backend.Requests.UpdateOddRequest;
+import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,10 +56,11 @@ public class EventsFacade {
             @ApiResponse(responseCode = "400", description = "Something went wrong fetching data") })
     @GetMapping("/getEvents")
     public List<Event> getEvents(
-            @RequestParam(name = "sport") String sport) {
+            @RequestParam(name = "sport") String sport,
+            @RequestParam(name = "Event state", required = false) String event_state) {
         try {
             BackendApplication.t.signal(false);
-            return EventsDB.get_Events(sport);
+            return EventsDB.get_Events(sport, event_state);
         } catch (SportDoesNotExistExeption | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

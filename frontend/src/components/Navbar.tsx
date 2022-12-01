@@ -6,7 +6,8 @@ interface Data {
 }
 
 const Navbar = (props: Data) => {
-  const { isAdministrator, isNormal, logout, balance } = UseAuthentication();
+  const { isAdministrator, isNormal, logout, balance, isSpecialist } =
+    UseAuthentication();
 
   return (
     <div className='sticky top-0 flex items-center justify-between h-24 p-6 text-white bg-green-900'>
@@ -19,14 +20,14 @@ const Navbar = (props: Data) => {
             </li>
             {isNormal() ? (
               <li key='ha'>
-                <Link to={"/historicoApostas"}>Bet history</Link>
+                <Link to={"/betHistory"}>Bet history</Link>
               </li>
             ) : (
               ""
             )}
             {isNormal() ? (
               <li key='ht'>
-                <Link to={"/historicoTransicoes"}>Transaction history</Link>
+                <Link to={"/transactionHistory"}>Transaction history</Link>
               </li>
             ) : (
               ""
@@ -48,6 +49,13 @@ const Navbar = (props: Data) => {
             {isAdministrator() ? (
               <li key='notification'>
                 <Link to={"/Notification"}>Notification</Link>
+              </li>
+            ) : (
+              ""
+            )}
+            {isSpecialist() ? (
+              <li key='createEvent'>
+                <Link to={"/createEvent"}>Create Event</Link>
               </li>
             ) : (
               ""
