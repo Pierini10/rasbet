@@ -98,8 +98,11 @@ public class EventsDB {
             // Event
             List<String> event_string = new ArrayList<>();
             event_string.add(SQLiteJDBC.prepare_string(e.getId()));
-            event_string.add(Integer.toString(get_SportID(e.getSport())));
-            event_string.add(Integer.toString(SportsDB.getCompetition_ID(e.getCompetition())));
+            int sport_id = get_SportID(e.getSport());
+            event_string.add(Integer.toString(sport_id));
+            int comp_id = SportsDB.getCompetition_ID(e.getCompetition());
+            if (comp_id == -1) comp_id = SportsDB.addCompetition(sport_id, e.getCompetition());
+            event_string.add(Integer.toString(comp_id));
             event_string.add(Integer.toString(get_EventStatusID(PENDING_STATUS)));
             event_string.add(SQLiteJDBC.prepare_string(e.getDatetime().toString()));
             event_string.add(SQLiteJDBC.prepare_string(e.getDescription()));
@@ -376,17 +379,18 @@ public class EventsDB {
     }
 
     // Gets all DB events
-    public static ArrayList<Event> get_Events(String sport, String event_state) throws SQLException, SportDoesNotExistExeption {
+    public static ArrayList<Event> get_Events(String sport, Boolean closed_state) throws SQLException, SportDoesNotExistExeption {
         // Create a connection
         int sport_id = get_SportID(sport);
         ArrayList<Event> events = new ArrayList<>();
-        if (event_state != null){
-            if (!event_state.equals(PENDING_STATUS) && !event_state.equals(FINISHED_STATUS) && !event_state.equals(CLOSED_STATUS))
-                throw new IllegalArgumentException("Event state does not exist");
+        
+        int state = get_EventStatusID(PENDING_STATUS);
+        String query = "SELECT * FROM Event WHERE Sport_ID=" + sport_id + " AND (EventState_ID=" + state;
+        if (closed_state){
+            state = get_EventStatusID(CLOSED_STATUS);
+            query += " OR EventState_ID=" + state;
         }
-        else event_state = PENDING_STATUS;
-        int state = get_EventStatusID(event_state);
-        String query = "SELECT * FROM Event WHERE EventState_ID=" + state + " AND Sport_ID=" + sport_id + ";";
+        query += ");";
 
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         ResultSet rs = sqLiteJDBC2.executeQuery(query);

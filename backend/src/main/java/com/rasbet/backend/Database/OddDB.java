@@ -1,10 +1,10 @@
 package com.rasbet.backend.Database;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.OddSimple;
-import com.rasbet.backend.Requests.UpdateOddRequest;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
 /**
@@ -40,11 +40,11 @@ public class OddDB {
      * @return True if odds were updated successfully, false otherwise, i think.
      */
 
-    public static void updateOdds(UpdateOddRequest possibleBets) throws NoAuthorizationException, SQLException {
+    public static void updateOdds(int id, List<EventOdds> possibleBets) throws NoAuthorizationException, SQLException {
 
-        UserDB.assert_is_Specialist(possibleBets.getUserID());
+        UserDB.assert_is_Specialist(id);
 
-        for (EventOdds eventOdd : possibleBets.getPossibleBets()) {
+        for (EventOdds eventOdd : possibleBets) {
             for (OddSimple odd : eventOdd.getOdds()) {
 
                 updateOdd(eventOdd.getEventID(), odd.getOdd(), odd.getEntity());

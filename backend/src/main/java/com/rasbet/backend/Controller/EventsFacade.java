@@ -2,7 +2,9 @@ package com.rasbet.backend.Controller;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,9 +25,10 @@ import com.rasbet.backend.Database.OddDB;
 import com.rasbet.backend.Database.SportsDB;
 import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Event;
+import com.rasbet.backend.Entities.EventOdds;
+import com.rasbet.backend.Entities.Odd;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
-import com.rasbet.backend.Requests.UpdateOddRequest;
 import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,10 +60,10 @@ public class EventsFacade {
     @GetMapping("/getEvents")
     public List<Event> getEvents(
             @RequestParam(name = "sport") String sport,
-            @RequestParam(name = "Event state", required = false) String event_state) {
+            @RequestParam(name = "Event state") Boolean closed_state) {
         try {
             BackendApplication.t.signal(false);
-            return EventsDB.get_Events(sport, event_state);
+            return EventsDB.get_Events(sport, closed_state);
         } catch (SportDoesNotExistExeption | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -97,11 +100,20 @@ public class EventsFacade {
             @RequestParam(name = "sport") String sport,
             @RequestParam(name = "competition") String competition,
             @RequestParam(name = "datetime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime datetime,
-            @RequestParam(name = "description")  String description)
+            @RequestParam(name = "description")  String description,
+            @RequestParam(name = "list of enteties", required = false) List<String> entetiesList)
     {
         token = RasbetTokenDecoder.parseToken(token);
 
-        Event event = new Event(null, sport, competition, datetime, description, null, null, null);
+        Map<String, Odd> odds = null;
+        if (entetiesList != null) {
+            odds = new HashMap<>();
+            for (String entety : entetiesList) {
+                odds.put(entety, new Odd(entety, -1, false));
+            }
+        }
+
+        Event event = new Event(null, sport, competition, datetime, description, null, null, odds);
         try {
             UserDB.assert_is_Specialist(new RasbetTokenDecoder(token, jwtDecoder).getId());
             EventsDB.add_Event(event);
@@ -166,6 +178,28 @@ public class EventsFacade {
     }
 
     /**
+     * Get all competitions
+     * 
+     * @return Map of competitions
+     */
+    @Operation(summary = "Get all competitions.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All competitions."),
+            @ApiResponse(responseCode = "500", description = "SQLException.") })
+    @GetMapping("/getAllCompetitions")
+    public Map<String, List<String>> getAllCompetitions()
+    {
+
+        try {
+            return SportsDB.getCompetitions();
+
+        } catch (SQLException e) {
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
+        }
+    }
+
+    /**
      * Insert new ODD.
      * list   containing:
      *               0: Event ID
@@ -182,11 +216,14 @@ public class EventsFacade {
             @ApiResponse(responseCode = "401", description = "This User does not have authorization to change ODD'S"),
             @ApiResponse(responseCode = "500", description = "SqlException") })
     @PostMapping("/insertOdd")
-    public void insertOdd(@RequestBody UpdateOddRequest possibleBets) {
+    public void insertOdd(@RequestHeader("Authorization") String token,
+                          @RequestBody List<EventOdds> possibleBets)
+    {
+        token = RasbetTokenDecoder.parseToken(token);
+        
 
         try {
-            OddDB.updateOdds(possibleBets);
-
+            OddDB.updateOdds(new RasbetTokenDecoder(token, jwtDecoder).getId(), possibleBets);
         } catch (NoAuthorizationException e) {
 
             throw new ResponseStatusException(

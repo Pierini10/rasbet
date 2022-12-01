@@ -3,6 +3,7 @@ package com.rasbet.backend.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,52 @@ public class SportsDB {
 
         sqLiteJDBC2.closeRS(rs);
         sqLiteJDBC2.close();
+
+        return res;
+    }
+
+
+    public static String getSport(int id) throws SQLException {
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+
+        String query = "SELECT Name FROM Sport WHERE Sport_ID = " + id + ";";
+        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+        String res;
+
+        if (rs.next()) res = rs.getString("Name");
+        else throw new SQLException("Sport not found");
+
+        sqLiteJDBC2.closeRS(rs);
+
+        return res;
+    }
+
+    /**
+     * Gets the ID of a bet state
+     * 
+     * @param state
+     * @return Id of the state
+     * @throws SQLException
+     */
+    public static Map<String, List<String>> getCompetitions() throws SQLException {
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+        Map<String, List<String>>res = new HashMap<>();
+
+        String query = "SELECT (Name, Sport_ID) FROM Competition;";
+        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+
+        while (rs.next()) {
+            String sport = getSport(rs.getInt("Sport_ID"));
+            if (res.containsKey(sport)) {
+                res.get(sport).add(rs.getString("Name"));
+            } else {
+                List<String> list = new ArrayList<>();
+                list.add(rs.getString("Name"));
+                res.put(sport, list);
+            }
+        }
+
+        sqLiteJDBC2.closeRS(rs);
 
         return res;
     }
@@ -87,6 +134,17 @@ public class SportsDB {
         }
 
         sqLiteJDBC2.close();
+    }
+
+    public static int addCompetition(int sport, String competition) throws SQLException{
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+
+        String insert_Competition = "INSERT INTO Competition (Name, Sport_ID) VALUES (" + SQLiteJDBC.prepare_string(competition) + ", " + sport + ") RETURNING Competition_ID;";
+        ResultSet rs_insert = sqLiteJDBC2.executeQuery(insert_Competition);
+        int comp_id = rs_insert.getInt("Sport_ID");
+
+        sqLiteJDBC2.close();
+        return comp_id;
     }
 
 }
