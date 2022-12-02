@@ -1,8 +1,22 @@
- 
-Login with: validate@gmail.com:Test3aut!
-
 TODO
-	- Register: NIF invalid.
+	- Register: NIF invalid. (passar para parâmetros)
+	- Adicionar mais tempo ao token
+	- 
+		- fix promotions: nominal, percentage
+
+
+-------------------USER ADMIN------------------------------
+
+login admin (Login with: manuel@gmail.com:Test3aut!)
+
+mostrar registar especialista/admins
+
+criar & eliminar promoção
+
+criar notificação global
+
+
+-------------------USER NORMAL------------------------------
 
 Register
 	user@gmail.com
@@ -15,4 +29,30 @@ Register
 	932854789
 	01/01/1999
 
+
+Login
+	user@gmail.com
+	umaPWl1ND4
+
+Mostrar desportos
+
+Mostrar competições
+
+Fazer bets
+	* bet simples  - apenas um jogo, com carteira
+	* bet multipla - varios jogos, com mbway
+
+Fazer com que as bets sejam resolvidas
+
+Mostrar historico de apostas
+
+Mostrar historico transações
+
+Mostrar notificações
+
+Mostrar perfil
+
+Mudar info perfil
+
+Fazer depósito & Levantamento (usar promotion code)
 
