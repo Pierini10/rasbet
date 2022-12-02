@@ -84,9 +84,7 @@ public class BetDB {
         sqLiteJDBC2.closeRS(rs);
         sqLiteJDBC2.close();
 
-        HistoryBets h = new HistoryBets(null, res);
-        h.calculateWPercentage();
-
+        HistoryBets h = new HistoryBets(res);
         return h;
     }
 
