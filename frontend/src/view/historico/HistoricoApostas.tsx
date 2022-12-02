@@ -51,6 +51,7 @@ function HistoricoApostas() {
           {names[0]} {names[1]}
         </div>
         <div className='flex justify-center mt-5 font-bold'>Bet History</div>
+        {bets?.winPercentage !== undefined && <div className="flex justify-center">Win percentage: {bets?.winPercentage.toString()}%</div>}
         <div className='flex justify-center mt-5'>
           <hr className='bg-gray-500 w-[90%]' />
         </div>
@@ -92,7 +93,7 @@ function HistoricoApostas() {
           ))}
           {!filteredBets && (
             <div className='flex items-center justify-center h-full py-5 text-3xl'>
-              Não existe histórico de Apostas para esta conta.
+              There is no bets history for this account.
             </div>
           )}
         </div>

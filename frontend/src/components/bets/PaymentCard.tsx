@@ -2,8 +2,6 @@ import { useState } from "react";
 
 interface Data {
   cancelCallback: (show: boolean) => void;
-  promotionalCode: string;
-  handlePromoCallback: (event: React.ChangeEvent<HTMLInputElement>) => void;
   payCallback: () => void;
 }
 
@@ -42,12 +40,6 @@ const PaymentCard = (props: Data) => {
             placeholder='Validation Date'
             className=' pl-2 text-gray-800 focus:outline-none h-12 w-44 border-gray-400 border-2'
             type='month'
-          />
-          <input
-            placeholder='Promotional Code'
-            className='pl-2 text-gray-800 focus:outline-none  h-12 w-44 border-gray-400 border-2'
-            onChange={props.handlePromoCallback}
-            value={props.promotionalCode}
           />
         </div>
       </div>

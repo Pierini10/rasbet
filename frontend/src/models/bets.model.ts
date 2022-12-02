@@ -12,12 +12,12 @@ export interface Prediction {
 }
 
 export interface SimpleBet {
-  amount: Number;
+  amount: number;
   betState: String;
   dataTime: String;
   gamesLeft: Number;
   id: Number;
   idUser: Number;
   predictions: Prediction[];
-  totalOdds: Number;
+  totalOdds: number;
 }
