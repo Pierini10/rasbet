@@ -90,9 +90,9 @@ public class TransactionDB {
         int walletID = rs.getInt("Wallet_ID");
 
         double balanceValue = WalletDB.get_Balance(walletID);
-        if (code != null && TransactionType.equals("deposito")) {
+        if (code != null && TransactionType.equals("Deposit")) {
             Promotion promotion = PromotionDB.getPromotion(code);
-            value += promotion.calculatePromotionValue(value);
+            value = promotion.calculatePromotionValue(value);
         }
         if (balanceValue + value >= 0) {
             String fullDate = getDateAndTime();

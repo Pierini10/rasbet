@@ -44,7 +44,8 @@ public class Promotion {
             if (this.type == PromotionDB.ABSOLUTE_TYPE) {
                 value += this.value;
             } else if (this.type == PromotionDB.PERCENTAGE_TYPE) {
-                value += value * this.value / 100;
+                value += (value * this.value / 100);
+
             }
             return value;
         } else {
