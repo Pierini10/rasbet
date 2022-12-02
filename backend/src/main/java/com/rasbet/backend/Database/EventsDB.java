@@ -175,7 +175,7 @@ public class EventsDB {
     }
 
     public static String calculateWinner(String description, String result) {
-        if (Pattern.compile("^(\\d+)x(\\d+)$").matcher(description).matches()){
+        if (Pattern.compile("^(\\d+)x(\\d+)$").matcher(result).matches()){
             String[] r = result.split("x", 2);
             int winner = (Integer.parseInt(r[0])) - (Integer.parseInt(r[1]));
             String[] d = description.split(" v ", 2);
