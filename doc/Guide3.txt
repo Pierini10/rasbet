@@ -1,0 +1,18 @@
+ 
+Login with: validate@gmail.com:Test3aut!
+
+TODO
+	- Register: NIF invalid.
+
+Register
+	user@gmail.com
+	umaPWl1ND4
+	ras
+	bet
+	510478379
+	89456787
+	Rua das dores
+	932854789
+	01/01/1999
+
+
