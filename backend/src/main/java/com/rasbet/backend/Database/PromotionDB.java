@@ -11,8 +11,7 @@ public class PromotionDB {
     public final static int PERCENTAGE_TYPE = 1;
     public final static int ABSOLUTE_TYPE = 2;
 
-    public static void createPromotion(int id, String code, String description, double value, double minValue,
-            int type)
+    public static void createPromotion(int id, String code, String description, double value, double minValue, int type)
             throws SQLException, NoAuthorizationException {
 
         UserDB.assert_is_Administrator(id);

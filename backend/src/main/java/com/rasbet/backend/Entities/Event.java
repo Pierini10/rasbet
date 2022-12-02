@@ -14,8 +14,7 @@ public class Event {
     private String result;
     private Map<String, Odd> odds;
 
-    public Event(String id, String sport, String competition, LocalDateTime datetime, String description, String result, String state,
-            Map<String, Odd> odds) {
+    public Event(String id, String sport, String competition, LocalDateTime datetime, String description, String result, String state, Map<String, Odd> odds) {
         if (id == null)
             id = generateId(description, datetime.toString());
         this.id = id;

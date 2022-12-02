@@ -21,6 +21,8 @@ const makeGame = (game: Prediction) => {
 }
 
 function Aposta(props: SimpleBet) {
+
+
     return (
         <div className="flex justify-center mt-5">
             <div className="container grid max-w-xl grid-cols-2 border border-black divide-x-4 rounded-lg">
@@ -29,8 +31,9 @@ function Aposta(props: SimpleBet) {
                 </div>
 
                 <div className="flex flex-col justify-around">
-                    <div className="ml-2">Amount Staken {props.amount.toString()}€</div>
-                    <div className="flex ml-2">Earnings: <div className="ml-5 text-orange-500"> {props.amount.toString()}€</div></div>
+                    <div className="ml-2">Amount Staken: {props.amount.toString()}€</div>
+                    <div className="ml-2">Bet State: {props.betState} </div>
+                    <div className="flex ml-2">Possible Earnings: <div className="ml-5 text-orange-500"> {(props.amount * props.totalOdds).toString()}€</div></div>
                 </div>
             </div>
 
