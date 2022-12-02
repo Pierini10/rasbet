@@ -104,7 +104,6 @@ public class EventsFacade {
             @RequestParam(name = "description") String description,
             @RequestBody(required = false) listOfEnteties entetiesList) {
         token = RasbetTokenDecoder.parseToken(token);
-        System.out.println(competition);
         Map<String, Odd> odds = null;
         if (entetiesList != null) {
             odds = new HashMap<>();
@@ -150,6 +149,7 @@ public class EventsFacade {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
         } catch (NoAuthorizationException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, e.getMessage());
         }
@@ -221,11 +221,11 @@ public class EventsFacade {
         try {
             OddDB.updateOdds(new RasbetTokenDecoder(token, jwtDecoder).getId(), possibleBets);
         } catch (NoAuthorizationException e) {
-
+            e.printStackTrace();
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (SQLException e) {
-
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

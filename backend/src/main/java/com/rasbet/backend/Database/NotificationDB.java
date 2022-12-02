@@ -85,7 +85,6 @@ public class NotificationDB {
 
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
         String query = "SELECT Description FROM Notification WHERE IdUser = " + idUser + " OR IdUser = " + globalId + " ORDER BY Id DESC LIMIT " + n + ";";
-        System.out.println(query);
         ResultSet rs = sqLiteJDBC.executeQuery(query);
         while (rs.next()) {
             notifications.add(rs.getString("Description"));

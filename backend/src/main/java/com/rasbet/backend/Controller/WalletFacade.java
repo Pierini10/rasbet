@@ -54,9 +54,9 @@ public class WalletFacade {
             @RequestHeader("Authorization") String token) {
         token = RasbetTokenDecoder.parseToken(token);
 
-        String transactionType = "Deposit";
+        String transactionType = "Withdraw";
         if (amount > 0) {
-            transactionType = "Withdraw";
+            transactionType = "Deposit";
         }
         try {
             return TransactionDB.addTransaction(new RasbetTokenDecoder(token, jwtDecoder).getId(), transactionType,
