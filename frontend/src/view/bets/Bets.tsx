@@ -72,7 +72,7 @@ const Bets = () => {
             undefined,
             {
               sport: s,
-              eventState: false,
+              eventState: !isNormal(),
             }
           );
           if (dataEvents !== undefined) {
