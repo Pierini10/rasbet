@@ -6,6 +6,7 @@ import PaymentMBWay from "./PaymentMBWay";
 
 interface Data {
   cancelCallback: (show: boolean) => void;
+  clearCallback: () => void;
   bets: DBBet[];
   amount: number;
 }
@@ -22,12 +23,7 @@ const Payment = (props: Data) => {
   const { fetchdataAuth, balance, setBalance } = UseAuthentication();
   const [step, setStep] = useState(1);
   const [method, setMethod] = useState("Wallet");
-  const [promotionalCode, setPromotionalCode] = useState("");
   const [success, setSuccess] = useState(true);
-
-  const handlePromotionalCode = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPromotionalCode(e.target.value);
-  };
 
   const payBet = async () => {
     const data = await fetchdataAuth(
@@ -47,14 +43,16 @@ const Payment = (props: Data) => {
     setMethod("Wallet");
   };
 
+  const close = () => {
+    props.clearCallback();
+    props.cancelCallback(false);
+  };
+
   return (
     <div className='fixed w-screen h-screen bg-black bg-opacity-60 top-0 flex justify-center items-center'>
       <div className='h-96 w-[900px] bg-white ml-20 mr-28 rounded-3xl flex flex-col justify-between pt-5 pb-5  text-gray-800'>
         {step === 3 && (
-          <button
-            className='absolute pl-3'
-            onClick={() => props.cancelCallback(false)}
-          >
+          <button className='absolute pl-3' onClick={() => close()}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -124,22 +122,16 @@ const Payment = (props: Data) => {
           method === "MBWay" ? (
             <PaymentMBWay
               cancelCallback={props.cancelCallback}
-              promotionalCode={promotionalCode}
-              handlePromoCallback={handlePromotionalCode}
               payCallback={payBet}
             />
           ) : method === "MB" ? (
             <PaymentBank
               cancelCallback={props.cancelCallback}
-              promotionalCode={promotionalCode}
-              handlePromoCallback={handlePromotionalCode}
               payCallback={payBet}
             />
           ) : (
             <PaymentCard
               cancelCallback={props.cancelCallback}
-              promotionalCode={promotionalCode}
-              handlePromoCallback={handlePromotionalCode}
               payCallback={payBet}
             />
           )

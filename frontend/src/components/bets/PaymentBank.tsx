@@ -2,8 +2,6 @@ import { useState } from "react";
 
 interface Data {
   cancelCallback: (show: boolean) => void;
-  promotionalCode: string;
-  handlePromoCallback: (event: React.ChangeEvent<HTMLInputElement>) => void;
   payCallback: () => void;
 }
 
@@ -30,13 +28,6 @@ const PaymentBank = (props: Data) => {
           className=' pl-2 text-gray-800 focus:outline-none text-lg h-12 w-48 border-gray-400 border-2'
           onChange={handleNIB}
           value={nib}
-        />
-
-        <input
-          placeholder='Promotional Code'
-          className='pl-2 text-gray-800 focus:outline-none text-lg h-12 w-48 border-gray-400 border-2'
-          onChange={props.handlePromoCallback}
-          value={props.promotionalCode}
         />
       </div>
 

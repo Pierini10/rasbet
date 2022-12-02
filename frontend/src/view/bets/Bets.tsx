@@ -89,7 +89,7 @@ const Bets = () => {
     };
 
     loadEvents();
-  }, [fetchdataAuth, updateBets]);
+  }, [fetchdataAuth, updateBets, isNormal]);
 
   const changeBetType = (bt: boolean) => {
     setBetType(bt);
@@ -225,7 +225,7 @@ const Bets = () => {
 
   const changeCompetitions = (events: Event[]) => {
     const competitionsSet: Set<string> = new Set();
-    const newCompetitions = ["Todas"];
+    const newCompetitions = ["All"];
 
     events.forEach((event) => competitionsSet.add(event.competition));
 
@@ -318,6 +318,10 @@ const Bets = () => {
     }
   };
 
+  const clearBets = () => {
+    setBets([]);
+  };
+
   const handleChangeSport = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSport(event.target.value);
     setBets([]);
@@ -362,7 +366,7 @@ const Bets = () => {
           {events.get(sport) !== undefined && (
             <ul className='space-y-6'>
               {events.get(sport)!.map((e) => {
-                return competition === "Todas" ||
+                return competition === "All" ||
                   e.competition === competition ? (
                   <li key={e.id}>
                     <EventBlock
@@ -426,6 +430,7 @@ const Bets = () => {
           cancelCallback={changeShowPayment}
           bets={betsDB}
           amount={Number(total)}
+          clearCallback={clearBets}
         />
       ) : (
         ""
