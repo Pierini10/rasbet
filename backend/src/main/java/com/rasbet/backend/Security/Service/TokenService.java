@@ -32,7 +32,7 @@ public class TokenService
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(String.valueOf(id))
                 .issuedAt(now)
-                .expiresAt(now.plus(1, ChronoUnit.HOURS))
+                .expiresAt(now.plus(1, ChronoUnit.DAYS))
                 .subject(email)
                 .claim("role", scope)
                 .build();
