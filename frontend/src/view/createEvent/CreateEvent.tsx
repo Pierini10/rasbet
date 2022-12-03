@@ -45,7 +45,7 @@ function CreateEvent() {
     const success = await fetchdataAuth(
       "http://localhost:8080/addEvent",
       "POST",
-      participants.length > 0 ? JSON.stringify(participants) : 'undefined',
+      JSON.stringify(participants),
       event
     );
     if (success) {

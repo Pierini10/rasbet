@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthenticationProvider from "./contexts/authenticationContext";
 import AdminRegister from "./view/AdminRegister/AdminRegister";
@@ -99,7 +99,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <div>This page does not exist</div>,
+    element: <Navigate to={"/bets"} />,
   },
 ]);
 
