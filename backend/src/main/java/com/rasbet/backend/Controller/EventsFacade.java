@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.rasbet.backend.Exceptions.InvalidOddException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -85,8 +86,6 @@ public class EventsFacade {
     /**
      * Adds a new Event.
      * 
-     * @param sport
-     * @param datetime
      * @param description (yyyy-MM-ddThh:mm:ss)
      * 
      */
@@ -105,7 +104,7 @@ public class EventsFacade {
     {
         token = RasbetTokenDecoder.parseToken(token);
         Map<String, Odd> odds = null;
-        if (entitiesList != null) {
+        if (entitiesList != null && !entitiesList.isEmpty()) {
             odds = new HashMap<>();
             for (String entety : entitiesList) {
                 odds.put(entety, new Odd(entety, -1, false));
@@ -125,10 +124,7 @@ public class EventsFacade {
 
     /**
      * Change event state.
-     * 
-     * @param idEvent
-     * @param state
-     * @return True if the change was successful, false otherwise.
+     *  True if the change was successful, false otherwise.
      */
     @Operation(summary = "Change state of event.")
     @ApiResponses(value = {
@@ -205,8 +201,7 @@ public class EventsFacade {
      * [
      * (Name, Odd),
      * ]
-     * 
-     * @return True if insertion was successful, false otherwise.
+     *  True if insertion was successful, false otherwise.
      */
     @Operation(summary = "Insert new ODD.")
     @ApiResponses(value = {
@@ -224,7 +219,14 @@ public class EventsFacade {
             e.printStackTrace();
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (SQLException e) {
+        }
+        catch (InvalidOddException e)
+        {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
