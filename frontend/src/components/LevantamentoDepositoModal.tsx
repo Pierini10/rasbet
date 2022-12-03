@@ -14,7 +14,9 @@ function LevantamentoModal(props: { isOpen: boolean, onClose: Dispatch<boolean>,
         if (promotionCode) { transaction.promotionCode = promotionCode }
         const data = await fetchdataAuth("http://localhost:8080/withdrawDeposit", "POST", undefined, transaction);
         if (data) {
-            setBalance(data)
+            if (typeof data === "number") {
+                setBalance(data)
+            } else { setBalance(0.0) }
             props.type === "levantamento" ? alert("Levantamento realizado com sucesso!") : alert("Deposito realizado com sucesso!")
             props.onClose(false)
             setStep("choices")
