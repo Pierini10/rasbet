@@ -1,15 +1,16 @@
 package com.rasbet.backend.Controller;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,6 @@ import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.User;
 import com.rasbet.backend.Exceptions.BadPasswordException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
-import com.rasbet.backend.Requests.SignUpRequest;
 import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,21 +46,30 @@ public class UserFacade {
             @ApiResponse(responseCode = "400", description = "Could not register") })
     @PostMapping("/register")
     public void register(
-            @RequestBody SignUpRequest signUpRequest,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam int NIF,
+            @RequestParam int CC,
+            @RequestParam String address,
+            @RequestParam String phoneNumber,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthday,
+            @RequestParam String role,
             @RequestHeader(value = "Authorization", required = false) String token) {
         try {
             User new_user = new User(
-                    signUpRequest.getEmail(),
-                    signUpRequest.getPassword(),
-                    this.encoder.encode(signUpRequest.getPassword()),
-                    signUpRequest.getFirstName(),
-                    signUpRequest.getLastName(),
-                    signUpRequest.getNIF(),
-                    signUpRequest.getCC(),
-                    signUpRequest.getAddress(),
-                    signUpRequest.getPhoneNumber(),
-                    signUpRequest.getBirthday(),
-                    signUpRequest.getRole());
+                    email,
+                    password,
+                    this.encoder.encode(password),
+                    firstName,
+                    lastName,
+                    NIF,
+                    CC,
+                    address,
+                    phoneNumber,
+                    birthday,
+                    role);
 
             // Get user role from bearer token (if there is a token available).
             String userRequestRole = UserDB.NORMAL_ROLE;
@@ -80,13 +89,6 @@ public class UserFacade {
     /**
      * Change user information.
      * Receiving only the parameters that are to be changed.
-     * 
-     * @param email
-     * @param password
-     * @param firstName
-     * @param lastName
-     * @param address
-     * @param phoneNumber
      * 
      */
     @Operation(summary = "Changes user information.")
