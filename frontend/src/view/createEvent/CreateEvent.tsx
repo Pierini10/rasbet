@@ -45,7 +45,7 @@ function CreateEvent() {
     const success = await fetchdataAuth(
       "http://localhost:8080/addEvent",
       "POST",
-      JSON.stringify({ entetiesList: participants }),
+      participants.length > 0 ? JSON.stringify(participants) : 'undefined',
       event
     );
     if (success) {
@@ -161,11 +161,8 @@ function CreateEvent() {
           <div className='flex justify-center'>
             <input
               className='p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-black'
-              placeholder={
-                costumeCompetition === ""
-                  ? " Custom Competition"
-                  : costumeCompetition
-              }
+              placeholder="Custom Competition" value={costumeCompetition}
+
               onChange={(e) => {
                 setCostumeCompetition(e.target.value);
                 setCompetition(e.target.value);
@@ -194,11 +191,7 @@ function CreateEvent() {
           <div className='flex justify-center'>
             <input
               className='p-2 border border-green-900 rounded-lg placeholder:text-center placeholder:text-black'
-              placeholder={
-                costumeCompetition === ""
-                  ? " Custom Participant"
-                  : costumeCompetition
-              }
+              placeholder="Custom Participant"
               onChange={(e) => {
                 setParticipant(e.target.value);
               }}

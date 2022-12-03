@@ -49,7 +49,7 @@ const Payment = (props: Data) => {
   };
 
   return (
-    <div className='fixed w-screen h-screen bg-black bg-opacity-60 top-0 flex justify-center items-center'>
+    <div className='fixed top-0 flex items-center justify-center w-screen h-screen bg-black bg-opacity-60'>
       <div className='h-96 w-[900px] bg-white ml-20 mr-28 rounded-3xl flex flex-col justify-between pt-5 pb-5  text-gray-800'>
         {step === 3 && (
           <button className='absolute pl-3' onClick={() => close()}>
@@ -59,7 +59,7 @@ const Payment = (props: Data) => {
               viewBox='0 0 24 24'
               strokeWidth={1.5}
               stroke='currentColor'
-              className='w-8 h-8 absolute'
+              className='absolute w-8 h-8'
             >
               <path
                 strokeLinecap='round'
@@ -70,15 +70,15 @@ const Payment = (props: Data) => {
           </button>
         )}
 
-        <p className='text-2xl font-semibold w-full text-center'>
+        <p className='w-full text-2xl font-semibold text-center'>
           {step !== 3 ? "Payment" : success ? "Congratulations!" : ""}
         </p>
         {step === 1 ? (
-          <div className='flex space-x-3 w-full justify-center items-center'>
-            <p className='font-medium text-xl'>Payment method:</p>
+          <div className='flex items-center justify-center w-full space-x-3'>
+            <p className='text-xl font-medium'>Payment method:</p>
             <div className='flex space-x-3'>
               <button
-                className='flex items-center justify-center w-44 h-24 duration-100 ease-in bg-white rounded hover:bg-slate-400'
+                className='flex items-center justify-center h-24 duration-100 ease-in bg-white rounded w-44 hover:bg-slate-400'
                 onClick={() => {
                   setMethod("MB");
                   setStep(2);
@@ -91,7 +91,7 @@ const Payment = (props: Data) => {
                 />
               </button>
               <button
-                className='flex items-center justify-center w-44 h-24 duration-100 ease-in bg-white rounded hover:bg-slate-400'
+                className='flex items-center justify-center h-24 duration-100 ease-in bg-white rounded w-44 hover:bg-slate-400'
                 onClick={() => {
                   setMethod("MBWay");
                   setStep(2);
@@ -100,11 +100,11 @@ const Payment = (props: Data) => {
                 <img
                   src='Levantar/LogoMBWay.png'
                   alt='mbway'
-                  className=' h-24 p-2'
+                  className='h-24 p-2 '
                 />
               </button>
               <button
-                className='flex items-center justify-center w-44 h-24 duration-100 ease-in bg-white rounded hover:bg-slate-400'
+                className='flex items-center justify-center h-24 duration-100 ease-in bg-white rounded w-44 hover:bg-slate-400'
                 onClick={() => {
                   setMethod("Credit");
                   setStep(2);
@@ -136,17 +136,17 @@ const Payment = (props: Data) => {
             />
           )
         ) : (
-          <div className='grow w-full flex justify-center items-center text-2xl'>
+          <div className='flex items-center justify-center w-full text-2xl grow'>
             {success ? "Payment was successful." : "Payment failed."}
           </div>
         )}
-        <div className='w-full flex justify-between items-center pl-10 pr-10'>
+        <div className='flex items-center justify-between w-full pl-10 pr-10'>
           {step === 1 ? (
             <button onClick={() => payBet()}>Use Wallet</button>
           ) : (
             <div></div>
           )}
-          <div className='flex justify-end items-center'>
+          <div className='flex items-center justify-end'>
             <div
               className={"h-8 w-8 rounded-full flex justify-center items-center ".concat(
                 step === 1

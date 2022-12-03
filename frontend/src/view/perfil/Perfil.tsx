@@ -32,7 +32,7 @@ function Profile() {
                     <button className="px-10 py-1 text-white duration-150 ease-in bg-orange-500 border-orange-500 rounded-md hover:text-white hover:bg-orange-700" onClick={() => setDepositoModalIsOpen(true)}>Deposit</button>
                 </div>
                 <div className="flex justify-center mt-5 text-xl sm:ml-20 sm:block">View Betting History
-                    <a className="px-1 ml-2 transition border border-black rounded-full hover:bg-orange-500" href="/historicoApostas"> {'>'} </a>
+                    <a className="px-1 ml-2 transition border border-black rounded-full hover:bg-orange-500" href="/bethistory"> {'>'} </a>
                 </div>
                 <ChangeInfoForm info={info} updateInfo={setInfo} />
 

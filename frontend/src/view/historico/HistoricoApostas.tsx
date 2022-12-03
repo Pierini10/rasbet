@@ -10,6 +10,7 @@ function HistoricoApostas() {
   const [bets, setBets] = useState<Bet>();
   const [filteredBets, setFilteredBets] = useState<Bet>();
   const [names, setNames] = useState<string[]>(["", ""]);
+  const [filter, setFilter] = useState<"simple" | "multiple" | "all">("all");
   useEffect(() => {
     fetchdataAuth("http://localhost:8080/getBetsHistory", "GET").then(
       (data: Bet) => {
@@ -32,6 +33,7 @@ function HistoricoApostas() {
   const filterBet = (filter: "simple" | "multiple" | "all") => {
     if (bets) {
       const temp = { ...bets };
+      setFilter(filter)
       if (filter === "simple") {
         temp.bets = temp.bets.filter((bet) => bet.predictions.length === 1);
         setFilteredBets(temp);
@@ -46,32 +48,32 @@ function HistoricoApostas() {
 
   return (
     <div className='grid h-[90vh] bg-gray-400 place-items-center '>
-      <div className=' max-w-5xl bg-white border-dotted h-[80%] container rounded-3xl border-black border'>
+      <div className=' max-w-5xl bg-white border-dotted h-[80vh] container rounded-3xl border-black border'>
         <div className='flex justify-center mt-5 text-2xl'>
           {names[0]} {names[1]}
         </div>
         <div className='flex justify-center mt-5 font-bold'>Bet History</div>
-        {bets?.winPercentage !== undefined && <div className="flex justify-center">Win percentage: {bets?.winPercentage.toString()}%</div>}
+        {bets?.winPercentage !== undefined && <div className="flex justify-center">Win percentage: {bets?.winPercentage.toFixed(2).toString()}%</div>}
         <div className='flex justify-center mt-5'>
           <hr className='bg-gray-500 w-[90%]' />
         </div>
         <div className='flex justify-center mt-2 space-x-2'>
           <button
-            className='py-1 text-orange-500 duration-150 ease-in border border-orange-500 rounded-md w-36 hover:bg-orange-500 hover:text-white'
+            className={'py-1  duration-150 ease-in border border-orange-500 rounded-md w-36 ' + (filter === 'simple' ? ' bg-orange-500 text-white' : 'bg-white text-orange-500 border border-orange-500 hover:bg-orange-500 hover:text-white')}
             onClick={() => filterBet("simple")}
           >
             {" "}
             Simple
           </button>
           <button
-            className='py-1 text-white duration-150 ease-in bg-blue-500 rounded-md w-36 hover:bg-blue-800 '
+            className={'py-1  duration-150 ease-in border border-orange-500 rounded-md w-36 ' + (filter === 'all' ? ' bg-orange-500 text-white' : 'bg-white text-orange-500 border border-orange-500 hover:bg-orange-500 hover:text-white')}
             onClick={() => filterBet("all")}
           >
             {" "}
             All
           </button>
           <button
-            className='py-1 text-white ease-in bg-orange-500 rounded-md w-36 hover:bg-orange-800'
+            className={'py-1  duration-150 ease-in border border-orange-500 rounded-md w-36 ' + (filter === 'multiple' ? ' bg-orange-500 text-white' : 'bg-white text-orange-500 border border-orange-500 hover:bg-orange-500 hover:text-white')}
             onClick={() => filterBet("multiple")}
           >
             {" "}
@@ -87,7 +89,7 @@ function HistoricoApostas() {
             {">"}{" "}
           </a>
         </div>
-        <div className='flex flex-col overflow-auto h-96 '>
+        <div className='flex flex-col overflow-auto mt-2 h-[42vh]'>
           {filteredBets?.bets.map((a, index) => (
             <Aposta key={index} {...a} />
           ))}

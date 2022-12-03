@@ -1,4 +1,5 @@
 import { RegisterData } from "../models/RegisterData.model";
+import { paramsMaker } from "../utils/params";
 
 export const register = async (data: RegisterData, token?: String) => {
   try {
@@ -9,12 +10,14 @@ export const register = async (data: RegisterData, token?: String) => {
     if (token) {
       headers = { ...headers, Authorization: `Bearer ${token}` };
     }
-    const response = await fetch("http://localhost:8080/register", {
-      headers,
+    const response = await fetch(
+      "http://localhost:8080/register" + paramsMaker(data),
+      {
+        headers,
 
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+        method: "POST",
+      }
+    );
 
     if (response.status === 200) {
       alert("Register successful");

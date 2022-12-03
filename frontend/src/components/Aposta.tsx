@@ -31,9 +31,9 @@ function Aposta(props: SimpleBet) {
                 </div>
 
                 <div className="flex flex-col justify-around">
-                    <div className="ml-2">Amount Staken: {props.amount.toString()}€</div>
+                    <div className="ml-2">Amount Staken: {props.amount.toFixed(2).toString()}€</div>
                     <div className="ml-2">Bet State: {props.betState} </div>
-                    <div className="flex ml-2">Possible Earnings: <div className="ml-5 text-orange-500"> {(props.amount * props.totalOdds).toString()}€</div></div>
+                    <div className="flex ml-2">Possible Earnings: <div className="ml-5 text-orange-500"> {(props.amount * props.totalOdds).toFixed(2).toString()}€</div></div>
                 </div>
             </div>
 
