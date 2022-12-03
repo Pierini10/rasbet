@@ -86,8 +86,8 @@ const Navbar = (props: Data) => {
           </button>
         )}
         {isNormal() && (
-          <div className='flex items-center justify-center h-10 ml-5 mr-5 text-lg font-medium border-2 border-white rounded-full w-28'>
-            {balance + " €"}
+          <div className='flex items-center justify-center h-10 ml-5 mr-5 text-lg font-medium border-2 border-white rounded-full pl-5 pr-5'>
+            {(balance !== 0 ? balance.toFixed(2) : balance) + " €"}
           </div>
         )}
         <button onClick={logout}>

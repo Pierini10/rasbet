@@ -43,7 +43,7 @@ const Bill = (props: Data) => {
           Multiple
         </button>
       </div>
-      <div className='h-[56%] overflow-y-auto pl-7 pr-7 mb-4'>
+      <div className='h-[55%] overflow-y-auto pl-7 pr-7 mb-4'>
         <div>
           <ul className='space-y-6'>
             {props.bets.map((b) => (

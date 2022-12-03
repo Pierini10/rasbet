@@ -32,7 +32,7 @@ const EventBlock = (props: Data) => {
     useGrouping: false,
   })}`;
 
-  const hasDraw = event.sport === "Soccer";
+  const hasDraw = Array.from(event.odds.keys()).includes("Draw");
   const homeIsChanged = props.checkChangedCallback(event.id, home);
   const awayIsChanged = props.checkChangedCallback(event.id, away);
   let drawIsChanged = 0;

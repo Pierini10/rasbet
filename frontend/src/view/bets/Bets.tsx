@@ -384,7 +384,7 @@ const Bets = () => {
               })}
             </ul>
           )}
-          {!isNormal() ? (
+          {isSpecialist() ? (
             <div className='bg-white fixed bottom-0 left-0 w-full h-24'>
               <div className='h-full w-[66%] flex justify-center items-center space-x-5'>
                 <button
