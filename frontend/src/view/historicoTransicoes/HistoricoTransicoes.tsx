@@ -11,7 +11,9 @@ function HistoricoTransicoes() {
 
     useEffect(() => {
         fetchdataAuth(`http://localhost:8080/getBalance`, "GET").then((data) => {
-            setBalance(data)
+            if (typeof data === "number") {
+                setBalance(data)
+            } else { setBalance(0.0) }
         })
         fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET").then(
             (data: Transaction[]) => {

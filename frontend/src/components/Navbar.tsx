@@ -8,7 +8,6 @@ interface Data {
 const Navbar = (props: Data) => {
   const { isAdministrator, isNormal, logout, balance, isSpecialist } =
     UseAuthentication();
-
   return (
     <div className='sticky top-0 flex items-center justify-between h-24 p-6 text-white bg-green-900'>
       <img src='logo.png' alt='logo' className='' />
@@ -87,7 +86,7 @@ const Navbar = (props: Data) => {
         )}
         {isNormal() && (
           <div className='flex items-center justify-center h-10 ml-5 mr-5 text-lg font-medium border-2 border-white rounded-full w-28'>
-            {balance && balance.toFixed(2) + " €"}
+            {balance.toFixed(2)}€
           </div>
         )}
         <button onClick={logout}>
