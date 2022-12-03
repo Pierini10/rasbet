@@ -27,7 +27,6 @@ import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.Odd;
-import com.rasbet.backend.Entities.listOfEnteties;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
@@ -102,13 +101,13 @@ public class EventsFacade {
             @RequestParam(name = "competition") String competition,
             @RequestParam(name = "datetime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime datetime,
             @RequestParam(name = "description") String description,
-            @RequestBody(required = false) listOfEnteties entetiesList) {
+            @RequestBody(required = false) List<String> entitiesList)
+    {
         token = RasbetTokenDecoder.parseToken(token);
-        System.out.println(competition);
         Map<String, Odd> odds = null;
-        if (entetiesList != null) {
+        if (entitiesList != null) {
             odds = new HashMap<>();
-            for (String entety : entetiesList.getEntetiesList()) {
+            for (String entety : entitiesList) {
                 odds.put(entety, new Odd(entety, -1, false));
             }
         }
@@ -150,6 +149,7 @@ public class EventsFacade {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
         } catch (NoAuthorizationException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, e.getMessage());
         }
@@ -221,11 +221,11 @@ public class EventsFacade {
         try {
             OddDB.updateOdds(new RasbetTokenDecoder(token, jwtDecoder).getId(), possibleBets);
         } catch (NoAuthorizationException e) {
-
+            e.printStackTrace();
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (SQLException e) {
-
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

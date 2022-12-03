@@ -11,7 +11,9 @@ function HistoricoTransicoes() {
 
     useEffect(() => {
         fetchdataAuth(`http://localhost:8080/getBalance`, "GET").then((data) => {
-            setBalance(data)
+            if (typeof data === "number") {
+                setBalance(data)
+            } else { setBalance(0.0) }
         })
         fetchdataAuth("http://localhost:8080/getTransactionsHistory", "GET").then(
             (data: Transaction[]) => {
@@ -29,12 +31,12 @@ function HistoricoTransicoes() {
     return (
 
         <div className="grid h-[90vh] bg-gray-400 place-items-center ">
-            <div className=" max-w-5xl bg-white border-dotted h-[80%] container rounded-3xl border-black border">
+            <div className="container max-w-5xl max-h-[80vh] bg-white border border-black border-dotted rounded-3xl">
 
                 <div className="flex justify-center mt-5 text-4xl">
                     Transaction History
                 </div>
-                <div className="flex justify-center mt-5">Balance: {balance} €</div>
+                <div className="flex justify-center mt-5">Balance: {balance.toFixed(2)} €</div>
                 <div className="flex flex-col justify-center mt-5 space-y-4">
                     {transicoes.length > 0 &&
                         <div>
@@ -50,15 +52,15 @@ function HistoricoTransicoes() {
                         </div>}
                 </div>
 
-                <div className=" mt-5 overflow-auto text-xl h-[500px] flex flex-col">
+                <div className="flex flex-col h-[50vh] mt-5 overflow-auto text-xl ">
                     {transicoes.length > 0 && transicoes.map((transicao, key) => {
                         return (
 
                             <div className="flex py-5 text-base" key={key}>
-                                <div className="flex justify-center w-[23%]">{transicao.date}</div>
+                                <div className="flex justify-center w-[23%]">{transicao.date}:{transicao.time}</div>
                                 <div className="flex justify-center w-[19%]">{transicao.description}</div>
-                                <div className="flex justify-center w-[27%]">{transicao.value}€</div>
-                                <div className="flex justify-center w-80">{transicao.balenceAfterTran
+                                <div className="flex justify-center w-[27%]">{transicao.value.toFixed(2)}€</div>
+                                <div className="flex justify-center w-80">{transicao.balenceAfterTran.toFixed(2)
                                 }€</div>
 
                             </div>

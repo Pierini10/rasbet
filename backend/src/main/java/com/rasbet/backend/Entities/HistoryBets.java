@@ -3,17 +3,19 @@ package com.rasbet.backend.Entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rasbet.backend.Database.BetDB;
+
 public class HistoryBets {
-    private Float winPercentage;
+    private float winPercentage;
     private List<Bet> bets;
 
-    public HistoryBets(Float winPercentage, List<Bet> bets) {
-        this.winPercentage = winPercentage;
+    public HistoryBets(List<Bet> bets) {
         this.setBets(bets);
+        this.calculateWPercentage();
     }
 
     // basic getters
-    public Float getWinPercentage() {
+    public float getWinPercentage() {
         return winPercentage;
     }
 
@@ -28,7 +30,7 @@ public class HistoryBets {
     }
 
     // basic setters
-    public void setWinPercentage(Float winPercentage) {
+    public void setWinPercentage(float winPercentage) {
         this.winPercentage = winPercentage;
     }
 
@@ -41,16 +43,17 @@ public class HistoryBets {
     }
 
     // calculate percentage
-    public void calculateWPercentage() {
-        int wins = 0;
+    private void calculateWPercentage() {
+        float wins = 0;
 
         if (this.bets.size() != 0) {
             for (Bet bet : this.bets) {
-                if (bet.getBetState().equals("Win"))
+                if (bet.getBetState().equals(BetDB.WIN_STATUS)) {
                     wins++;
+                }
+                this.winPercentage = (float) (wins / this.bets.size()) * 100;
             }
-            this.winPercentage = (float) (wins / this.bets.size()) * 100;
-        }
 
+        }
     }
 }

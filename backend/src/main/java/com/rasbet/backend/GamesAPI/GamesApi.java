@@ -88,11 +88,11 @@ public class GamesApi {
 		List<Event> events = new ArrayList<Event>();
 
 		// TODO REMOVER PARA TER UPDATES
-		/*
+		
+		/* 
 		Map<String, Pair<String, String>> sports_name = getSports();
 
-		events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"),
-		true));
+		//events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"),true));
 
 		for (String sport : sports) {
 			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"), sports_name.get(sport), false));

@@ -50,23 +50,23 @@ function ChangeInfoForm(props: { info: ProfileInfo | undefined, updateInfo: Disp
         <div className="flex flex-col overflow-auto">
             <div className="flex mt-5 ml-20 text-center">
                 <div>Email:&#160;</div>
-                <input className="container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96 pl-2 placeholder:text-black" onChange={(e) => setEmail(e.target.value)} placeholder={props.info?.email} />
+                <input className="container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96 pl-2 placeholder:text-black" onChange={(e) => setEmail(e.target.value)} value={props.info?.email} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
                 <div>Name:</div>
-                <input className="container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96 pl-2 placeholder:text-black" onChange={(e) => { setNome(e.target.value) }} placeholder={props.info?.firstName} />
+                <input className="container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96 pl-2 placeholder:text-black" onChange={(e) => { setNome(e.target.value) }} value={props.info?.firstName} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
                 <div>Surname:</div>
-                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[22.7rem] pl-2 placeholder:text-black" onChange={(e) => setApelido(e.target.value)} placeholder={props.info?.lastName} />
+                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[22.7rem] pl-2 placeholder:text-black" onChange={(e) => setApelido(e.target.value)} value={props.info?.lastName} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
                 <div>Address:</div>
-                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[23.2rem] pl-2 placeholder:text-black" onChange={(e) => setMorada(e.target.value)} placeholder={props.info?.address} />
+                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[23.2rem] pl-2 placeholder:text-black" onChange={(e) => setMorada(e.target.value)} value={props.info?.address} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
                 <div >Phone Number:</div>
-                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[20rem]  placeholder:text-black pl-2" type="number" onChange={(e) => setPhone(e.target.value)} placeholder={props.info?.phoneNumber} />
+                <input className="container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[20rem]  placeholder:text-black pl-2" type="number" onChange={(e) => setPhone(e.target.value)} value={props.info?.phoneNumber} />
             </div>
             <div className="flex mt-5 ml-20 text-center">
                 <div >Change Password:</div>
