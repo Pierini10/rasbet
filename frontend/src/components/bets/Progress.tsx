@@ -23,9 +23,14 @@ const Progress = (props: Data) => {
         yellow = 0,
         red = 0;
       for (const event of events) {
+        let nWithOdd = 0;
+
+        Array.from(event.odds.values()).forEach((o) => {
+          if (o.odd !== -1) nWithOdd += 1;
+        });
         const size = event.odds.size;
-        if (size === 0) red++;
-        else if ((size === 2 && sport === "Basketball") || size === 3) green++;
+        if (nWithOdd === 0) red++;
+        else if (nWithOdd === size) green++;
         else yellow++;
       }
 

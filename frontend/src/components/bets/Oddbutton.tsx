@@ -31,7 +31,7 @@ const Oddbutton = (props: Data) => {
       onClick={() => callback()}
     >
       <div>{props.ent}</div>
-      {props.odd ? (
+      {props.odd !== -1 ? (
         <div>{props.odd}</div>
       ) : (
         <div className='text-blue-500 underline'>Inserir Odd</div>

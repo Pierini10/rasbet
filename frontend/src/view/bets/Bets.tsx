@@ -12,8 +12,7 @@ import { EventOdds } from "../../models/odds.model";
 
 interface Bet {
   id: string;
-  home: string;
-  away: string;
+  description: string;
   bet: string;
   odd: number;
 }
@@ -103,7 +102,6 @@ const Bets = () => {
 
   const changeBets = (id: string, bet: string) => {
     let newBets = [];
-
     if (betType) {
       const indexEvent = events.get(sport)!.findIndex((i) => i.id === id);
 
@@ -112,20 +110,11 @@ const Bets = () => {
         (bets[0].id === id && bets[0].bet !== bet) ||
         bets[0].id !== id
       ) {
-        const [home, away] = events
-          .get(sport)!
-          [indexEvent].description.split(" v ");
         newBets.push({
           id: events.get(sport)![indexEvent].id,
-          home: home,
-          away: away,
           bet: bet,
-          odd:
-            bet === "Draw"
-              ? events.get(sport)![indexEvent].odds.get("Draw")!.odd
-              : bet === home
-              ? events.get(sport)![indexEvent].odds.get(home)!.odd
-              : events.get(sport)![indexEvent].odds.get(away)!.odd,
+          description: events.get(sport)![indexEvent].description,
+          odd: events.get(sport)![indexEvent].odds.get(bet)!.odd,
         });
       }
     } else {
@@ -134,36 +123,22 @@ const Bets = () => {
 
       if (index === -1) {
         const indexEvent = events.get(sport)!.findIndex((i) => i.id === id);
-        const [home, away] = events
-          .get(sport)!
-          [indexEvent].description.split(" v ");
 
         newBets.push({
           id: events.get(sport)![indexEvent].id,
-          home: home,
-          away: away,
+          description: events.get(sport)![indexEvent].description,
           bet: bet,
-          odd:
-            bet === "Draw"
-              ? events.get(sport)![indexEvent].odds.get("Draw")!.odd
-              : bet === home
-              ? events.get(sport)![indexEvent].odds.get(home)!.odd
-              : events.get(sport)![indexEvent].odds.get(away)!.odd,
+          odd: events.get(sport)![indexEvent].odds.get(bet)!.odd,
         });
       } else {
         if (newBets[index].bet === bet) newBets.splice(index, 1);
         else {
           const indexGame = events.get(sport)!.findIndex((i) => i.id === id);
-          const teams = events.get(sport)![indexGame].description.split(" v ");
 
           newBets[index].bet = bet;
-          newBets[index].odd =
-            bet === "Draw"
-              ? events.get(sport)![indexGame].odds.get("Draw")!.odd
-              : bet === teams[0]
-              ? events.get(sport)![indexGame].odds.get(newBets[index].home)!.odd
-              : events.get(sport)![indexGame].odds.get(newBets[index].away)!
-                  .odd;
+          newBets[index].odd = events
+            .get(sport)!
+            [indexGame].odds.get(newBets[index].bet)!.odd;
         }
       }
     }

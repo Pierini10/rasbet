@@ -35,6 +35,11 @@ const EventBlock = (props: Data) => {
   })}`;
   const hasTemplate = event.description.split(" v ").length > 1;
 
+  let nWithOdd = 0;
+  Array.from(event.odds.values()).forEach((o) => {
+    if (o.odd !== -1) nWithOdd += 1;
+  });
+
   let hasDraw = false,
     home = "",
     away = "",
@@ -196,6 +201,7 @@ const EventBlock = (props: Data) => {
           <div className='mt-5 grid grid-cols-5 gap-3'>
             {entities.map((e) => (
               <Oddbutton
+                key={e}
                 id={event.id}
                 ent={e}
                 odd={
@@ -217,14 +223,14 @@ const EventBlock = (props: Data) => {
         <div className='h-28 flex'>
           <div
             className={"w-28 mt-5 mb-5 rounded-xl flex justify-center items-center font-medium text-xl ".concat(
-              event.odds.size === 0
+              nWithOdd === 0
                 ? "bg-red-700"
-                : (event.odds.size === 2 && !hasDraw) || event.odds.size === 3
+                : nWithOdd === event.odds.size
                 ? "bg-green-800 text-white"
                 : "bg-yellow-500"
             )}
           >
-            {event.odds.size}/{hasDraw ? 3 : 2}
+            {nWithOdd}/{event.odds.size}
           </div>
         </div>
       )}

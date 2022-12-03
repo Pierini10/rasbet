@@ -13,8 +13,7 @@ interface Data {
 
 interface Bet {
   id: string;
-  home: string;
-  away: string;
+  description: string;
   bet: string;
   odd: number;
 }
@@ -50,7 +49,11 @@ const Bill = (props: Data) => {
               <li key={b.id}>
                 <div className='bg-gray-200 mb-[2px] pl-3 pr-3 flex items-center  justify-between h-8 '>
                   <div className='font-medium '>
-                    {b.home} - {b.away}
+                    {b.description.split(" v ").length > 1
+                      ? b.description.split(" v ")[0] +
+                        " - " +
+                        b.description.split(" v ")[1]
+                      : b.description}
                   </div>
                   <button onClick={() => props.rmBetCallback(b.id, b.bet)}>
                     <svg
@@ -70,9 +73,7 @@ const Bill = (props: Data) => {
                   </button>
                 </div>
                 <div className='bg-gray-200 pl-3 h-11 flex items-center '>
-                  {b.bet === "Draw"
-                    ? "Result:  Draw"
-                    : `Winner: ${b.bet === b.home ? b.home : b.away}`}
+                  {b.bet === "Draw" ? "Result:  Draw" : `Winner: ${b.bet}`}
                 </div>
               </li>
             ))}
