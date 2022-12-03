@@ -2,7 +2,6 @@ import { UseAuthentication } from "../../contexts/authenticationContext";
 
 interface Data {
   id: string;
-  betType: string;
   ent: string;
   description: string;
   changeCallback: (id: string, bet: string) => void;
@@ -13,21 +12,21 @@ interface Data {
 }
 
 const Oddbutton = (props: Data) => {
-  const { isNormal } = UseAuthentication();
+  const { isNormal, isAdministrator } = UseAuthentication();
 
   const callback = () => {
-    if (isNormal()) props.changeCallback(props.id, props.betType);
+    if (isNormal()) props.changeCallback(props.id, props.ent);
     else props.changeOddCallback(props.id, props.ent, props.description);
   };
 
-  return (
+  return !isAdministrator() ? (
     <button
-      className={"text-gray-800 h-full w-full border-[1px] rounded-xl items-center space-y-1 font-bold".concat(
+      className={"text-gray-800 h-full w-full border-[1px] rounded-xl items-center space-y-1 font-bold border-green-900".concat(
         props.isChanged
           ? " bg-yellow-200"
-          : props.checkCallback(props.id, props.betType)
-          ? " bg-orange-500"
-          : " border-green-900"
+          : props.checkCallback(props.id, props.ent)
+          ? " bg-orange-500 "
+          : ""
       )}
       onClick={() => callback()}
     >
@@ -38,6 +37,17 @@ const Oddbutton = (props: Data) => {
         <div className='text-blue-500 underline'>Inserir Odd</div>
       )}
     </button>
+  ) : (
+    <div className='text-gray-800 h-full w-full border-[1px] rounded-xl items-center space-y-1 font-bold border-green-900 flex justify-center'>
+      <div className='flex flex-col items-center'>
+        <div>{props.ent}</div>
+        {props.odd !== -1 ? (
+          <div>{props.odd}</div>
+        ) : (
+          <div className='text-blue-500 underline'>Inserir Odd</div>
+        )}
+      </div>
+    </div>
   );
 };
 

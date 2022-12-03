@@ -17,13 +17,21 @@ const OddPopUp = (props: Data) => {
   };
 
   const confirm = () => {
-    if (value > 0) {
+    if (value > 1) {
       props.confirmCallback(props.id, props.entity, value);
       props.closeCallback();
     } else setShowError(true);
   };
+  const hasTemplate = props.description.split(" v ").length > 1;
+  let home = "",
+    away = "";
 
-  const [home, away] = props.description.split(" v ");
+  if (hasTemplate) {
+    const [homeG, awayG] = props.description.split(" v ");
+    home = homeG;
+    away = awayG;
+  }
+
   return (
     <div className='fixed w-screen h-screen bg-black bg-opacity-60 top-0 flex justify-center items-center'>
       <div className='w-[600px] h-[400px] bg-gray-100 rounded-3xl flex flex-col justify-between'>
@@ -55,7 +63,9 @@ const OddPopUp = (props: Data) => {
           </div>
           <div className='text-gray-800 text-2xl w-64 space-y-5'>
             <div className='font-bold h-10 flex items-center'>
-              {" " + home + " - " + away}
+              {hasTemplate
+                ? " " + home + " - " + away
+                : " " + props.description}
             </div>
             <div className='font-bold h-10 flex items-center'>
               {" " + props.entity}

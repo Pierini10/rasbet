@@ -71,8 +71,8 @@ const Bill = (props: Data) => {
                 </div>
                 <div className='bg-gray-200 pl-3 h-11 flex items-center '>
                   {b.bet === "Draw"
-                    ? "Resultado:  Empate"
-                    : `Vencedor do jogo: ${b.bet === b.home ? b.home : b.away}`}
+                    ? "Result:  Draw"
+                    : `Winner: ${b.bet === b.home ? b.home : b.away}`}
                 </div>
               </li>
             ))}
