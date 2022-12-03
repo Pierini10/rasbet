@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.OddSimple;
+import com.rasbet.backend.Exceptions.InvalidOddException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
 /**
@@ -17,10 +18,8 @@ public class OddDB {
      * @param eventID Event ID.
      * @param odd     new Odd.
      * @param name    Odd name.
-     * @return True if odds were updated successfully, false otherwise, i think.
-     * @throws SQLException
      */
-    private static void updateOdd(String eventID, Double odd, String name) throws SQLException {
+    private static void updateOdd(String eventID, Double odd, String name){
         try {
             SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
             String query = "Update Odd SET Odd =" + odd + ", OddSup = 1  WHERE Event_ID = + '" + eventID
@@ -37,17 +36,19 @@ public class OddDB {
      * Update various odds.
      * 
      * @param possibleBets List of odds to update.
-     * @return True if odds were updated successfully, false otherwise, i think.
+     * True if odds were updated successfully, false otherwise, i think.
      */
 
-    public static void updateOdds(int id, List<EventOdds> possibleBets) throws NoAuthorizationException, SQLException {
+    public static void updateOdds(int id, List<EventOdds> possibleBets) throws NoAuthorizationException, SQLException, InvalidOddException {
 
         UserDB.assert_is_Specialist(id);
 
         for (EventOdds eventOdd : possibleBets) {
             for (OddSimple odd : eventOdd.getOdds()) {
-
-                updateOdd(eventOdd.getEventID(), odd.getOdd(), odd.getEntity());
+                if(odd.getOdd() >= 1)
+                    updateOdd(eventOdd.getEventID(), odd.getOdd(), odd.getEntity());
+                else
+                    throw new InvalidOddException("Odd must be greater (or equal) than 1!");
             }
         }
 
