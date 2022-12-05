@@ -62,11 +62,12 @@ public class WalletFacade {
             return TransactionDB.addTransaction(new RasbetTokenDecoder(token, jwtDecoder).getId(), transactionType,
                     amount, promotionCode);
         } catch (NoAmountException | NoPromotionCodeException | NoMinimumValueException e) {
+            e.printStackTrace();
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (SQLException e) {
-
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException");
+                HttpStatus.BAD_REQUEST, e.getMessage());
+            } catch (SQLException e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
