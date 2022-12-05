@@ -30,6 +30,7 @@ import com.rasbet.backend.Exceptions.readJsonException;
 
 public class GamesApi {
 
+    private static final int MAX_RETRIES = 3;
 	private static final String GET_URL = "http://ucras.di.uminho.pt/v1/games";
 	private static final String SPORTS_API_URL = "https://api.the-odds-api.com";
 	private static final String SPORTS_API_KEY = "e54ee6aaa6143d3ed4d01dda39f95630";
@@ -83,48 +84,78 @@ public class GamesApi {
 				"&daysFrom=" + days;
 	}
 
-	public static List<Event> getallEvents() throws Exception {
+	public static List<Event> getallEvents() throws SQLException {
 
 		List<Event> events = new ArrayList<Event>();
 
 		Map<String, Pair<String, String>> sports_name = getSports();
+		
+		
+		int retries = 0;
+		while (retries < MAX_RETRIES) {
+			try {
 
-		for (String sport : sports) {
-			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"),
-					sports_name.get(sport), false));
-			events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu",
-					"3")));
+				for (String sport : sports) {
+					events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"),
+							sports_name.get(sport), false));
+					events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu",
+							"3")));
+				}
+				break;
+			} catch (Exception e) {
+				e.printStackTrace();
+				retries++;
+			}
 		}
-		events.addAll(getEvents(GET_URL,
-				sports_name.get("soccer_primeira_liga"), true));
 
+		retries = 0;
+		while (retries < MAX_RETRIES) {
+			try {
+				events.addAll(getEvents(GET_URL,sports_name.get("soccer_primeira_liga"), true));
+				break;
+			} catch (Exception e) {
+				e.printStackTrace();
+				retries++;
+			}
+		}
+		
 		return events;
 	}
 
-	private static Map<String, Pair<String, String>> getSports() throws IOException, JSONException, SQLException {
+	private static Map<String, Pair<String, String>> getSports() throws SQLException {
 		Map<String, Pair<String, String>> sports_map = new HashMap<String, Pair<String, String>>();
 		sports_map.put("soccer_primeira_liga", Pair.of("Soccer", "Primeira Liga"));
 		Map<String, List<String>> db_sports = new HashMap<String, List<String>>();
 		db_sports.put("Soccer", Stream.of("Primeira Liga").collect(Collectors.toList()));
 
-		JSONArray jsonArray = readJsonFromUrl(SPORTS_API_URL + "/v4/sports/?apiKey=" + SPORTS_API_KEY);
+		int retries = 0;
+		while (retries < MAX_RETRIES) {
+			try {
+				JSONArray jsonArray = readJsonFromUrl(SPORTS_API_URL + "/v4/sports/?apiKey=" + SPORTS_API_KEY);
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject jsonSport = jsonArray.getJSONObject(i);
-			String sport_key = jsonSport.getString("key");
-			if (sports.contains(sport_key)) {
-				String sport_group = jsonSport.getString("group");
-				String sport_title = jsonSport.getString("title");
-				sports_map.put(sport_key, Pair.of(sport_group, sport_title));
-				if (db_sports.keySet().contains(sport_group)) {
-					db_sports.get(sport_group).add(sport_title);
-				} else {
-					List<String> sport_list = new ArrayList<String>();
-					sport_list.add(sport_title);
-					db_sports.put(sport_group, sport_list);
+				for (int i = 0; i < jsonArray.length(); i++) {
+					JSONObject jsonSport = jsonArray.getJSONObject(i);
+					String sport_key = jsonSport.getString("key");
+					if (sports.contains(sport_key)) {
+						String sport_group = jsonSport.getString("group");
+						String sport_title = jsonSport.getString("title");
+						sports_map.put(sport_key, Pair.of(sport_group, sport_title));
+						if (db_sports.keySet().contains(sport_group)) {
+							db_sports.get(sport_group).add(sport_title);
+						} else {
+							List<String> sport_list = new ArrayList<String>();
+							sport_list.add(sport_title);
+							db_sports.put(sport_group, sport_list);
+						}
+					}
 				}
+				break;
+			} catch (Exception e) {
+				e.printStackTrace();
+				retries++;
 			}
 		}
+		
 
 		SportsDB.addSports(db_sports);
 		return sports_map;

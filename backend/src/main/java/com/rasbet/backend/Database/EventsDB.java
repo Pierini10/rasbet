@@ -376,6 +376,7 @@ public class EventsDB {
             update_Events(oldEvents);
             add_Events(newEvents);
         }
+
     }
 
     // Gets all DB events

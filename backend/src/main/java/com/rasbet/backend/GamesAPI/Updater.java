@@ -7,7 +7,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.rasbet.backend.Database.EventsDB;
 
 public class Updater implements Runnable {
-    private static final int MAX_RETRIES = 3;
 
     private boolean running;
     /// Basic Reentrant Lock.
@@ -47,25 +46,18 @@ public class Updater implements Runnable {
                 update();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             } finally {
                 lock.unlock();
             }
         }
     }
 
-    private void update() {
+    private void update() throws Exception {
         if (this.can_update()) {
-            int retries = 0;
-            while (retries < MAX_RETRIES) {
-                try {
-                    EventsDB.update_Database();
-                    updatelasEventsUpdate();
-                    break;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    retries++;
-                }
-            }
+            EventsDB.update_Database();
+            updatelasEventsUpdate();  
         }
     }
 
