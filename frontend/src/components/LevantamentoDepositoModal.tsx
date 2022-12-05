@@ -112,6 +112,8 @@ function LevantamentoModal(props: {
             </div>
             <div className='flex flex-col py-1 pl-2 space-y-4'>
               <input
+                min={1}
+                required
                 placeholder='Amount'
                 className='py-1 pl-2'
                 onChange={updateValue}
@@ -141,6 +143,9 @@ function LevantamentoModal(props: {
             </div>
             <div className='flex flex-col py-1 pl-2 space-y-4'>
               <input
+                type="number"
+                min={1}
+                required
                 placeholder='Amount'
                 className='py-1 pl-2'
                 onChange={updateValue}
@@ -169,6 +174,9 @@ function LevantamentoModal(props: {
             </div>
             <div className='flex flex-col py-1 pl-2 space-y-4'>
               <input
+                type="number"
+                min={1}
+                required
                 placeholder='Amount'
                 className='py-1 pl-2'
                 onChange={updateValue}

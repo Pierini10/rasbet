@@ -55,7 +55,7 @@ public class GamesApi {
 		URL url = new URL(api_url);
 		HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 		HttpURLConnection.setFollowRedirects(false);
-		huc.setConnectTimeout(30 * 1000);
+		huc.setConnectTimeout(10 * 1000);
 		huc.setRequestMethod("GET");
 		huc.connect();
 		InputStream is = huc.getInputStream();
@@ -87,18 +87,16 @@ public class GamesApi {
 
 		List<Event> events = new ArrayList<Event>();
 
-		// TODO REMOVER PARA TER UPDATES
-		
-		/* 
 		Map<String, Pair<String, String>> sports_name = getSports();
 
-		//events.addAll(getEvents(GET_URL, sports_name.get("soccer_primeira_liga"),true));
-
 		for (String sport : sports) {
-			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"), sports_name.get(sport), false));
-			events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu", "3")));
+			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"),
+					sports_name.get(sport), false));
+			events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu",
+					"3")));
 		}
-		*/
+		events.addAll(getEvents(GET_URL,
+				sports_name.get("soccer_primeira_liga"), true));
 
 		return events;
 	}

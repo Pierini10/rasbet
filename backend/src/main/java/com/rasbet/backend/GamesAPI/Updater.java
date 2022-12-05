@@ -8,7 +8,6 @@ import com.rasbet.backend.Database.EventsDB;
 
 public class Updater implements Runnable {
     private static final int MAX_RETRIES = 3;
-    private static final int RETRY_INTERVAL = 1;
 
     private boolean running;
     /// Basic Reentrant Lock.
@@ -65,11 +64,6 @@ public class Updater implements Runnable {
                 } catch (Exception e) {
                     e.printStackTrace();
                     retries++;
-                    try {
-                        Thread.sleep(RETRY_INTERVAL);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
                 }
             }
         }
