@@ -13,7 +13,9 @@ function LevantamentoModal(props: {
   const [promotionCode, setPromotionCode] = useState<string | undefined>();
   const { fetchdataAuth, setBalance } = UseAuthentication();
 
-  const withdrawMoney = async () => {
+  const withdrawMoney = async (e: any) => {
+    e.preventDefault();
+
     const val = props.type === "deposito" ? value : -value;
     let transaction: {
       amount: number;
@@ -110,7 +112,7 @@ function LevantamentoModal(props: {
             <div className='flex justify-center mb-5 text-2xl text-black'>
               Bank Transfer
             </div>
-            <div className='flex flex-col py-1 pl-2 space-y-4'>
+            <form className='flex flex-col py-1 pl-2 space-y-4' onSubmit={(e) => withdrawMoney(e)}>
               <input
                 min={1}
                 required
@@ -129,11 +131,11 @@ function LevantamentoModal(props: {
               )}
               <button
                 className='px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600'
-                onClick={withdrawMoney}
+                type="submit"
               >
                 Confirm
               </button>
-            </div>
+            </form>
           </div>
         )}
         {step === "MBway" && (
@@ -141,7 +143,7 @@ function LevantamentoModal(props: {
             <div className='flex justify-center mb-5 text-2xl text-black'>
               MBWay
             </div>
-            <div className='flex flex-col py-1 pl-2 space-y-4'>
+            <form className='flex flex-col py-1 pl-2 space-y-4' onSubmit={(e) => withdrawMoney(e)}>
               <input
                 type="number"
                 min={1}
@@ -160,11 +162,11 @@ function LevantamentoModal(props: {
               )}
               <button
                 className='px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600'
-                onClick={withdrawMoney}
+                type="submit"
               >
                 Confirm
               </button>
-            </div>
+            </form>
           </div>
         )}
         {step === "Card" && (
@@ -172,7 +174,7 @@ function LevantamentoModal(props: {
             <div className='flex justify-center mb-5 text-2xl text-black'>
               Bank Card
             </div>
-            <div className='flex flex-col py-1 pl-2 space-y-4'>
+            <form className='flex flex-col py-1 pl-2 space-y-4' onSubmit={(e) => withdrawMoney(e)}>
               <input
                 type="number"
                 min={1}
@@ -203,11 +205,11 @@ function LevantamentoModal(props: {
               )}
               <button
                 className='px-5 py-1 text-white rounded bg-slate-400 hover:bg-slate-600'
-                onClick={withdrawMoney}
+                type="submit"
               >
                 Confirm
               </button>
-            </div>
+            </form>
           </div>
         )}
       </div>
