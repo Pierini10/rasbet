@@ -33,7 +33,7 @@ function ChangeInfoForm(props: {
     ).then((data: boolean) => {
       if (data) {
         alert("Informação alterada com sucesso");
-        fetchdataAuth("http://localhost:8080/getUser", "POST").then(
+        fetchdataAuth("http://localhost:8080/getUser", "GET").then(
           (data: ProfileInfo) => {
             if (data) {
               props.updateInfo(data);
@@ -52,7 +52,7 @@ function ChangeInfoForm(props: {
         <input
           className='container flex flex-col justify-center max-w-xs border border-black rounded-lg h-[2rem] ml-96 pl-2 placeholder:text-black'
           onChange={(e) => setEmail(e.target.value)}
-          value={props.info === undefined ? "" : props.info.email}
+          placeholder={props.info === undefined ? "" : props.info.email}
         />
       </div>
       <div className='flex mt-5 ml-20 text-center'>
@@ -62,7 +62,7 @@ function ChangeInfoForm(props: {
           onChange={(e) => {
             setNome(e.target.value);
           }}
-          value={props.info === undefined ? "" : props.info.firstName}
+          placeholder={props.info === undefined ? "" : props.info.firstName}
         />
       </div>
       <div className='flex mt-5 ml-20 text-center'>
@@ -70,7 +70,7 @@ function ChangeInfoForm(props: {
         <input
           className='container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[22.7rem] pl-2 placeholder:text-black'
           onChange={(e) => setApelido(e.target.value)}
-          value={props.info === undefined ? "" : props.info.lastName}
+          placeholder={props.info === undefined ? "" : props.info.lastName}
         />
       </div>
       <div className='flex mt-5 ml-20 text-center'>
@@ -78,7 +78,7 @@ function ChangeInfoForm(props: {
         <input
           className='container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[23.2rem] pl-2 placeholder:text-black'
           onChange={(e) => setMorada(e.target.value)}
-          value={props.info === undefined ? "" : props.info.address}
+          placeholder={props.info === undefined ? "" : props.info.address}
         />
       </div>
       <div className='flex mt-5 ml-20 text-center'>
@@ -87,7 +87,7 @@ function ChangeInfoForm(props: {
           className='container max-w-xs h-[2rem]  flex flex-col justify-center border border-black rounded-lg ml-[20rem]  placeholder:text-black pl-2'
           type='number'
           onChange={(e) => setPhone(e.target.value)}
-          value={props.info === undefined ? "" : props.info.phoneNumber}
+          placeholder={props.info === undefined ? "" : props.info.phoneNumber}
         />
       </div>
       <div className='flex mt-5 ml-20 text-center'>
