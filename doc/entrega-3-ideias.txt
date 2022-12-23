@@ -1,0 +1,6 @@
+Padrão Observer:
+	- Para as threads/updates dos jogos
+	- Para a nova feature de follow
+
+Padrão Decorator
+	- apostas múltiplas, tipos de jogos/desportos/bets...
