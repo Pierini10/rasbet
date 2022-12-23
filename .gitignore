@@ -1,2 +1,4 @@
 .vscode/
 backend/src/main/resources/certs/private.pem
+frontend/.idea/*
+
