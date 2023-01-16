@@ -34,7 +34,6 @@ public class AuthFacade {
 
     @GetMapping("/validToken")
     public boolean home(@RequestHeader("Authorization") String token) {
-        // TODO: REMOVE (TEST ONLY)
         token = RasbetTokenDecoder.parseToken(token);
         return true;
 

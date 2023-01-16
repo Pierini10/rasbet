@@ -3,8 +3,11 @@ package com.rasbet.backend.Database;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.OddSimple;
+import com.rasbet.backend.Entities.SharedEventSubject;
 import com.rasbet.backend.Exceptions.InvalidOddException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 
@@ -12,6 +15,10 @@ import com.rasbet.backend.Exceptions.NoAuthorizationException;
  * OddDB
  */
 public class OddDB {
+
+    @Autowired
+    static SharedEventSubject sharedEventSubject;
+    
     /**
      * Update odds.
      * 
@@ -45,6 +52,7 @@ public class OddDB {
 
         for (EventOdds eventOdd : possibleBets) {
             for (OddSimple odd : eventOdd.getOdds()) {
+                sharedEventSubject.notifyFollowers(eventOdd.getEventID(), "Followed game: Odd " + odd.getEntity() + "updated to" + odd.getOdd());
                 if(odd.getOdd() >= 1)
                     updateOdd(eventOdd.getEventID(), odd.getOdd(), odd.getEntity());
                 else

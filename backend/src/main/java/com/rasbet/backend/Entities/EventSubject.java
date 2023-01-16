@@ -31,7 +31,7 @@ public class EventSubject implements Subject{
     @Override
     public void removeObserver(Observer o) {
         FollowObserver fo = (FollowObserver) o;
-        followers.add(fo);
+        followers.removeIf(f -> f.getUser_id() == fo.getUser_id());
         try {
             FollowDB.followEvent(false, fo.getUser_id(), event_id);
         } catch (SQLException e) {
@@ -40,9 +40,9 @@ public class EventSubject implements Subject{
     }
 
     @Override
-    public void notifyObservers() {
+    public void notifyObservers(String message) {
         for (FollowObserver fo : followers) {
-            fo.update();
+            fo.update(message);
         }
     }
 }

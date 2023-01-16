@@ -19,8 +19,8 @@ public class FollowObserver implements Observer {
     }
 
     @Override
-    public void update() {
-        Notification n = new Notification(user_id, "TODO NOTIFCATION");
+    public void update(String message) {
+        Notification n = new Notification(user_id, message);
         try {
             NotificationDB.createAutomaticNotification(Collections.singletonList(n));
         } catch (SQLException e) {

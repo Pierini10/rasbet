@@ -140,7 +140,6 @@ public class EventsFacade {
 
         try {
             EventsDB.update_Event_State(idEvent, new RasbetTokenDecoder(token, jwtDecoder).getId(), state);
-            // TODO POINT OF NOTIFICATION
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
@@ -215,7 +214,6 @@ public class EventsFacade {
 
         try {
             OddDB.updateOdds(new RasbetTokenDecoder(token, jwtDecoder).getId(), possibleBets);
-            // TODO POINT OF NOTIFICATION
         } catch (NoAuthorizationException e) {
             e.printStackTrace();
             throw new ResponseStatusException(

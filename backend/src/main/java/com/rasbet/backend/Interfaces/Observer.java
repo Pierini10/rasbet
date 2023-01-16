@@ -1,5 +1,5 @@
 package com.rasbet.backend.Interfaces;
 
 public interface Observer {
-    public void update();
+    public void update(String message);
 }

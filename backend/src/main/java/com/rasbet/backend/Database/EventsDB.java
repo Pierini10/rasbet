@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Notification;
 import com.rasbet.backend.Entities.Odd;
+import com.rasbet.backend.Entities.SharedEventSubject;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
@@ -22,6 +25,9 @@ public class EventsDB {
     public final static String PENDING_STATUS = "Pending";
     public final static String FINISHED_STATUS = "Finished";
     public final static String CLOSED_STATUS = "Closed";
+
+    @Autowired
+    private static SharedEventSubject sharedEventSubject;
 
     public static String get_EventStatus(int id) throws SQLException {
         // Create a connection
@@ -94,6 +100,8 @@ public class EventsDB {
 
     public static void add_Event(Event e) throws SQLException, SportDoesNotExistExeption {
 
+        sharedEventSubject.addEvent(e.getId());
+
         if (e != null) {
             // Event
             List<String> event_string = new ArrayList<>();
@@ -139,6 +147,8 @@ public class EventsDB {
             List<String> odds_string = new ArrayList<>();
 
             for (Event e : newEvents) {
+
+                sharedEventSubject.addEvent(e.getId());
 
                 // Event
                 List<String> event_string = new ArrayList<>();
@@ -211,7 +221,6 @@ public class EventsDB {
         Map<Integer, Double> trans = new HashMap<>();
         List<Notification> notifications = new ArrayList<>();
 
-        // TODO POINT OF NOTIFICATION COMPLEXO
         for (Event e : events) {
 
             // Update Event
@@ -220,6 +229,7 @@ public class EventsDB {
                     + ",EventState_ID = " + finished_state_id
                     + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
             sqLiteJDBC2.executeUpdate(update_event);
+            if (e.getResult() != "null") sharedEventSubject.notifyFollowers(e.getId(), "Followed game: " + e.getDescription() + " ended " + e.getResult());
 
             // Update Odds
             if (e.getOdds() != null) {
@@ -234,6 +244,7 @@ public class EventsDB {
                         + "Odd = " + odd.getOdd()
                         + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
                         sqLiteJDBC2.executeUpdate(update_odd);
+                        sharedEventSubject.notifyFollowers(e.getId(), "Followed game: Odd " + odd.getEntity() + "updated to" + odd.getOdd());
                     }
                 }
                 rs_odds.close();
@@ -339,9 +350,16 @@ public class EventsDB {
         Integer idState = EventsDB.get_EventStatusID(state);
 
         String query = "UPDATE Event SET EventState_ID = " + idState + " WHERE Event_ID = "
-                + SQLiteJDBC.prepare_string(idEvent) + ";";
+                + SQLiteJDBC.prepare_string(idEvent) + " RETURNING Description;";
 
-        sqLiteJDBC.executeUpdate(query);
+                
+        ResultSet rs = sqLiteJDBC.executeQuery(query);
+        
+        if (rs.next()) 
+            sharedEventSubject.notifyFollowers(idEvent, " Event " + rs.getString("Description") + " has changed to " + state);
+        else 
+            System.out.println("Event not found, ERROR");
+
         sqLiteJDBC.close();
     }
 

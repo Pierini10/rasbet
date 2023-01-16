@@ -38,16 +38,16 @@ public class FollowDB
         return res;
     }
 
-    public static List<String> getFollowers(int event_id) throws SQLException
+    public static List<Integer> getFollowers(String event_id) throws SQLException
     {
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
 
         String query = "SELECT User_ID FROM Follow WHERE Event_ID = " + event_id + ";";
         ResultSet rs = sqLiteJDBC.executeQuery(query);
 
-        List<String> res = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
         while(rs.next())
-            res.add(rs.getString("User_ID"));
+            res.add(rs.getInt("User_ID"));
 
         sqLiteJDBC.closeRS(rs);
         sqLiteJDBC.close();

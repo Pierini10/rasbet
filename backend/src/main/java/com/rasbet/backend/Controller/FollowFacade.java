@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rasbet.backend.Database.FollowDB;
+import com.rasbet.backend.Entities.SharedEventSubject;
 import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,9 @@ public class FollowFacade
 
     @Autowired
     JwtDecoder jwtDecoder;
+    
+    @Autowired
+    SharedEventSubject sharedEventSubject;
 
     @Operation(summary = "Follow an event.")
     @PostMapping("/followEvent")
@@ -35,6 +39,7 @@ public class FollowFacade
         // Follow event: insert (user_id, event_id) into follow table
         try
         {
+            sharedEventSubject.addFollow(user_id, event_id);
             FollowDB.followEvent(true, user_id, event_id);
         }
         catch (Exception e)
@@ -55,6 +60,7 @@ public class FollowFacade
 
         // Unfollow event: delete (user_id, event_id) from follow table
         try {
+            sharedEventSubject.removeFollow(user_id, event_id);
             FollowDB.followEvent(false, user_id, event_id);
         } catch (Exception e) {
             e.printStackTrace();
