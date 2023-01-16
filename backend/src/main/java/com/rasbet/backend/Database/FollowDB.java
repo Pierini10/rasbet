@@ -8,7 +8,7 @@ import java.util.List;
 public class FollowDB
 {
 
-    public static void followEvent(boolean follow, int user_id, int event_id) throws SQLException
+    public static void followEvent(boolean follow, int user_id, String event_id) throws SQLException
     {
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
 
