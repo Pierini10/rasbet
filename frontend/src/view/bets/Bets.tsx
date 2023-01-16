@@ -50,6 +50,7 @@ const Bets = () => {
   const [entityCO, setEntityCO] = useState("");
   const [descriptionCO, setDescriptionCO] = useState("");
   const [eventsOddsC, setEventsOddsC] = useState<EventOdds[]>([]);
+  const [following, setFollowing] = useState([]);
 
   useEffect(() => {
     if (updateBets) {
@@ -297,6 +298,8 @@ const Bets = () => {
     setBets([]);
   };
 
+  const changeFollow = () => {};
+
   const handleChangeSport = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSport(event.target.value);
     setBets([]);
@@ -346,11 +349,15 @@ const Bets = () => {
                   <li key={e.id}>
                     <EventBlock
                       event={e}
+                      isFollowing={
+                        following.findIndex((elem) => elem === e.id) !== -1
+                      }
                       changeCallback={changeBets}
                       checkCallback={checkBet}
                       eventStateCallback={changeEventState}
                       changeOddCallback={changeOdd}
                       checkChangedCallback={checkOddChanged}
+                      changeFollowCallback={changeFollow}
                     />
                   </li>
                 ) : (
