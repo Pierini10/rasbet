@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rasbet.backend.Exceptions.InvalidOddException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -28,6 +27,7 @@ import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.Odd;
+import com.rasbet.backend.Exceptions.InvalidOddException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
 import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
@@ -140,7 +140,7 @@ public class EventsFacade {
 
         try {
             EventsDB.update_Event_State(idEvent, new RasbetTokenDecoder(token, jwtDecoder).getId(), state);
-
+            // TODO POINT OF NOTIFICATION
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
@@ -215,6 +215,7 @@ public class EventsFacade {
 
         try {
             OddDB.updateOdds(new RasbetTokenDecoder(token, jwtDecoder).getId(), possibleBets);
+            // TODO POINT OF NOTIFICATION
         } catch (NoAuthorizationException e) {
             e.printStackTrace();
             throw new ResponseStatusException(
