@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rasbet.backend.BackendApplication;
+import com.rasbet.backend.Entities.SharedEventSubject;
 import com.rasbet.backend.Security.Service.RasbetTokenDecoder;
 import com.rasbet.backend.Security.Service.TokenService;
 
@@ -24,6 +26,10 @@ public class AuthFacade {
 
     @Autowired
     JwtDecoder jwtDecoder;
+
+    @Autowired
+    SharedEventSubject sharedEventSubject;
+
     private static final Logger LOG = LoggerFactory.getLogger(AuthFacade.class);
 
     private final TokenService tokenService;
@@ -34,6 +40,7 @@ public class AuthFacade {
 
     @GetMapping("/validToken")
     public boolean home(@RequestHeader("Authorization") String token) {
+        BackendApplication.t.updateSharedEventSubject(sharedEventSubject);
         token = RasbetTokenDecoder.parseToken(token);
         return true;
 
@@ -50,6 +57,7 @@ public class AuthFacade {
             @ApiResponse(responseCode = "401", description = "Invalid credentials") })
     @PostMapping("/login")
     public String token(Authentication authentication) {
+        BackendApplication.t.updateSharedEventSubject(sharedEventSubject);
         LOG.debug("Token requested for user '{}'.", authentication.getName());
         String token = this.tokenService.generateToken(authentication);
         LOG.debug("Token granted '{}'.", token);

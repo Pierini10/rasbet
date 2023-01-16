@@ -68,7 +68,8 @@ public class EventsFacade {
             @RequestParam(name = "eventState") Boolean closed_state) {
         try {
             BackendApplication.t.signal(false);
-            return EventsDB.get_Events(sport, closed_state);
+            List<Event> e = EventsDB.get_Events(sport, closed_state);
+            return e;
         } catch (SportDoesNotExistExeption | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

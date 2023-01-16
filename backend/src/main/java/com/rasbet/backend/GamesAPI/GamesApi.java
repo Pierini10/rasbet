@@ -26,7 +26,6 @@ import org.springframework.data.util.Pair;
 import com.rasbet.backend.Database.SportsDB;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Odd;
-import com.rasbet.backend.Exceptions.readJsonException;
 
 public class GamesApi {
 
@@ -60,6 +59,7 @@ public class GamesApi {
 		huc.setRequestMethod("GET");
 		huc.connect();
 		InputStream is = huc.getInputStream();
+		//System.out.println("Response code: " + api_url + " " + huc.getResponseCode());
 
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -88,35 +88,35 @@ public class GamesApi {
 
 		List<Event> events = new ArrayList<Event>();
 
-		// // Map<String, Pair<String, String>> sports_name = getSports();
+		Map<String, Pair<String, String>> sports_name = getSports();
 		
 		
-		// // int retries = 0;
-		// // while (retries < MAX_RETRIES) {
-		// // 	try {
-		// // 		for (String sport : sports) {
-		// // 			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"),
-		// // 					sports_name.get(sport), false));
-		// // 			events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu",
-		// // 					"3")));
-		// // 		}
-		// // 		break;
-		// // 	} catch (Exception e) {
-		// // 		e.printStackTrace();
-		// // 		retries++;
-		// // 	}
-		// // }
+		int retries = 0;
+		while (retries < MAX_RETRIES) {
+			try {
+				for (String sport : sports) {
+					events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"),
+							sports_name.get(sport), false));
+					events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu",
+							"3")));
+				}
+				break;
+			} catch (Exception e) {
+				e.printStackTrace();
+				retries++;
+			}
+		}
 
-		// // retries = 0;
-		// // while (retries < MAX_RETRIES) {
-		// // 	try {
-		// // 		events.addAll(getEvents(GET_URL,sports_name.get("soccer_primeira_liga"), true));
-		// // 		break;
-		// // 	} catch (Exception e) {
-		// // 		e.printStackTrace();
-		// // 		retries++;
-		// // 	}
-		// // }
+		retries = 0;
+		while (retries < MAX_RETRIES) {
+			try {
+				events.addAll(getEvents(GET_URL,sports_name.get("soccer_primeira_liga"), true));
+				break;
+			} catch (Exception e) {
+				e.printStackTrace();
+				retries++;
+			}
+		}
 		
 		return events;
 	}
@@ -187,39 +187,39 @@ public class GamesApi {
 				}
 
 				// Get all the odds
-				if (markets == null)
-					throw new readJsonException("No markets found");
+				if (markets != null){
+					
+					JSONArray odds_json = markets.getJSONObject(0).getJSONArray("outcomes");
+					Map<String, Odd> odds = new HashMap<>();
+						
+					for (int j = 0; j < odds_json.length(); j++) {
+						JSONObject odd_json = odds_json.getJSONObject(j);
+						odds.put(odd_json.getString("name"),
+								new Odd(odd_json.getString("name"), odd_json.getDouble("price"), false));
+					}
 
-				JSONArray odds_json = markets.getJSONObject(0).getJSONArray("outcomes");
-				Map<String, Odd> odds = new HashMap<>();
-
-				for (int j = 0; j < odds_json.length(); j++) {
-					JSONObject odd_json = odds_json.getJSONObject(j);
-					odds.put(odd_json.getString("name"),
-							new Odd(odd_json.getString("name"), odd_json.getDouble("price"), false));
+					// Create the event
+					DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+					String homeString = custom_api ? "homeTeam" : "home_team";
+					String awayString = custom_api ? "awayTeam" : "away_team";
+					String comanceString = custom_api ? "commenceTime" : "commence_time";
+					String result = custom_api && jsonEvent.getString("completed") == "true"
+							&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
+					String description = !jsonEvent.get(homeString).equals(null)
+							? jsonEvent.get(homeString) + " v " + jsonEvent.get(awayString)
+							: jsonEvent.getString("sport_title");
+					events.add(new Event(jsonEvent.getString("id"),
+							pair.getFirst(),
+							pair.getSecond(),
+							LocalDateTime.parse(jsonEvent.getString(comanceString), formatter),
+							description,
+							result,
+							null,
+							odds));
 				}
-
-				// Create the event
-				DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-				String homeString = custom_api ? "homeTeam" : "home_team";
-				String awayString = custom_api ? "awayTeam" : "away_team";
-				String comanceString = custom_api ? "commenceTime" : "commence_time";
-				String result = custom_api && jsonEvent.getString("completed") == "true"
-						&& !jsonEvent.getString("scores").equals("null") ? jsonEvent.getString("scores") : null;
-				String description = !jsonEvent.get(homeString).equals(null)
-						? jsonEvent.get(homeString) + " v " + jsonEvent.get(awayString)
-						: jsonEvent.getString("sport_title");
-				events.add(new Event(jsonEvent.getString("id"),
-						pair.getFirst(),
-						pair.getSecond(),
-						LocalDateTime.parse(jsonEvent.getString(comanceString), formatter),
-						description,
-						result,
-						null,
-						odds));
 			}
 			return events;
-		} catch (JSONException | readJsonException e) {
+		} catch (JSONException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			return null;
 		}

@@ -4,15 +4,13 @@ import java.time.LocalDateTime;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.rasbet.backend.Database.EventsDB;
 import com.rasbet.backend.Entities.SharedEventSubject;
 
+@Component
 public class Updater implements Runnable {
-
-    @Autowired
-    SharedEventSubject sharedEventSubject;
 
     private boolean running;
     /// Basic Reentrant Lock.
@@ -23,6 +21,8 @@ public class Updater implements Runnable {
     private LocalDateTime lastEventsUpdate;
 
     private boolean forceUpdate;
+
+    private SharedEventSubject sharedEventSubject;
 
     private boolean can_update() {
         LocalDateTime now = LocalDateTime.now();
@@ -37,10 +37,15 @@ public class Updater implements Runnable {
         lastEventsUpdate = LocalDateTime.now();
     }
 
+    public void updateSharedEventSubject(SharedEventSubject sharedEventSubject) {
+        this.sharedEventSubject =  sharedEventSubject;
+    }
+
     public Updater() {
         this.running = true;
         this.lock = new ReentrantLock();
         this.condition = lock.newCondition();
+        this.sharedEventSubject = null;
     }
 
     @Override
@@ -62,9 +67,13 @@ public class Updater implements Runnable {
 
     private void update() throws Exception {
         if (this.can_update()) {
-            EventsDB.update_Database(sharedEventSubject);
-            updatelasEventsUpdate();
-            // TODO POINT OF NOTIFICATION
+            if (sharedEventSubject != null) {
+                EventsDB.update_Database(sharedEventSubject);
+                updatelasEventsUpdate();
+            }
+            else {
+                System.out.print("SharedEventSubject is null.");
+            }
         }
     }
 

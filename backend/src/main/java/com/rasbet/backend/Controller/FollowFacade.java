@@ -1,5 +1,7 @@
 package com.rasbet.backend.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,6 +67,23 @@ public class FollowFacade
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Operation(summary = "Get all followed games by a user.")
+    @PostMapping("/getFollowedGames")
+    public List<String> getFollowedGames(@RequestHeader("Authorization") String token) {
+        token = RasbetTokenDecoder.parseToken(token);
+
+        // Get user_id from token
+        int user_id = new RasbetTokenDecoder(token, jwtDecoder).getId();
+
+        // Get all followed games by user
+        try {
+            return FollowDB.getFollowedEvents(user_id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
