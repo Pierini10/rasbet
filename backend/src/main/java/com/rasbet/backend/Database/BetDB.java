@@ -7,21 +7,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.rasbet.backend.Entities.Bet;
 import com.rasbet.backend.Entities.HistoryBets;
 import com.rasbet.backend.Entities.Prediction;
 import com.rasbet.backend.Entities.SharedEventSubject;
+
 
 public class BetDB {
 
     public final static String PENDING_STATUS = "Pending";
     public final static String WIN_STATUS = "Win";
     public final static String LOSS_STATUS = "Loss";
-
-    @Autowired
-    private static SharedEventSubject sharedEventSubject;
 
     /**
      * Gets the ID of a bet state
@@ -100,9 +96,11 @@ public class BetDB {
      * @param bet
      * @throws SQLException
      */
-    public static void add_Bet(Bet bet) throws SQLException {
+    public static void add_Bet(Bet bet, SharedEventSubject sharedEventSubject) throws SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         Integer idBetState = get_Bet_State(PENDING_STATUS);
+
+        List<String> events = new ArrayList<>();
 
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
         StringBuilder sb = new StringBuilder();
@@ -122,7 +120,7 @@ public class BetDB {
 
         for (Prediction prediction : bet.getPredictions()) {
 
-            sharedEventSubject.addFollow(bet.getIdUser(), prediction.getIdEvent());;
+            events.add(prediction.getIdEvent());
 
             StringBuilder sb2 = new StringBuilder();
             sb2.append("INSERT INTO SimpleBet (Bet_ID, BetState_ID, Prediction, Odd, Event_ID) VALUES (");
@@ -137,6 +135,10 @@ public class BetDB {
         }
 
         sqLiteJDBC.closeRS(rs);
+
+        for (String event : events) {
+            sharedEventSubject.addFollow(bet.getIdUser(), event);
+        }
     }
 
     

@@ -88,36 +88,35 @@ public class GamesApi {
 
 		List<Event> events = new ArrayList<Event>();
 
-		Map<String, Pair<String, String>> sports_name = getSports();
+		// // Map<String, Pair<String, String>> sports_name = getSports();
 		
 		
-		int retries = 0;
-		while (retries < MAX_RETRIES) {
-			try {
+		// // int retries = 0;
+		// // while (retries < MAX_RETRIES) {
+		// // 	try {
+		// // 		for (String sport : sports) {
+		// // 			events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"),
+		// // 					sports_name.get(sport), false));
+		// // 			events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu",
+		// // 					"3")));
+		// // 		}
+		// // 		break;
+		// // 	} catch (Exception e) {
+		// // 		e.printStackTrace();
+		// // 		retries++;
+		// // 	}
+		// // }
 
-				for (String sport : sports) {
-					events.addAll(getEvents(build_odds_sports_api_URL(sport, "eu"),
-							sports_name.get(sport), false));
-					events.addAll(getEventsScores(build_scores_sports_api_URL(sport, "eu",
-							"3")));
-				}
-				break;
-			} catch (Exception e) {
-				e.printStackTrace();
-				retries++;
-			}
-		}
-
-		retries = 0;
-		while (retries < MAX_RETRIES) {
-			try {
-				events.addAll(getEvents(GET_URL,sports_name.get("soccer_primeira_liga"), true));
-				break;
-			} catch (Exception e) {
-				e.printStackTrace();
-				retries++;
-			}
-		}
+		// // retries = 0;
+		// // while (retries < MAX_RETRIES) {
+		// // 	try {
+		// // 		events.addAll(getEvents(GET_URL,sports_name.get("soccer_primeira_liga"), true));
+		// // 		break;
+		// // 	} catch (Exception e) {
+		// // 		e.printStackTrace();
+		// // 		retries++;
+		// // 	}
+		// // }
 		
 		return events;
 	}

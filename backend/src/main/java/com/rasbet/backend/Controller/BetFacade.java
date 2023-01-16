@@ -23,6 +23,7 @@ import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Bet;
 import com.rasbet.backend.Entities.HistoryBets;
 import com.rasbet.backend.Entities.Prediction;
+import com.rasbet.backend.Entities.SharedEventSubject;
 import com.rasbet.backend.Exceptions.NoAmountException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.NoMinimumValueException;
@@ -39,6 +40,9 @@ public class BetFacade {
 
     @Autowired
     JwtDecoder jwtDecoder;
+
+    @Autowired
+    SharedEventSubject sharedEventSubject;
 
     /**
      * Make a bet.
@@ -76,7 +80,7 @@ public class BetFacade {
             if (r) {
                 Bet bet = new Bet(null, idUser, null, amount, null, null, simpleBets.size(), simpleBets);
                 bet.calculateTotalOdds();
-                BetDB.add_Bet(bet);
+                BetDB.add_Bet(bet, sharedEventSubject);
                 if (needsDeposit)
                     TransactionDB.addTransaction(idUser, "Deposit", amount.doubleValue(), null);
                 TransactionDB.addTransaction(idUser, "Bet", -amount.doubleValue(), null);

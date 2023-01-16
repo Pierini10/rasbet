@@ -4,9 +4,15 @@ import java.time.LocalDateTime;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.rasbet.backend.Database.EventsDB;
+import com.rasbet.backend.Entities.SharedEventSubject;
 
 public class Updater implements Runnable {
+
+    @Autowired
+    SharedEventSubject sharedEventSubject;
 
     private boolean running;
     /// Basic Reentrant Lock.
@@ -56,7 +62,7 @@ public class Updater implements Runnable {
 
     private void update() throws Exception {
         if (this.can_update()) {
-            EventsDB.update_Database();
+            EventsDB.update_Database(sharedEventSubject);
             updatelasEventsUpdate();
             // TODO POINT OF NOTIFICATION
         }

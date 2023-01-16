@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.Notification;
 import com.rasbet.backend.Entities.Odd;
@@ -25,9 +23,6 @@ public class EventsDB {
     public final static String PENDING_STATUS = "Pending";
     public final static String FINISHED_STATUS = "Finished";
     public final static String CLOSED_STATUS = "Closed";
-
-    @Autowired
-    private static SharedEventSubject sharedEventSubject;
 
     public static String get_EventStatus(int id) throws SQLException {
         // Create a connection
@@ -98,7 +93,7 @@ public class EventsDB {
         return id;
     }
 
-    public static void add_Event(Event e) throws SQLException, SportDoesNotExistExeption {
+    public static void add_Event(Event e, SharedEventSubject sharedEventSubject) throws SQLException, SportDoesNotExistExeption {
 
         sharedEventSubject.addEvent(e.getId());
 
@@ -139,7 +134,7 @@ public class EventsDB {
         }
     }
 
-    public static void add_Events(List<Event> newEvents) throws SQLException, SportDoesNotExistExeption {
+    public static void add_Events(List<Event> newEvents, SharedEventSubject sharedEventSubject) throws SQLException, SportDoesNotExistExeption {
 
         if (!newEvents.isEmpty()) {
 
@@ -211,16 +206,22 @@ public class EventsDB {
         }
     }
 
-    public static void update_Events(List<Event> events) throws SQLException {
+    public static void update_Events(List<Event> events, SharedEventSubject sharedEventSubject) throws SQLException {
 
         int bet_state_pending_id = BetDB.get_Bet_State(BetDB.PENDING_STATUS);
         int bet_state_win_id = BetDB.get_Bet_State(BetDB.WIN_STATUS);
         int bet_state_loss_id = BetDB.get_Bet_State(BetDB.LOSS_STATUS);
         int finished_state_id = get_EventStatusID(FINISHED_STATUS);
-        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         Map<Integer, Double> trans = new HashMap<>();
         List<Notification> notifications = new ArrayList<>();
+        
+        for (Event e : events){
+            if (e.getResult() != "null")
+                sharedEventSubject.notifyFollowers(e.getId(), "Followed game: " + e.getDescription() + " ended " + e.getResult());
+        }
 
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC(); // Não puxar para cima porque não é SQLite safe
+        
         for (Event e : events) {
 
             // Update Event
@@ -229,7 +230,6 @@ public class EventsDB {
                     + ",EventState_ID = " + finished_state_id
                     + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
             sqLiteJDBC2.executeUpdate(update_event);
-            if (e.getResult() != "null") sharedEventSubject.notifyFollowers(e.getId(), "Followed game: " + e.getDescription() + " ended " + e.getResult());
 
             // Update Odds
             if (e.getOdds() != null) {
@@ -244,7 +244,7 @@ public class EventsDB {
                         + "Odd = " + odd.getOdd()
                         + " WHERE Event_ID=" + SQLiteJDBC.prepare_string(e.getId()) + ";";
                         sqLiteJDBC2.executeUpdate(update_odd);
-                        sharedEventSubject.notifyFollowers(e.getId(), "Followed game: Odd " + odd.getEntity() + "updated to" + odd.getOdd());
+                        //sharedEventSubject.notifyFollowers(e.getId(), "Followed game: Odd " + odd.getEntity() + "updated to" + odd.getOdd());
                     }
                 }
                 rs_odds.close();
@@ -342,7 +342,7 @@ public class EventsDB {
      * @throws SQLException
      * @throws NoAuthorizationException
      */
-    public static void update_Event_State(String idEvent, Integer idUser, String state) throws SQLException, NoAuthorizationException {
+    public static void update_Event_State(String idEvent, Integer idUser, String state, SharedEventSubject sharedEventSubject) throws SQLException, NoAuthorizationException {
         UserDB.assert_is_Administrator(idUser);
 
         SQLiteJDBC sqLiteJDBC = new SQLiteJDBC();
@@ -353,18 +353,15 @@ public class EventsDB {
                 + SQLiteJDBC.prepare_string(idEvent) + " RETURNING Description;";
 
                 
-        ResultSet rs = sqLiteJDBC.executeQuery(query);
-        
-        if (rs.next()) 
-            sharedEventSubject.notifyFollowers(idEvent, " Event " + rs.getString("Description") + " has changed to " + state);
-        else 
-            System.out.println("Event not found, ERROR");
-
+        ResultSet rs = sqLiteJDBC.executeQuery(query);     
+        String description = rs.getString("Description");
         sqLiteJDBC.close();
+
+        sharedEventSubject.notifyFollowers(idEvent, " Event " + description + " has changed to " + state);
     }
 
     // Updates all DB events
-    public static void update_Database() throws Exception {
+    public static void update_Database(SharedEventSubject sharedEventSubject) throws Exception {
 
         // Get events from API
         List<Event> events = GamesApi.getallEvents();
@@ -392,8 +389,8 @@ public class EventsDB {
             sqLiteJDBC2.close();
 
             // Add new Oods and Events
-            update_Events(oldEvents);
-            add_Events(newEvents);
+            update_Events(oldEvents, sharedEventSubject);
+            add_Events(newEvents, sharedEventSubject);
         }
 
     }
@@ -450,13 +447,13 @@ public class EventsDB {
         ArrayList<String> events = new ArrayList<>();
         
         int state = get_EventStatusID(FINISHED_STATUS);
-        String query = "SELECT EventID FROM Event WHERE  (EventState_ID!=" + state + ");";
+        String query = "SELECT Event_ID FROM Event WHERE  (EventState_ID!=" + state + ");";
 
         SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
         ResultSet rs = sqLiteJDBC2.executeQuery(query);
 
         while (rs.next()) {
-            events.add(rs.getString("EventID"));
+            events.add(rs.getString("Event_ID"));
         }
 
         sqLiteJDBC2.close();

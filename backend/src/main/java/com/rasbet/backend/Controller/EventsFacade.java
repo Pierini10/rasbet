@@ -27,6 +27,7 @@ import com.rasbet.backend.Database.UserDB;
 import com.rasbet.backend.Entities.Event;
 import com.rasbet.backend.Entities.EventOdds;
 import com.rasbet.backend.Entities.Odd;
+import com.rasbet.backend.Entities.SharedEventSubject;
 import com.rasbet.backend.Exceptions.InvalidOddException;
 import com.rasbet.backend.Exceptions.NoAuthorizationException;
 import com.rasbet.backend.Exceptions.SportDoesNotExistExeption;
@@ -42,6 +43,9 @@ public class EventsFacade {
 
     @Autowired
     JwtDecoder jwtDecoder;
+
+    @Autowired
+    SharedEventSubject sharedEventSubject;
 
     /**
      * Get current events information.
@@ -114,7 +118,7 @@ public class EventsFacade {
         Event event = new Event(null, sport, competition, datetime, description, null, null, odds);
         try {
             UserDB.assert_is_Specialist(new RasbetTokenDecoder(token, jwtDecoder).getId());
-            EventsDB.add_Event(event);
+            EventsDB.add_Event(event, sharedEventSubject);
         } catch (SportDoesNotExistExeption | NoAuthorizationException | SQLException e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -139,7 +143,7 @@ public class EventsFacade {
         token = RasbetTokenDecoder.parseToken(token);
 
         try {
-            EventsDB.update_Event_State(idEvent, new RasbetTokenDecoder(token, jwtDecoder).getId(), state);
+            EventsDB.update_Event_State(idEvent, new RasbetTokenDecoder(token, jwtDecoder).getId(), state, sharedEventSubject);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SQLException", e);
@@ -213,7 +217,7 @@ public class EventsFacade {
         token = RasbetTokenDecoder.parseToken(token);
 
         try {
-            OddDB.updateOdds(new RasbetTokenDecoder(token, jwtDecoder).getId(), possibleBets);
+            OddDB.updateOdds(new RasbetTokenDecoder(token, jwtDecoder).getId(), possibleBets, sharedEventSubject);
         } catch (NoAuthorizationException e) {
             e.printStackTrace();
             throw new ResponseStatusException(

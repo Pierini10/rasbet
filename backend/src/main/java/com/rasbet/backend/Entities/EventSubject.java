@@ -45,4 +45,13 @@ public class EventSubject implements Subject{
             fo.update(message);
         }
     }
+
+    public boolean isFollowed(int user_id) {
+        for (FollowObserver fo : followers) {
+            if (fo.getUser_id() == user_id) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -7,10 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 import com.rasbet.backend.Database.EventsDB;
 import com.rasbet.backend.Database.FollowDB;
 
+@Component
 public class SharedEventSubject implements FactoryBean<SharedEventSubject> {
     private static final Map<String, EventSubject> map = new ConcurrentHashMap<>();
 
@@ -51,7 +53,7 @@ public class SharedEventSubject implements FactoryBean<SharedEventSubject> {
     }
 
     public void addFollow(int user_id, String event_id){
-        if (map.containsKey(event_id)) {
+        if (map.containsKey(event_id) && !map.get(event_id).isFollowed(user_id)) {
             map.get(event_id).registerObserver(new FollowObserver(user_id));
         }
         else {
@@ -60,7 +62,7 @@ public class SharedEventSubject implements FactoryBean<SharedEventSubject> {
     }
 
     public void removeFollow(int user_id, String event_id){
-        if (map.containsKey(event_id)) {
+        if (map.containsKey(event_id) && map.get(event_id).isFollowed(user_id)) {
             map.get(event_id).removeObserver(new FollowObserver(user_id));
         }
         else {
