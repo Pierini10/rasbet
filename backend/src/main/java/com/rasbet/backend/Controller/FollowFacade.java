@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,7 +71,7 @@ public class FollowFacade
     }
 
     @Operation(summary = "Get all followed games by a user.")
-    @PostMapping("/getFollowedGames")
+    @GetMapping("/getFollowedGames")
     public List<String> getFollowedGames(@RequestHeader("Authorization") String token) {
         token = RasbetTokenDecoder.parseToken(token);
 

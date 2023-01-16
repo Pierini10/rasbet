@@ -50,7 +50,7 @@ const Bets = () => {
   const [entityCO, setEntityCO] = useState("");
   const [descriptionCO, setDescriptionCO] = useState("");
   const [eventsOddsC, setEventsOddsC] = useState<EventOdds[]>([]);
-  const [following, setFollowing] = useState([]);
+  const [following, setFollowing] = useState<string[]>([]);
 
   useEffect(() => {
     if (updateBets) {
@@ -88,7 +88,19 @@ const Bets = () => {
       }
     };
 
+    const loadFollowing = async () => {
+      const newFollowing: string[] = await fetchdataAuth(
+        "http://localhost:8080/getFollowedGames",
+        "GET"
+      );
+
+      if (newFollowing !== undefined) {
+        setFollowing(newFollowing);
+      }
+    };
+
     loadEvents();
+    loadFollowing();
   }, [fetchdataAuth, updateBets, isNormal]);
 
   const changeBetType = (bt: boolean) => {
@@ -298,7 +310,18 @@ const Bets = () => {
     setBets([]);
   };
 
-  const changeFollow = () => {};
+  const changeFollow = async (id: string, follow: boolean) => {
+    const data = await fetchdataAuth(
+      `http://localhost:8080/${follow ? "followEvent" : "unfollowEvent"}`,
+      "POST",
+      undefined,
+      { event_id: id }
+    );
+
+    if (data) {
+      updateEvents();
+    }
+  };
 
   const handleChangeSport = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSport(event.target.value);
