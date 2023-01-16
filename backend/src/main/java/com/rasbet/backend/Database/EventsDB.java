@@ -426,4 +426,24 @@ public class EventsDB {
         return events;
     }
 
+    // Gets all DB events
+    public static ArrayList<String> getAllEventIds() throws SQLException {
+        // Create a connection
+        ArrayList<String> events = new ArrayList<>();
+        
+        int state = get_EventStatusID(FINISHED_STATUS);
+        String query = "SELECT EventID FROM Event WHERE  (EventState_ID!=" + state + ");";
+
+        SQLiteJDBC sqLiteJDBC2 = new SQLiteJDBC();
+        ResultSet rs = sqLiteJDBC2.executeQuery(query);
+
+        while (rs.next()) {
+            events.add(rs.getString("EventID"));
+        }
+
+        sqLiteJDBC2.close();
+
+        return events;
+    }
+
 }
