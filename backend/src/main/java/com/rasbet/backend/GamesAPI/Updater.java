@@ -57,7 +57,8 @@ public class Updater implements Runnable {
     private void update() throws Exception {
         if (this.can_update()) {
             EventsDB.update_Database();
-            updatelasEventsUpdate();  
+            updatelasEventsUpdate();
+            // TODO POINT OF NOTIFICATION
         }
     }
 

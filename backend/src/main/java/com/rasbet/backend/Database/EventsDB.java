@@ -211,6 +211,7 @@ public class EventsDB {
         Map<Integer, Double> trans = new HashMap<>();
         List<Notification> notifications = new ArrayList<>();
 
+        // TODO POINT OF NOTIFICATION COMPLEXO
         for (Event e : events) {
 
             // Update Event
