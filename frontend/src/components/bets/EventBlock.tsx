@@ -5,11 +5,13 @@ import Oddbutton from "./Oddbutton";
 
 interface Data {
   event: Event;
+  isFollowing: boolean;
   changeCallback: (id: string, bet: string) => void;
   checkCallback: (id: string, bet: string) => boolean;
   eventStateCallback: (id: string, description: string, state: string) => void;
   changeOddCallback: (id: string, entity: string, description: string) => void;
   checkChangedCallback: (id: string, entity: string) => number;
+  changeFollowCallback: (id: string) => void;
 }
 
 const EventBlock = (props: Data) => {
@@ -68,7 +70,7 @@ const EventBlock = (props: Data) => {
   return (
     <div className='flex align-middle'>
       <div className='grow ml-12 mr-12 p-4 rounded-xl border-dashed border-gray-400 border-2 '>
-        <div className='grid grid-cols-5 gap-3 items-center h-20'>
+        <div className='grid grid-cols-5 gap-3 items-center h-24'>
           <div
             className={
               entities.length > 3
@@ -84,8 +86,8 @@ const EventBlock = (props: Data) => {
                 : event.description}
             </div>
             <div className='text-gray-500'>{date}</div>
-            {!isNormal() &&
-              (isAdministrator() ? (
+            {!isNormal() ? (
+              isAdministrator() ? (
                 <div className='flex'>
                   <div className='text-gray-600'>Event state:</div>
                   <button
@@ -108,7 +110,18 @@ const EventBlock = (props: Data) => {
                     {event.state}
                   </div>
                 </div>
-              ))}
+              )
+            ) : (
+              <button
+                className={`mt-2 h-8 w-min flex items-center pl-6 pr-6 rounded-md text-gray-800 ${
+                  !props.isFollowing
+                    ? "border-gray-700 border-[1px]"
+                    : "bg-orange-400"
+                }`}
+              >
+                {!props.isFollowing ? "Following" : "Follow"}
+              </button>
+            )}
           </div>
           {entities.length < 4 ? (
             hasTemplate ? (
