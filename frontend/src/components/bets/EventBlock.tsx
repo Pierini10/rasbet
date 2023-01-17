@@ -11,7 +11,7 @@ interface Data {
   eventStateCallback: (id: string, description: string, state: string) => void;
   changeOddCallback: (id: string, entity: string, description: string) => void;
   checkChangedCallback: (id: string, entity: string) => number;
-  changeFollowCallback: (id: string) => void;
+  changeFollowCallback: (id: string, follow: boolean) => void;
 }
 
 const EventBlock = (props: Data) => {
@@ -23,7 +23,7 @@ const EventBlock = (props: Data) => {
   const date = `${event.datetime.getDate().toLocaleString(undefined, {
     minimumIntegerDigits: 2,
     useGrouping: false,
-  })}/${event.datetime.getMonth().toLocaleString(undefined, {
+  })}/${(event.datetime.getMonth() + 1).toLocaleString(undefined, {
     minimumIntegerDigits: 2,
     useGrouping: false,
   })}/${event.datetime.getFullYear()} ${event.datetime
@@ -70,7 +70,7 @@ const EventBlock = (props: Data) => {
   return (
     <div className='flex align-middle'>
       <div className='grow ml-12 mr-12 p-4 rounded-xl border-dashed border-gray-400 border-2 '>
-        <div className='grid grid-cols-5 gap-3 items-center h-24'>
+        <div className='grid grid-cols-5 gap-3 items-center '>
           <div
             className={
               entities.length > 3
@@ -114,12 +114,15 @@ const EventBlock = (props: Data) => {
             ) : (
               <button
                 className={`mt-2 h-8 w-min flex items-center pl-6 pr-6 rounded-md text-gray-800 ${
-                  !props.isFollowing
+                  props.isFollowing
                     ? "border-gray-700 border-[1px]"
                     : "bg-orange-400"
                 }`}
+                onClick={() =>
+                  props.changeFollowCallback(event.id, !props.isFollowing)
+                }
               >
-                {!props.isFollowing ? "Following" : "Follow"}
+                {props.isFollowing ? "Following" : "Follow"}
               </button>
             )}
           </div>
