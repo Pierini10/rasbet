@@ -42,7 +42,6 @@ public class FollowFacade
         try
         {
             sharedEventSubject.addFollow(user_id, event_id);
-            FollowDB.followEvent(true, user_id, event_id);
         }
         catch (Exception e)
         {
@@ -63,7 +62,6 @@ public class FollowFacade
         // Unfollow event: delete (user_id, event_id) from follow table
         try {
             sharedEventSubject.removeFollow(user_id, event_id);
-            FollowDB.followEvent(false, user_id, event_id);
         } catch (Exception e) {
             e.printStackTrace();
         }
